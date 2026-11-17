@@ -2,7 +2,7 @@
 
 Site vitrine du restaurant **Le New Select**, Place de France à Moroni (Union des Comores) : présentation, carte, galerie, histoire, réservation et informations pratiques, avec un dashboard propriétaire connecté à Supabase.
 
-**Dépôt GitHub :** <https://github.com/KassimAbdou/new-select.git>
+**Dépôt GitHub :** <https://github.com/KassimAbdou/le-new-select-moroni.git>
 
 ## Stack technique
 
@@ -82,7 +82,7 @@ scripts/optimize-images.mjs
   Les URL absolues sont actuellement `https://lenewselect-moroni.km` : à remplacer par le domaine réel avant mise en ligne.
 - **Images** : placez les photos sources dans `src/assets/images/original/`, lancez `npm run optimize:images`, puis importez le WebP généré dans `restaurantData.ts`. Vite gère le hachage et le cache des fichiers.
 - **Supabase** : copier `.env.example` vers `.env.local`, renseigner la clé anon/publishable, exécuter `supabase/migrations/001_lns_site_content.sql` puis, si nécessaire, `supabase/migrations/002_lns_grants_fix.sql`, et suivre [`SUPABASE.md`](./SUPABASE.md) pour créer le compte propriétaire. Les mêmes variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) sont à définir sur Vercel.
-- **Déploiement Vercel** : importer <https://github.com/KassimAbdou/new-select.git> dans Vercel, ajouter `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` dans _Project Settings → Environment Variables_, puis redéployer. `vercel.json` définit le framework `vite`, la commande `npm run build` et le dossier `dist/`. La version Node est lue depuis `engines` dans `package.json`. Le routage par hash ne nécessite aucune règle de réécriture serveur.
+- **Déploiement Vercel** : importer <https://github.com/KassimAbdou/le-new-select-moroni.git> dans Vercel, ajouter `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` dans _Project Settings → Environment Variables_, puis redéployer. `vercel.json` définit le framework `vite`, la commande `npm run build` et le dossier `dist/`. La version Node est lue depuis `engines` dans `package.json`. Le routage par hash ne nécessite aucune règle de réécriture serveur.
 
 ## Qualité
 
