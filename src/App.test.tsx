@@ -51,12 +51,7 @@ describe('application', () => {
     window.location.hash = '#admin';
     fireEvent(window, new Event('hashchange'));
 
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: /configuration supabase requise/i,
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /retour au site/i })).toBeInTheDocument();
     expect(document.title).toContain('Administration');
   });
 
