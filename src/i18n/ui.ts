@@ -4,12 +4,15 @@ export type UiMessages = {
   nav: {
     home: string;
     menu: string;
+    pizzas: string;
+    dailySpecials: string;
     history: string;
     gallery: string;
     infos: string;
     reservation: string;
     reservationContact: string;
     admin: string;
+    events: string;
     mainAria: string;
     mobileAria: string;
     openMenu: string;
@@ -79,6 +82,14 @@ export type UiMessages = {
     signatureKicker: string;
     signatureTitle: string;
     signatureAll: string;
+    dailySpecialKicker: string;
+    dailySpecialTitle: string;
+    dailySpecialAll: string;
+    eventsKicker: string;
+    eventsTitle: string;
+    eventsAll: string;
+    eventsEmpty: string;
+    eventsNextBadge: string;
     reviewsKicker: string;
     reviewsTitle: string;
     avgRatingAria: string;
@@ -95,6 +106,15 @@ export type UiMessages = {
     lunch: string;
     dinner: string;
     dessertsDrinks: string;
+    categories: {
+      breakfast: string;
+      lunch: string;
+      dinner: string;
+      dessertsDrinks: string;
+    };
+    chooseOption: string;
+    noDailySpecial: string;
+    empty: string;
     headings: {
       breakfast: { title: string; hours: string };
       lunch: { title: string; hours: string };
@@ -188,6 +208,38 @@ export type UiMessages = {
     faqKicker: string;
     faqTitle: string;
   };
+  events: {
+    kicker: string;
+    title: string;
+    intro: string;
+    all: string;
+    filtersAria: string;
+    empty: string;
+    dateLabel: string;
+    timeLabel: string;
+    locationLabel: string;
+    free: string;
+    priceOnRequest: string;
+    bookTickets: string;
+    ticketsRemaining: string;
+    salePoints: string;
+    buyOnline: string;
+    ticketFormTitle: string;
+    ticketQuantity: string;
+    ticketName: string;
+    ticketPhone: string;
+    ticketEmail: string;
+    ticketSubmit: string;
+    ticketSending: string;
+    ticketConfirmTitle: string;
+    ticketConfirmText: string;
+    ticketReference: string;
+    ticketWhatsapp: string;
+    ticketError: string;
+    organizeTitle: string;
+    organizeText: string;
+    organizeCta: string;
+  };
   footer: {
     description: string;
     navigation: string;
@@ -199,6 +251,7 @@ export type UiMessages = {
     menuLink: string;
     historyLink: string;
     galleryLink: string;
+    eventsLink: string;
     reservationLink: string;
     infosLink: string;
   };
@@ -208,6 +261,9 @@ export type UiMessages = {
     tabs: {
       overview: string;
       dishes: string;
+      menuCategories: string;
+      dailySpecials: string;
+      events: string;
       info: string;
       gallery: string;
       team: string;
@@ -250,6 +306,7 @@ export type UiMessages = {
       loadError: string;
       order: string;
       reservation: string;
+      ticket: string;
       deleteRecord: string;
       note: string;
       migrationNotice: string;
@@ -281,6 +338,10 @@ export type UiMessages = {
         statGallery: string;
         statTeam: string;
         statFaq: string;
+        statCategories: string;
+        statEvents: string;
+        importNew: string;
+        importNewConfirm: string;
         syncTitle: string;
         sourceLabel: string;
         sourceSupabase: string;
@@ -289,6 +350,7 @@ export type UiMessages = {
         liveActive: string;
         liveInactive: string;
         noDataNotice: string;
+        migrationNotice: string;
         importMissing: string;
         imported: string;
         viewSite: string;
@@ -306,6 +368,14 @@ export type UiMessages = {
         newDish: string;
         name: string;
         priceKmf: string;
+        category: string;
+        noCategory: string;
+        priceOptions: string;
+        priceOptionsHint: string;
+        optionLabel: string;
+        optionPrice: string;
+        addOption: string;
+        removeOption: string;
         moment: string;
         section: string;
         badge: string;
@@ -322,6 +392,75 @@ export type UiMessages = {
         empty: string;
         hiddenBadge: string;
         signatureBadge: string;
+      };
+      menuCategories: {
+        title: string;
+        description: string;
+        newCategory: string;
+        editCategory: string;
+        name: string;
+        descriptionField: string;
+        showOnSite: string;
+        saved: string;
+        deleted: string;
+        empty: string;
+        hiddenBadge: string;
+      };
+      dailySpecials: {
+        title: string;
+        description: string;
+        newSpecial: string;
+        editSpecial: string;
+        dishName: string;
+        descriptionField: string;
+        priceKmf: string;
+        image: string;
+        startDate: string;
+        endDate: string;
+        availability: string;
+        showOnSite: string;
+        saved: string;
+        deleted: string;
+        empty: string;
+        hiddenBadge: string;
+      };
+      events: {
+        title: string;
+        description: string;
+        newEvent: string;
+        editEvent: string;
+        eventTitle: string;
+        descriptionField: string;
+        category: string;
+        date: string;
+        endDate: string;
+        time: string;
+        location: string;
+        priceKmf: string;
+        freeHint: string;
+        ticketPriceKmf: string;
+        ticketsAvailable: string;
+        salePoints: string;
+        ticketingUrl: string;
+        ticketHint: string;
+        bookTicketsBadge: string;
+        seatsBadge: string;
+        image: string;
+        showOnSite: string;
+        saved: string;
+        deleted: string;
+        empty: string;
+        hiddenBadge: string;
+        categoriesTitle: string;
+        categoriesHint: string;
+        newCategory: string;
+        categoryName: string;
+        categoryDescription: string;
+        categorySaved: string;
+        categoryDeleted: string;
+        categoryDeleteConfirm: string;
+        categoryInUse: string;
+        deleteConfirm: string;
       };
       settings: {
         title: string;
@@ -397,15 +536,19 @@ export type UiMessages = {
         empty: string;
       };
       errorUnknown: string;
+      errorValidation: string;
     };
   };
   pages: {
     accueil: string;
     menu: string;
+    pizzas: string;
+    platsDuJour: string;
     histoire: string;
     galerie: string;
     reservation: string;
     infos: string;
+    evenements: string;
     admin: string;
   };
 };
@@ -415,12 +558,15 @@ export const ui: Record<Locale, UiMessages> = {
     nav: {
       home: 'Accueil',
       menu: 'Menu',
+      pizzas: 'Pizzas',
+      dailySpecials: 'Plats du jour',
       history: 'Histoire',
       gallery: 'Galerie',
       infos: 'Infos pratiques',
       reservation: 'Réserver',
       reservationContact: 'Réservation & Contact',
       admin: 'Administration',
+      events: 'Événements',
       mainAria: 'Navigation principale',
       mobileAria: 'Navigation mobile',
       openMenu: 'Ouvrir le menu',
@@ -450,7 +596,8 @@ export const ui: Record<Locale, UiMessages> = {
       viewCart: 'Voir le panier ({count}) · {total}',
       yourCart: 'Votre panier',
       currentOrder: 'Commande en cours',
-      cartEmpty: 'Aucun plat sélectionné. Ajoutez un plat depuis la carte pour composer votre commande.',
+      cartEmpty:
+        'Aucun plat sélectionné. Ajoutez un plat depuis la carte pour composer votre commande.',
       remove: 'Retirer {name} du panier',
       removeUnit: 'Retirer une unité de {name}',
       addUnit: 'Ajouter une unité de {name}',
@@ -458,7 +605,8 @@ export const ui: Record<Locale, UiMessages> = {
       pricesNote: 'Les prix sont indiqués en francs comoriens, taxes comprises.',
       validateOrder: 'Valider la commande',
       emptyCart: 'Vider le panier',
-      orderNote: 'Le détail de la commande est pré-rempli dans WhatsApp. Le restaurant confirme la disponibilité et le délai de préparation avant le règlement sur place.',
+      orderNote:
+        'Le détail de la commande est pré-rempli dans WhatsApp. Le restaurant confirme la disponibilité et le délai de préparation avant le règlement sur place.',
       closePreview: 'Fermer l’aperçu',
       previousPhoto: 'Photo précédente',
       nextPhoto: 'Photo suivante',
@@ -477,8 +625,10 @@ export const ui: Record<Locale, UiMessages> = {
     home: {
       location: 'Place de France · Moroni, Grande Comore',
       taglineFallback: 'Cuisine française et européenne au cœur de Moroni',
-      intro: 'Du café matinal dès 07h00 aux dîners sous les arbres de la Place de France, Le New Select marie la tradition bistrot aux pêches fraîches et épices de l’océan Indien.',
-      heroAlt: 'Terrasse ombragée du restaurant Le New Select sur la Place de France à Moroni',
+      intro:
+        'Du café matinal dès 07h00 aux dîners sous les arbres de la Place de France, Le New Select marie la tradition bistrot aux pêches fraîches et épices de l’océan Indien.',
+      heroAlt:
+        'Terrasse ombragée du restaurant Le New Select sur la Place de France à Moroni',
       viewMenuBtn: 'Voir la Carte',
       itineraryBtn: 'Itinéraire Place de France',
       hoursLabel: 'Horaires d’ouverture',
@@ -490,6 +640,14 @@ export const ui: Record<Locale, UiMessages> = {
       signatureKicker: 'Sélection de la maison · Tarifs en Francs Comoriens',
       signatureTitle: 'Les trois plats phares',
       signatureAll: 'Consulter toute la carte',
+      dailySpecialKicker: 'Plat du jour · Selon les arrivages',
+      dailySpecialTitle: 'Le plat du jour',
+      dailySpecialAll: 'Voir tous les plats du jour',
+      eventsKicker: 'Événements à venir · Place de France',
+      eventsTitle: 'Événements à venir',
+      eventsAll: 'Tous les événements',
+      eventsEmpty: 'Aucun événement à venir pour le moment.',
+      eventsNextBadge: 'Prochain rendez-vous',
       reviewsKicker: 'Retours vérifiés · TripAdvisor Moroni',
       reviewsTitle: 'Avis de nos hôtes et voyageurs',
       avgRatingAria: 'Note moyenne : 4,6 sur 5',
@@ -499,18 +657,40 @@ export const ui: Record<Locale, UiMessages> = {
     menu: {
       kicker: 'La Carte & Menus · Tarifs nets en Francs Comoriens (KMF)',
       title: 'Une carte rythmée par les heures du jour',
-      intro: 'Du petit-déjeuner matinal aux grillades du soir, nos assiettes sont préparées à la commande avec les pêches côtières de Grande Comore. Sélectionnez vos plats, le total se calcule automatiquement et votre commande part directement sur WhatsApp.',
+      intro:
+        'Du petit-déjeuner matinal aux grillades du soir, nos assiettes sont préparées à la commande avec les pêches côtières de Grande Comore. Sélectionnez vos plats, le total se calcule automatiquement et votre commande part directement sur WhatsApp.',
       tabsAria: 'Filtrer la carte par moment de la journée',
       all: 'Toute la carte',
       breakfast: 'Petit-déjeuner · dès 07h00',
       lunch: 'Déjeuner · 12h–15h',
       dinner: 'Dîner · 18h30–23h',
       dessertsDrinks: 'Desserts & Boissons',
+      categories: {
+        breakfast: 'Petit-déjeuner',
+        lunch: 'Déjeuner',
+        dinner: 'Dîner',
+        dessertsDrinks: 'Desserts & Boissons',
+      },
+      chooseOption: 'Choisir l’option',
+      noDailySpecial: 'Aucun plat du jour prévu pour le moment.',
+      empty: 'Aucun plat disponible pour ce service.',
       headings: {
-        breakfast: { title: 'Petit-déjeuner', hours: 'Servi dès 07h00 jusqu’à 10h30 en terrasse et en salle' },
-        lunch: { title: 'Déjeuner', hours: 'Servi de 12h00 à 15h00 · Formules et carte complète' },
-        dinner: { title: 'Dîner', hours: 'Servi de 18h30 à 23h00 · Grillades, poissons et classiques bistrot' },
-        dessertsDrinks: { title: 'Desserts maison & Boissons', hours: 'Pâtisseries du jour, jus frais pressés et cafés' },
+        breakfast: {
+          title: 'Petit-déjeuner',
+          hours: 'Servi dès 07h00 jusqu’à 10h30 en terrasse et en salle',
+        },
+        lunch: {
+          title: 'Déjeuner',
+          hours: 'Servi de 12h00 à 15h00 · Formules et carte complète',
+        },
+        dinner: {
+          title: 'Dîner',
+          hours: 'Servi de 18h30 à 23h00 · Grillades, poissons et classiques bistrot',
+        },
+        dessertsDrinks: {
+          title: 'Desserts maison & Boissons',
+          hours: 'Pâtisseries du jour, jus frais pressés et cafés',
+        },
       },
       chefSuggestion: 'Suggestion du chef',
       cartAria: 'Votre commande',
@@ -520,12 +700,14 @@ export const ui: Record<Locale, UiMessages> = {
       customerWhatsApp: 'Numéro WhatsApp',
       customerNamePlaceholder: 'Votre nom',
       customerWhatsAppPlaceholder: '+269 3XX XX XX',
-      customerRequired: 'Veuillez indiquer votre nom et votre numéro WhatsApp pour valider la commande.',
+      customerRequired:
+        'Veuillez indiquer votre nom et votre numéro WhatsApp pour valider la commande.',
     },
     gallery: {
       kicker: 'Galerie Photo · Ambiances & Assiettes',
       title: 'Sous les badamiers et en cuisine',
-      intro: 'Parcourez la terrasse de la Place de France, la salle climatisée et nos assiettes préparées au fil de la journée.',
+      intro:
+        'Parcourez la terrasse de la Place de France, la salle climatisée et nos assiettes préparées au fil de la journée.',
       filtersAria: 'Filtrer la galerie photo',
       all: 'Toutes les vues',
       terrace: 'Terrasse',
@@ -536,15 +718,29 @@ export const ui: Record<Locale, UiMessages> = {
     history: {
       kicker: 'Notre Histoire · Moroni, Place de France',
       title: 'Une table ouverte sur la Place de France',
-      intro1: 'Installé face aux arcades historiques de la Place de France, Le New Select s’est imposé au fil des années comme un point de rencontre familier au cœur de Moroni. On s’y retrouve dès sept heures du matin pour un café serré avant d’ouvrir les bureaux, pour un déjeuner d’affaires en salle climatisée ou pour un dîner paisible sous l’ombre des badamiers.',
-      intro2: 'Notre maison défend une cuisine lisible et sincère : des techniques bistrot françaises appliquées avec exigence aux trésors maritimes et agricoles de Grande Comore.',
+      intro1:
+        'Installé face aux arcades historiques de la Place de France, Le New Select s’est imposé au fil des années comme un point de rencontre familier au cœur de Moroni. On s’y retrouve dès sept heures du matin pour un café serré avant d’ouvrir les bureaux, pour un déjeuner d’affaires en salle climatisée ou pour un dîner paisible sous l’ombre des badamiers.',
+      intro2:
+        'Notre maison défend une cuisine lisible et sincère : des techniques bistrot françaises appliquées avec exigence aux trésors maritimes et agricoles de Grande Comore.',
       discoverMenu: 'Découvrir la carte',
       pillarsKicker: 'Philosophie culinaire',
       pillarsTitle: 'Nos trois fondations',
       pillars: [
-        { title: 'Esprit bistrot français', description: 'Cuissons précises, sauces montées au beurre, fonds réduits sur place et accueil attentif : une rigueur culinaire héritée de la brasserie traditionnelle.' },
-        { title: 'Produits frais de l’océan Indien', description: 'Capitaine, thon jaune, mérou et langoustes proviennent des débarquements matinaux des pêcheurs de Moroni, Itsandra et Mitsamiouli.' },
-        { title: 'Approvisionnements locaux de Ngazidja', description: 'Vanille Bourbon, poivre vert, girofle, combava, brèdes et manioc des hauteurs du Karthala signent chaque assiette d’une identité comorienne.' },
+        {
+          title: 'Esprit bistrot français',
+          description:
+            'Cuissons précises, sauces montées au beurre, fonds réduits sur place et accueil attentif : une rigueur culinaire héritée de la brasserie traditionnelle.',
+        },
+        {
+          title: 'Produits frais de l’océan Indien',
+          description:
+            'Capitaine, thon jaune, mérou et langoustes proviennent des débarquements matinaux des pêcheurs de Moroni, Itsandra et Mitsamiouli.',
+        },
+        {
+          title: 'Approvisionnements locaux de Ngazidja',
+          description:
+            'Vanille Bourbon, poivre vert, girofle, combava, brèdes et manioc des hauteurs du Karthala signent chaque assiette d’une identité comorienne.',
+        },
       ],
       teamKicker: 'Équipe en cuisine et en salle',
       teamTitle: 'La brigade et les maîtres de rang',
@@ -553,7 +749,8 @@ export const ui: Record<Locale, UiMessages> = {
     reservation: {
       kicker: 'Réservation & Contact · Moroni, Place de France',
       title: 'Réserver votre table',
-      intro: 'Choisissez votre placement en terrasse sous les arbres ou dans la salle climatisée. Confirmation immédiate ou par téléphone au ',
+      intro:
+        'Choisissez votre placement en terrasse sous les arbres ou dans la salle climatisée. Confirmation immédiate ou par téléphone au ',
       seatingLegend: 'Choix de placement',
       terraceTitle: 'Terrasse ombragée',
       terraceDetail: 'Sous les badamiers · Vue Place de France',
@@ -573,7 +770,8 @@ export const ui: Record<Locale, UiMessages> = {
       serviceHours: 'Service continu de 07h00 à 23h00',
       confirmedKicker: 'Référence {ref}',
       confirmedTitle: 'Demande de réservation enregistrée',
-      confirmedThanks: 'Merci {name}. Votre demande est prête ; transmettez-la via WhatsApp pour une prise en charge immédiate par notre maître d’hôtel.',
+      confirmedThanks:
+        'Merci {name}. Votre demande est prête ; transmettez-la via WhatsApp pour une prise en charge immédiate par notre maître d’hôtel.',
       dateTime: 'Date & Heure',
       covers: 'Nombre de couverts',
       seating: 'Placement souhaité',
@@ -584,27 +782,67 @@ export const ui: Record<Locale, UiMessages> = {
       whatsappQuick: 'Réponse rapide',
       mapKicker: 'Situation géographique · Moroni',
       mapTitle: 'Plan de la Place de France',
-      mapAlt: 'Carte schématique de la Place de France à Moroni et repères autour du restaurant Le New Select',
+      mapAlt:
+        'Carte schématique de la Place de France à Moroni et repères autour du restaurant Le New Select',
       viewLandmark: 'Voir le repère : {name}',
       whatsappPrefill: 'Bonjour Le New Select, je souhaite réserver une table.',
     },
     infos: {
       kicker: 'Informations Pratiques · Moroni',
       title: 'Préparer votre venue au New Select',
-      intro: 'Accès, stationnement autour de la Place de France, moyens de paiement et réponses aux questions fréquentes.',
+      intro:
+        'Accès, stationnement autour de la Place de France, moyens de paiement et réponses aux questions fréquentes.',
       accessKicker: '01. Accès & Stationnement',
       accessTitle: 'Aux abords de la Place de France',
-      accessText: 'Situé en plein centre-ville de Moroni, le restaurant est accessible à pied depuis les ministères, banques, ambassades et le port. Des places de stationnement public longent la Place de France et la rue adjacente, à moins de cinquante mètres de l’entrée de la terrasse.',
+      accessText:
+        'Situé en plein centre-ville de Moroni, le restaurant est accessible à pied depuis les ministères, banques, ambassades et le port. Des places de stationnement public longent la Place de France et la rue adjacente, à moins de cinquante mètres de l’entrée de la terrasse.',
       takeawayKicker: '02. À emporter & Groupes',
       takeawayTitle: 'Vente à emporter et grandes tables',
-      takeawayText: 'Tous les plats de la carte peuvent être commandés à emporter pour vos bureaux ou votre domicile en appelant vingt minutes avant votre passage. Pour les groupes de 8 à 30 couverts (déjeuners officiels, réunions, dîners familiaux), nous privatisons une zone de la salle climatisée ou de la terrasse.',
+      takeawayText:
+        'Tous les plats de la carte peuvent être commandés à emporter pour vos bureaux ou votre domicile en appelant vingt minutes avant votre passage. Pour les groupes de 8 à 30 couverts (déjeuners officiels, réunions, dîners familiaux), nous privatisons une zone de la salle climatisée ou de la terrasse.',
       paymentKicker: 'Règlement sur place ou à emporter',
       paymentTitle: 'Moyens de paiement acceptés',
       faqKicker: 'Services en salle et en terrasse',
       faqTitle: 'Foire aux questions',
     },
+    events: {
+      kicker: 'Événements · Le New Select, Moroni',
+      title: 'Événements à venir',
+      intro:
+        'Soirées musicales, célébrations et rencontres professionnelles : découvrez les prochains rendez-vous du New Select, sous les badamiers de la Place de France ou dans notre salle climatisée.',
+      all: 'Tous les événements',
+      filtersAria: 'Filtrer les événements par catégorie',
+      empty: 'Aucun événement à venir dans cette catégorie.',
+      dateLabel: 'Date',
+      timeLabel: 'Heure',
+      locationLabel: 'Lieu',
+      free: 'Gratuit',
+      priceOnRequest: 'Prix sur demande',
+      bookTickets: 'Réserver des billets',
+      ticketsRemaining: '{count} place(s) restante(s)',
+      salePoints: 'Points de vente',
+      buyOnline: 'Acheter en ligne',
+      ticketFormTitle: 'Réserver des billets — {title}',
+      ticketQuantity: 'Nombre de billets',
+      ticketName: 'Nom complet',
+      ticketPhone: 'WhatsApp / Téléphone',
+      ticketEmail: 'E-mail (optionnel)',
+      ticketSubmit: 'Envoyer la réservation',
+      ticketSending: 'Envoi en cours…',
+      ticketConfirmTitle: 'Réservation de billets enregistrée',
+      ticketConfirmText:
+        'Votre demande a bien été enregistrée (référence {ref}). Notre équipe vous contactera pour confirmer et régler vos billets.',
+      ticketReference: 'Référence',
+      ticketWhatsapp: 'Finaliser sur WhatsApp',
+      ticketError: 'Impossible d’enregistrer la demande. Réessayez ou contactez-nous.',
+      organizeTitle: 'Organiser un événement',
+      organizeText:
+        'Anniversaire, mariage, soirée d’équipe ou réception officielle : notre équipe compose un menu et un espace sur mesure pour vos invités.',
+      organizeCta: 'Demander un devis',
+    },
     footer: {
-      description: 'Une maison ouverte chaque jour sur la Place de France, entre produits frais de l’océan Indien et savoir-faire bistrot.',
+      description:
+        'Une maison ouverte chaque jour sur la Place de France, entre produits frais de l’océan Indien et savoir-faire bistrot.',
       navigation: 'Navigation',
       location: 'Moroni · Place de France',
       rights: '© {year} {name} · Moroni, Union des Comores',
@@ -614,6 +852,7 @@ export const ui: Record<Locale, UiMessages> = {
       menuLink: 'La Carte & Menus',
       historyLink: 'Notre Histoire',
       galleryLink: 'Galerie Photo',
+      eventsLink: 'Événements',
       reservationLink: 'Réservation & Contact',
       infosLink: 'Informations Pratiques',
     },
@@ -623,6 +862,9 @@ export const ui: Record<Locale, UiMessages> = {
       tabs: {
         overview: 'Tableau de bord',
         dishes: 'Plats',
+        menuCategories: 'Catégories de la carte',
+        dailySpecials: 'Plats du jour',
+        events: 'Événements',
         info: 'Informations',
         gallery: 'Galerie',
         team: 'Équipe',
@@ -638,14 +880,16 @@ export const ui: Record<Locale, UiMessages> = {
       logout: 'Déconnexion',
       setup: {
         title: 'Configuration Supabase requise',
-        notice: 'Le dashboard est prêt, mais la clé publique Supabase n’est pas encore définie dans l’environnement de l’application.',
+        notice:
+          'Le dashboard est prêt, mais la clé publique Supabase n’est pas encore définie dans l’environnement de l’application.',
         varsTitle: 'Variables à définir :',
         help: 'Ajoutez-les dans .env.local en local, puis dans les variables d’environnement Vercel. Exécutez ensuite supabase/migrations/001_lns_site_content.sql dans le SQL Editor de Supabase. Seule la clé anon est exposée au navigateur : la clé service_role ne doit jamais être utilisée ici.',
       },
       login: {
         kicker: 'Espace propriétaire',
         title: 'Connexion',
-        intro: 'Réservé au propriétaire du restaurant. Utilisez le compte Supabase Auth autorisé.',
+        intro:
+          'Réservé au propriétaire du restaurant. Utilisez le compte Supabase Auth autorisé.',
         email: 'E-mail',
         password: 'Mot de passe',
         submit: 'Se connecter',
@@ -653,21 +897,25 @@ export const ui: Record<Locale, UiMessages> = {
       },
       clients: {
         title: 'Clients & demandes',
-        description: 'Données enregistrées automatiquement lorsqu’un client valide une commande (panier) ou confirme une demande de réservation.',
+        description:
+          'Données enregistrées automatiquement lorsqu’un client valide une commande (panier) ou confirme une demande de réservation.',
         refresh: 'Actualiser',
         deleteAll: 'Tout supprimer',
         deleteAllConfirm: 'Supprimer tous les enregistrements clients ?',
         count: '{count} enregistrement(s)',
-        empty: 'Aucun enregistrement pour le moment. Les données apparaîtront ici lorsqu’un client validera une commande ou confirmera une demande de réservation.',
+        empty:
+          'Aucun enregistrement pour le moment. Les données apparaîtront ici lorsqu’un client validera une commande ou confirmera une demande de réservation.',
         deleted: 'Enregistrement supprimé.',
         cleared: 'Tous les enregistrements ont été supprimés.',
         deleteError: 'Suppression impossible.',
         loadError: 'Impossible de charger les données clients.',
         order: 'Commande',
         reservation: 'Réservation',
+        ticket: 'Billets',
         deleteRecord: 'Supprimer l’enregistrement de {name}',
         note: 'Note : {note}',
-        migrationNotice: 'Si la table Supabase lns_client_records n’est pas encore créée, exécutez la migration 003_lns_client_records.sql. Les enregistrements sont aussi conservés localement dans ce navigateur en secours.',
+        migrationNotice:
+          'Si la table Supabase lns_client_records n’est pas encore créée, exécutez la migration 003_lns_client_records.sql. Pour les billets, exécutez aussi 005_lns_ticket_records.sql. Les enregistrements sont aussi conservés localement dans ce navigateur en secours.',
       },
       editors: {
         common: {
@@ -691,11 +939,17 @@ export const ui: Record<Locale, UiMessages> = {
         overview: {
           kicker: 'Vue d’ensemble',
           title: 'Bienvenue dans l’espace propriétaire',
-          description: 'Modifiez les plats, les coordonnées, les photos ou l’équipe : le site client se met à jour automatiquement grâce à Supabase Realtime.',
+          description:
+            'Modifiez les plats, les coordonnées, les photos ou l’équipe : le site client se met à jour automatiquement grâce à Supabase Realtime.',
           statDishes: 'Plats à la carte',
           statGallery: 'Photos de galerie',
           statTeam: 'Membres de l’équipe',
           statFaq: 'Questions fréquentes',
+          statCategories: 'Catégories de la carte',
+          statEvents: 'Événements à venir',
+          importNew: 'Importer les nouveautés',
+          importNewConfirm:
+            'Importer les catégories, plats du jour et événements manquants ? Vos modifications existantes seront conservées.',
           syncTitle: 'État de la synchronisation',
           sourceLabel: 'Source des données',
           sourceSupabase: 'Supabase',
@@ -703,7 +957,10 @@ export const ui: Record<Locale, UiMessages> = {
           liveLabel: 'Mises à jour en direct',
           liveActive: 'Actives',
           liveInactive: 'Inactives',
-          noDataNotice: 'Aucune donnée Supabase pour le moment. Importez le contenu d’origine pour commencer à gérer le site depuis le dashboard.',
+          noDataNotice:
+            'Aucune donnée Supabase pour le moment. Importez le contenu d’origine pour commencer à gérer le site depuis le dashboard.',
+          migrationNotice:
+            'Tables manquantes dans Supabase : {tables}. Exécutez la migration 004_lns_menu_events.sql dans le SQL Editor pour publier ces sections sur le site.',
           importMissing: 'Importer le contenu manquant',
           imported: 'Contenu manquant importé (modifications préservées).',
           viewSite: 'Voir le site',
@@ -715,12 +972,21 @@ export const ui: Record<Locale, UiMessages> = {
         },
         menu: {
           title: 'Les plats',
-          description: 'Ajoutez un plat, modifiez son prix ou sa photo, masquez-le le temps d’une rupture. Le total du panier client suit automatiquement.',
+          description:
+            'Ajoutez un plat, modifiez son prix ou sa photo, masquez-le le temps d’une rupture. Le total du panier client suit automatiquement.',
           all: 'Tous',
           editDish: 'Modifier le plat',
           newDish: 'Nouveau plat',
           name: 'Nom du plat',
           priceKmf: 'Prix (KMF)',
+          category: 'Catégorie',
+          noCategory: 'Sans catégorie',
+          priceOptions: 'Options de prix',
+          priceOptionsHint: 'Ex. : 26 cm / 33 cm, petite / grande portion.',
+          optionLabel: 'Nom de l’option',
+          optionPrice: 'Prix de l’option (KMF)',
+          addOption: 'Ajouter une option',
+          removeOption: 'Supprimer l’option',
           moment: 'Moment de service',
           section: 'Section sur la carte',
           badge: 'Badge (optionnel)',
@@ -738,9 +1004,83 @@ export const ui: Record<Locale, UiMessages> = {
           hiddenBadge: 'Masqué',
           signatureBadge: 'Phare',
         },
+        menuCategories: {
+          title: 'Catégories de la carte',
+          description:
+            'Organisez les sections de votre carte : nom, description, ordre d’affichage et visibilité.',
+          newCategory: 'Nouvelle catégorie',
+          editCategory: 'Modifier la catégorie',
+          name: 'Nom de la catégorie',
+          descriptionField: 'Description',
+          showOnSite: 'Afficher sur la carte',
+          saved: 'Catégorie enregistrée.',
+          deleted: 'Catégorie supprimée.',
+          empty: 'Aucune catégorie pour le moment.',
+          hiddenBadge: 'Masquée',
+        },
+        dailySpecials: {
+          title: 'Plats du jour',
+          description:
+            'Programmez les plats du jour avec leurs dates de validité : seul le plat en cours est affiché sur le site.',
+          newSpecial: 'Nouveau plat du jour',
+          editSpecial: 'Modifier le plat du jour',
+          dishName: 'Nom du plat',
+          descriptionField: 'Description',
+          priceKmf: 'Prix (KMF)',
+          image: 'Photo du plat',
+          startDate: 'Date de début',
+          endDate: 'Date de fin',
+          availability: 'Disponibilité',
+          showOnSite: 'Afficher sur le site',
+          saved: 'Plat du jour enregistré.',
+          deleted: 'Plat du jour supprimé.',
+          empty: 'Aucun plat du jour programmé.',
+          hiddenBadge: 'Masqué',
+        },
+        events: {
+          title: 'Événements',
+          description:
+            'Ajoutez vos événements et catégories : dates, lieu, tarif et visibilité sont affichés sur la page Événements.',
+          newEvent: 'Nouvel événement',
+          editEvent: 'Modifier l’événement',
+          eventTitle: 'Titre de l’événement',
+          descriptionField: 'Description',
+          category: 'Catégorie',
+          date: 'Date de début',
+          endDate: 'Date de fin (optionnelle)',
+          time: 'Heure',
+          location: 'Lieu',
+          priceKmf: 'Prix (KMF)',
+          freeHint: 'Laissez à 0 pour un événement gratuit.',
+          ticketPriceKmf: 'Prix d’un billet (KMF)',
+          ticketsAvailable: 'Places disponibles',
+          salePoints: 'Points de vente / modalités d’achat',
+          ticketingUrl: 'Lien de billetterie en ligne (optionnel)',
+          ticketHint: 'Ces informations alimentent la billetterie de la page Événements.',
+          bookTicketsBadge: 'Billetterie',
+          seatsBadge: '{count} place(s)',
+          image: 'Photo de l’événement',
+          showOnSite: 'Afficher sur le site',
+          saved: 'Événement enregistré.',
+          deleted: 'Événement supprimé.',
+          empty: 'Aucun événement pour le moment.',
+          hiddenBadge: 'Masqué',
+          categoriesTitle: 'Catégories d’événements',
+          categoriesHint:
+            'Classez les événements (festivités, cérémonies, soirées, etc.).',
+          newCategory: 'Nouvelle catégorie',
+          categoryName: 'Nom de la catégorie',
+          categoryDescription: 'Description',
+          categorySaved: 'Catégorie enregistrée.',
+          categoryDeleted: 'Catégorie supprimée.',
+          categoryDeleteConfirm: 'Supprimer la catégorie {name} ?',
+          categoryInUse: '{count} événement(s) utilisent encore la catégorie {name}.',
+          deleteConfirm: 'Supprimer l’événement {name} ?',
+        },
         settings: {
           title: 'Informations essentielles',
-          description: 'Nom, coordonnées, horaires, photo d’accueil et plat du jour : ces champs alimentent toutes les pages du site.',
+          description:
+            'Nom, coordonnées, horaires, photo d’accueil et plat du jour : ces champs alimentent toutes les pages du site.',
           saved: 'Informations enregistrées.',
           restaurantName: 'Nom du restaurant',
           tagline: 'Accroche',
@@ -749,7 +1089,8 @@ export const ui: Record<Locale, UiMessages> = {
           phoneDisplay: 'Téléphone affiché',
           phoneLink: 'Lien téléphone',
           whatsappLink: 'Lien WhatsApp',
-          whatsappHint: 'Ex. : https://wa.me/2697730031 — utilisé pour les commandes et réservations.',
+          whatsappHint:
+            'Ex. : https://wa.me/2697730031 — utilisé pour les commandes et réservations.',
           email: 'E-mail',
           hoursSummary: 'Horaires (résumé)',
           directionsLink: 'Lien itinéraire',
@@ -767,7 +1108,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         gallery: {
           title: 'Galerie photo',
-          description: 'Remplacez les visuels de la terrasse, de la salle et des plats. Les photos uploadées sont stockées dans le bucket Supabase dédié.',
+          description:
+            'Remplacez les visuels de la terrasse, de la salle et des plats. Les photos uploadées sont stockées dans le bucket Supabase dédié.',
           newPhoto: 'Nouvelle photo',
           editPhoto: 'Modifier la photo',
           category: 'Catégorie',
@@ -791,7 +1133,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         faq: {
           title: 'Questions fréquentes',
-          description: 'Gérez les réponses affichées sur la page « Informations pratiques ».',
+          description:
+            'Gérez les réponses affichées sur la page « Informations pratiques ».',
           newQuestion: 'Nouvelle question',
           question: 'Question',
           answer: 'Réponse',
@@ -801,7 +1144,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         media: {
           title: 'Bibliothèque de médias',
-          description: 'Uploadez vos photos une fois, puis copiez leur URL dans un plat ou une photo de galerie.',
+          description:
+            'Uploadez vos photos une fois, puis copiez leur URL dans un plat ou une photo de galerie.',
           upload: 'Importer des images',
           uploading: 'Envoi…',
           imported: '{count} image(s) importée(s).',
@@ -812,15 +1156,20 @@ export const ui: Record<Locale, UiMessages> = {
           empty: 'Aucune image dans la bibliothèque.',
         },
         errorUnknown: 'Erreur inconnue',
+        errorValidation:
+          'Vérifiez les champs du formulaire avant d’enregistrer (prix, dates, champs obligatoires).',
       },
     },
     pages: {
       accueil: 'Accueil',
       menu: 'La Carte & Menus',
+      pizzas: 'Nos Pizzas',
+      platsDuJour: 'Plats du jour',
       histoire: 'Notre Histoire',
       galerie: 'Galerie Photo',
       reservation: 'Réservation & Contact',
       infos: 'Informations Pratiques',
+      evenements: 'Événements',
       admin: 'Administration',
     },
   },
@@ -828,12 +1177,15 @@ export const ui: Record<Locale, UiMessages> = {
     nav: {
       home: 'Home',
       menu: 'Menu',
+      pizzas: 'Pizzas',
+      dailySpecials: 'Daily specials',
       history: 'Our Story',
       gallery: 'Gallery',
       infos: 'Practical Info',
       reservation: 'Book',
       reservationContact: 'Booking & Contact',
       admin: 'Administration',
+      events: 'Events',
       mainAria: 'Main navigation',
       mobileAria: 'Mobile navigation',
       openMenu: 'Open menu',
@@ -871,7 +1223,8 @@ export const ui: Record<Locale, UiMessages> = {
       pricesNote: 'Prices are shown in Comorian francs, tax included.',
       validateOrder: 'Place order',
       emptyCart: 'Clear cart',
-      orderNote: 'Your order details are pre-filled in WhatsApp. The restaurant will confirm availability and preparation time before payment on site.',
+      orderNote:
+        'Your order details are pre-filled in WhatsApp. The restaurant will confirm availability and preparation time before payment on site.',
       closePreview: 'Close preview',
       previousPhoto: 'Previous photo',
       nextPhoto: 'Next photo',
@@ -890,7 +1243,8 @@ export const ui: Record<Locale, UiMessages> = {
     home: {
       location: 'Place de France · Moroni, Grande Comore',
       taglineFallback: 'French and European cuisine in the heart of Moroni',
-      intro: 'From morning coffee at 7:00 AM to dinners under the trees of Place de France, Le New Select blends bistro tradition with fresh catches and spices from the Indian Ocean.',
+      intro:
+        'From morning coffee at 7:00 AM to dinners under the trees of Place de France, Le New Select blends bistro tradition with fresh catches and spices from the Indian Ocean.',
       heroAlt: 'Shaded terrace of Le New Select restaurant on Place de France in Moroni',
       viewMenuBtn: 'View Menu',
       itineraryBtn: 'Directions to Place de France',
@@ -903,6 +1257,14 @@ export const ui: Record<Locale, UiMessages> = {
       signatureKicker: 'House selection · Prices in Comorian Francs',
       signatureTitle: 'Our three signature dishes',
       signatureAll: 'View full menu',
+      dailySpecialKicker: 'Daily special · Based on the day’s arrivals',
+      dailySpecialTitle: 'Today’s daily special',
+      dailySpecialAll: 'See all daily specials',
+      eventsKicker: 'Upcoming events · Place de France',
+      eventsTitle: 'Upcoming events',
+      eventsAll: 'All events',
+      eventsEmpty: 'No upcoming events at the moment.',
+      eventsNextBadge: 'Next event',
       reviewsKicker: 'Verified reviews · TripAdvisor Moroni',
       reviewsTitle: 'What our guests say',
       avgRatingAria: 'Average rating: 4.6 out of 5',
@@ -912,18 +1274,40 @@ export const ui: Record<Locale, UiMessages> = {
     menu: {
       kicker: 'Menu · Net prices in Comorian Francs (KMF)',
       title: 'A menu that follows the rhythm of the day',
-      intro: 'From breakfast to evening grills, our dishes are cooked to order with coastal catches from Grande Comore. Select your dishes, the total updates automatically, and your order goes straight to WhatsApp.',
+      intro:
+        'From breakfast to evening grills, our dishes are cooked to order with coastal catches from Grande Comore. Select your dishes, the total updates automatically, and your order goes straight to WhatsApp.',
       tabsAria: 'Filter menu by time of day',
       all: 'Full menu',
       breakfast: 'Breakfast · from 7:00 AM',
       lunch: 'Lunch · 12:00–3:00 PM',
       dinner: 'Dinner · 6:30–11:00 PM',
       dessertsDrinks: 'Desserts & Drinks',
+      categories: {
+        breakfast: 'Breakfast',
+        lunch: 'Lunch',
+        dinner: 'Dinner',
+        dessertsDrinks: 'Desserts & Drinks',
+      },
+      chooseOption: 'Choose an option',
+      noDailySpecial: 'No daily special planned at the moment.',
+      empty: 'No dishes available for this service.',
       headings: {
-        breakfast: { title: 'Breakfast', hours: 'Served from 7:00 AM to 10:30 AM on the terrace and indoors' },
-        lunch: { title: 'Lunch', hours: 'Served from 12:00 PM to 3:00 PM · Set menus and full à la carte' },
-        dinner: { title: 'Dinner', hours: 'Served from 6:30 PM to 11:00 PM · Grills, fish and bistro classics' },
-        dessertsDrinks: { title: 'Homemade Desserts & Drinks', hours: 'Daily pastries, fresh juices and coffee' },
+        breakfast: {
+          title: 'Breakfast',
+          hours: 'Served from 7:00 AM to 10:30 AM on the terrace and indoors',
+        },
+        lunch: {
+          title: 'Lunch',
+          hours: 'Served from 12:00 PM to 3:00 PM · Set menus and full à la carte',
+        },
+        dinner: {
+          title: 'Dinner',
+          hours: 'Served from 6:30 PM to 11:00 PM · Grills, fish and bistro classics',
+        },
+        dessertsDrinks: {
+          title: 'Homemade Desserts & Drinks',
+          hours: 'Daily pastries, fresh juices and coffee',
+        },
       },
       chefSuggestion: "Chef's suggestion",
       cartAria: 'Your order',
@@ -938,7 +1322,8 @@ export const ui: Record<Locale, UiMessages> = {
     gallery: {
       kicker: 'Photo Gallery · Atmosphere & Dishes',
       title: 'Under the badamier trees and in the kitchen',
-      intro: 'Explore the Place de France terrace, the air-conditioned dining room, and our dishes prepared throughout the day.',
+      intro:
+        'Explore the Place de France terrace, the air-conditioned dining room, and our dishes prepared throughout the day.',
       filtersAria: 'Filter photo gallery',
       all: 'All views',
       terrace: 'Terrace',
@@ -949,24 +1334,40 @@ export const ui: Record<Locale, UiMessages> = {
     history: {
       kicker: 'Our Story · Moroni, Place de France',
       title: 'A table open onto Place de France',
-      intro1: 'Facing the historic arcades of Place de France, Le New Select has become a familiar meeting place in the heart of Moroni. Guests come for a strong coffee from seven in the morning, a business lunch in the air-conditioned room, or a peaceful dinner under the shade of the badamier trees.',
-      intro2: 'Our house stands for clear, sincere cooking: French bistro techniques applied with care to the maritime and agricultural treasures of Grande Comore.',
+      intro1:
+        'Facing the historic arcades of Place de France, Le New Select has become a familiar meeting place in the heart of Moroni. Guests come for a strong coffee from seven in the morning, a business lunch in the air-conditioned room, or a peaceful dinner under the shade of the badamier trees.',
+      intro2:
+        'Our house stands for clear, sincere cooking: French bistro techniques applied with care to the maritime and agricultural treasures of Grande Comore.',
       discoverMenu: 'Discover the menu',
       pillarsKicker: 'Culinary philosophy',
       pillarsTitle: 'Our three foundations',
       pillars: [
-        { title: 'French bistro spirit', description: 'Precise cooking, butter-mounted sauces, stocks reduced on site and attentive service: culinary rigor inherited from the traditional brasserie.' },
-        { title: 'Fresh produce from the Indian Ocean', description: 'Capitaine, yellowfin tuna, grouper and lobsters come from the morning landings of fishermen in Moroni, Itsandra and Mitsamiouli.' },
-        { title: 'Local sourcing from Ngazidja', description: 'Bourbon vanilla, green pepper, clove, combava, local greens and cassava from the slopes of Mount Karthala give each dish its Comorian identity.' },
+        {
+          title: 'French bistro spirit',
+          description:
+            'Precise cooking, butter-mounted sauces, stocks reduced on site and attentive service: culinary rigor inherited from the traditional brasserie.',
+        },
+        {
+          title: 'Fresh produce from the Indian Ocean',
+          description:
+            'Capitaine, yellowfin tuna, grouper and lobsters come from the morning landings of fishermen in Moroni, Itsandra and Mitsamiouli.',
+        },
+        {
+          title: 'Local sourcing from Ngazidja',
+          description:
+            'Bourbon vanilla, green pepper, clove, combava, local greens and cassava from the slopes of Mount Karthala give each dish its Comorian identity.',
+        },
       ],
       teamKicker: 'Kitchen and dining room team',
       teamTitle: 'The brigade and maître d’s',
-      heroAlt: 'Air-conditioned dining room and woodwork at Le New Select restaurant in Moroni',
+      heroAlt:
+        'Air-conditioned dining room and woodwork at Le New Select restaurant in Moroni',
     },
     reservation: {
       kicker: 'Booking & Contact · Moroni, Place de France',
       title: 'Book your table',
-      intro: 'Choose a seat on the tree-shaded terrace or in the air-conditioned dining room. Instant confirmation or by phone at ',
+      intro:
+        'Choose a seat on the tree-shaded terrace or in the air-conditioned dining room. Instant confirmation or by phone at ',
       seatingLegend: 'Seating preference',
       terraceTitle: 'Shaded terrace',
       terraceDetail: 'Under the badamier trees · View of Place de France',
@@ -986,7 +1387,8 @@ export const ui: Record<Locale, UiMessages> = {
       serviceHours: 'Continuous service from 7:00 AM to 11:00 PM',
       confirmedKicker: 'Reference {ref}',
       confirmedTitle: 'Booking request saved',
-      confirmedThanks: 'Thank you {name}. Your request is ready; send it via WhatsApp for immediate handling by our maître d’hôtel.',
+      confirmedThanks:
+        'Thank you {name}. Your request is ready; send it via WhatsApp for immediate handling by our maître d’hôtel.',
       dateTime: 'Date & Time',
       covers: 'Number of guests',
       seating: 'Preferred seating',
@@ -997,27 +1399,67 @@ export const ui: Record<Locale, UiMessages> = {
       whatsappQuick: 'Quick response',
       mapKicker: 'Location · Moroni',
       mapTitle: 'Map of Place de France',
-      mapAlt: 'Schematic map of Place de France in Moroni and landmarks around Le New Select restaurant',
+      mapAlt:
+        'Schematic map of Place de France in Moroni and landmarks around Le New Select restaurant',
       viewLandmark: 'View landmark: {name}',
       whatsappPrefill: 'Hello Le New Select, I would like to book a table.',
     },
     infos: {
       kicker: 'Practical Information · Moroni',
       title: 'Plan your visit to Le New Select',
-      intro: 'Access, parking around Place de France, payment methods and answers to frequently asked questions.',
+      intro:
+        'Access, parking around Place de France, payment methods and answers to frequently asked questions.',
       accessKicker: '01. Access & Parking',
       accessTitle: 'Around Place de France',
-      accessText: 'Located in downtown Moroni, the restaurant is within walking distance of ministries, banks, embassies and the port. Public parking spaces line Place de France and the adjacent street, less than fifty meters from the terrace entrance.',
+      accessText:
+        'Located in downtown Moroni, the restaurant is within walking distance of ministries, banks, embassies and the port. Public parking spaces line Place de France and the adjacent street, less than fifty meters from the terrace entrance.',
       takeawayKicker: '02. Takeaway & Groups',
       takeawayTitle: 'Takeaway and large tables',
-      takeawayText: 'All dishes on the menu can be ordered for takeaway to your office or home by calling twenty minutes before pickup. For groups of 8 to 30 guests (official lunches, meetings, family dinners), we can reserve an area of the air-conditioned room or the terrace.',
+      takeawayText:
+        'All dishes on the menu can be ordered for takeaway to your office or home by calling twenty minutes before pickup. For groups of 8 to 30 guests (official lunches, meetings, family dinners), we can reserve an area of the air-conditioned room or the terrace.',
       paymentKicker: 'Payment on site or takeaway',
       paymentTitle: 'Accepted payment methods',
       faqKicker: 'Indoor and terrace services',
       faqTitle: 'Frequently asked questions',
     },
+    events: {
+      kicker: 'Events · Le New Select, Moroni',
+      title: 'Upcoming events',
+      intro:
+        'Live music evenings, celebrations and business gatherings: discover the next events at Le New Select, under the badamier trees of Place de France or in our air-conditioned dining room.',
+      all: 'All events',
+      filtersAria: 'Filter events by category',
+      empty: 'No upcoming events in this category.',
+      dateLabel: 'Date',
+      timeLabel: 'Time',
+      locationLabel: 'Venue',
+      free: 'Free',
+      priceOnRequest: 'Price on request',
+      bookTickets: 'Book tickets',
+      ticketsRemaining: '{count} ticket(s) left',
+      salePoints: 'Points of sale',
+      buyOnline: 'Buy online',
+      ticketFormTitle: 'Book tickets — {title}',
+      ticketQuantity: 'Number of tickets',
+      ticketName: 'Full name',
+      ticketPhone: 'WhatsApp / Phone',
+      ticketEmail: 'Email (optional)',
+      ticketSubmit: 'Send booking request',
+      ticketSending: 'Sending…',
+      ticketConfirmTitle: 'Ticket booking recorded',
+      ticketConfirmText:
+        'Your request has been recorded (reference {ref}). Our team will contact you to confirm and pay for your tickets.',
+      ticketReference: 'Reference',
+      ticketWhatsapp: 'Finish on WhatsApp',
+      ticketError: 'Unable to save the request. Please try again or contact us.',
+      organizeTitle: 'Organise an event',
+      organizeText:
+        'Birthday, wedding, team evening or official reception: our team will tailor a menu and a space for your guests.',
+      organizeCta: 'Request a quote',
+    },
     footer: {
-      description: 'A house open every day on Place de France, combining fresh Indian Ocean produce with bistro know-how.',
+      description:
+        'A house open every day on Place de France, combining fresh Indian Ocean produce with bistro know-how.',
       navigation: 'Navigation',
       location: 'Moroni · Place de France',
       rights: '© {year} {name} · Moroni, Union of the Comoros',
@@ -1027,6 +1469,7 @@ export const ui: Record<Locale, UiMessages> = {
       menuLink: 'Menu',
       historyLink: 'Our Story',
       galleryLink: 'Photo Gallery',
+      eventsLink: 'Events',
       reservationLink: 'Booking & Contact',
       infosLink: 'Practical Information',
     },
@@ -1036,6 +1479,9 @@ export const ui: Record<Locale, UiMessages> = {
       tabs: {
         overview: 'Dashboard',
         dishes: 'Dishes',
+        menuCategories: 'Menu categories',
+        dailySpecials: 'Daily specials',
+        events: 'Events',
         info: 'Information',
         gallery: 'Gallery',
         team: 'Team',
@@ -1051,14 +1497,16 @@ export const ui: Record<Locale, UiMessages> = {
       logout: 'Log out',
       setup: {
         title: 'Supabase configuration required',
-        notice: 'The dashboard is ready, but the Supabase public key is not set in the app environment yet.',
+        notice:
+          'The dashboard is ready, but the Supabase public key is not set in the app environment yet.',
         varsTitle: 'Variables to set:',
         help: 'Add them to .env.local locally, then to Vercel environment variables. Then run supabase/migrations/001_lns_site_content.sql in the Supabase SQL Editor. Only the anon key is exposed to the browser: the service_role key must never be used here.',
       },
       login: {
         kicker: 'Owner area',
         title: 'Sign in',
-        intro: 'Reserved for the restaurant owner. Use the authorized Supabase Auth account.',
+        intro:
+          'Reserved for the restaurant owner. Use the authorized Supabase Auth account.',
         email: 'Email',
         password: 'Password',
         submit: 'Sign in',
@@ -1066,21 +1514,25 @@ export const ui: Record<Locale, UiMessages> = {
       },
       clients: {
         title: 'Clients & requests',
-        description: 'Data saved automatically when a customer places an order (cart) or confirms a reservation request.',
+        description:
+          'Data saved automatically when a customer places an order (cart) or confirms a reservation request.',
         refresh: 'Refresh',
         deleteAll: 'Delete all',
         deleteAllConfirm: 'Delete all client records?',
         count: '{count} record(s)',
-        empty: 'No records yet. Data will appear here when a customer places an order or confirms a reservation request.',
+        empty:
+          'No records yet. Data will appear here when a customer places an order or confirms a reservation request.',
         deleted: 'Record deleted.',
         cleared: 'All records have been deleted.',
         deleteError: 'Could not delete.',
         loadError: 'Could not load client data.',
         order: 'Order',
         reservation: 'Reservation',
+        ticket: 'Tickets',
         deleteRecord: 'Delete record for {name}',
         note: 'Note: {note}',
-        migrationNotice: 'If the Supabase table lns_client_records does not exist yet, run migration 003_lns_client_records.sql. Records are also kept locally in this browser as a fallback.',
+        migrationNotice:
+          'If the Supabase table lns_client_records does not exist yet, run migration 003_lns_client_records.sql. For tickets, also run 005_lns_ticket_records.sql. Records are also kept locally in this browser as a fallback.',
       },
       editors: {
         common: {
@@ -1104,11 +1556,17 @@ export const ui: Record<Locale, UiMessages> = {
         overview: {
           kicker: 'Overview',
           title: 'Welcome to the owner area',
-          description: 'Edit dishes, contact details, photos or the team: the customer site updates automatically with Supabase Realtime.',
+          description:
+            'Edit dishes, contact details, photos or the team: the customer site updates automatically with Supabase Realtime.',
           statDishes: 'Menu dishes',
           statGallery: 'Gallery photos',
           statTeam: 'Team members',
           statFaq: 'FAQ entries',
+          statCategories: 'Menu categories',
+          statEvents: 'Upcoming events',
+          importNew: 'Import new content',
+          importNewConfirm:
+            'Import missing categories, daily specials and events? Your existing changes will be preserved.',
           syncTitle: 'Sync status',
           sourceLabel: 'Data source',
           sourceSupabase: 'Supabase',
@@ -1116,7 +1574,10 @@ export const ui: Record<Locale, UiMessages> = {
           liveLabel: 'Live updates',
           liveActive: 'Active',
           liveInactive: 'Inactive',
-          noDataNotice: 'No Supabase data yet. Import the original content to start managing the site from the dashboard.',
+          noDataNotice:
+            'No Supabase data yet. Import the original content to start managing the site from the dashboard.',
+          migrationNotice:
+            'Missing Supabase tables: {tables}. Run migration 004_lns_menu_events.sql in the SQL Editor to publish these sections on the site.',
           importMissing: 'Import missing content',
           imported: 'Missing content imported (existing changes preserved).',
           viewSite: 'View site',
@@ -1128,12 +1589,21 @@ export const ui: Record<Locale, UiMessages> = {
         },
         menu: {
           title: 'Dishes',
-          description: 'Add a dish, edit its price or photo, or hide it during a stockout. The customer cart total updates automatically.',
+          description:
+            'Add a dish, edit its price or photo, or hide it during a stockout. The customer cart total updates automatically.',
           all: 'All',
           editDish: 'Edit dish',
           newDish: 'New dish',
           name: 'Dish name',
           priceKmf: 'Price (KMF)',
+          category: 'Category',
+          noCategory: 'No category',
+          priceOptions: 'Price options',
+          priceOptionsHint: 'E.g. 26 cm / 33 cm, small / large portion.',
+          optionLabel: 'Option name',
+          optionPrice: 'Option price (KMF)',
+          addOption: 'Add an option',
+          removeOption: 'Remove option',
           moment: 'Service time',
           section: 'Menu section',
           badge: 'Badge (optional)',
@@ -1151,9 +1621,82 @@ export const ui: Record<Locale, UiMessages> = {
           hiddenBadge: 'Hidden',
           signatureBadge: 'Featured',
         },
+        menuCategories: {
+          title: 'Menu categories',
+          description:
+            'Organise the sections of your menu: name, description, display order and visibility.',
+          newCategory: 'New category',
+          editCategory: 'Edit category',
+          name: 'Category name',
+          descriptionField: 'Description',
+          showOnSite: 'Show on the menu',
+          saved: 'Category saved.',
+          deleted: 'Category deleted.',
+          empty: 'No categories yet.',
+          hiddenBadge: 'Hidden',
+        },
+        dailySpecials: {
+          title: 'Daily specials',
+          description:
+            'Schedule daily specials with their date range: only the current one is shown on the site.',
+          newSpecial: 'New daily special',
+          editSpecial: 'Edit daily special',
+          dishName: 'Dish name',
+          descriptionField: 'Description',
+          priceKmf: 'Price (KMF)',
+          image: 'Dish photo',
+          startDate: 'Start date',
+          endDate: 'End date',
+          availability: 'Availability',
+          showOnSite: 'Show on site',
+          saved: 'Daily special saved.',
+          deleted: 'Daily special deleted.',
+          empty: 'No daily specials scheduled.',
+          hiddenBadge: 'Hidden',
+        },
+        events: {
+          title: 'Events',
+          description:
+            'Add events and categories: dates, venue, price and visibility appear on the Events page.',
+          newEvent: 'New event',
+          editEvent: 'Edit event',
+          eventTitle: 'Event title',
+          descriptionField: 'Description',
+          category: 'Category',
+          date: 'Start date',
+          endDate: 'End date (optional)',
+          time: 'Time',
+          location: 'Venue',
+          priceKmf: 'Price (KMF)',
+          freeHint: 'Leave 0 for a free event.',
+          ticketPriceKmf: 'Ticket price (KMF)',
+          ticketsAvailable: 'Tickets available',
+          salePoints: 'Points of sale / purchase terms',
+          ticketingUrl: 'Online ticketing link (optional)',
+          ticketHint: 'These details feed the ticketing section of the Events page.',
+          bookTicketsBadge: 'Ticketing',
+          seatsBadge: '{count} seat(s)',
+          image: 'Event photo',
+          showOnSite: 'Show on site',
+          saved: 'Event saved.',
+          deleted: 'Event deleted.',
+          empty: 'No events yet.',
+          hiddenBadge: 'Hidden',
+          categoriesTitle: 'Event categories',
+          categoriesHint: 'Group events (festivities, ceremonies, evenings, etc.).',
+          newCategory: 'New category',
+          categoryName: 'Category name',
+          categoryDescription: 'Description',
+          categorySaved: 'Category saved.',
+          categoryDeleted: 'Category deleted.',
+          categoryDeleteConfirm: 'Delete category {name}?',
+          categoryInUse: '{count} event(s) still use the category {name}.',
+          deleteConfirm: 'Delete the event {name}?',
+        },
         settings: {
           title: 'Essential information',
-          description: 'Name, contact details, hours, hero image and chef’s special: these fields power all site pages.',
+          description:
+            'Name, contact details, hours, hero image and chef’s special: these fields power all site pages.',
           saved: 'Information saved.',
           restaurantName: 'Restaurant name',
           tagline: 'Tagline',
@@ -1162,7 +1705,8 @@ export const ui: Record<Locale, UiMessages> = {
           phoneDisplay: 'Displayed phone',
           phoneLink: 'Phone link',
           whatsappLink: 'WhatsApp link',
-          whatsappHint: 'E.g. https://wa.me/2697730031 — used for orders and reservations.',
+          whatsappHint:
+            'E.g. https://wa.me/2697730031 — used for orders and reservations.',
           email: 'Email',
           hoursSummary: 'Hours (summary)',
           directionsLink: 'Directions link',
@@ -1180,7 +1724,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         gallery: {
           title: 'Photo gallery',
-          description: 'Replace terrace, dining room and dish visuals. Uploaded photos are stored in the dedicated Supabase bucket.',
+          description:
+            'Replace terrace, dining room and dish visuals. Uploaded photos are stored in the dedicated Supabase bucket.',
           newPhoto: 'New photo',
           editPhoto: 'Edit photo',
           category: 'Category',
@@ -1214,7 +1759,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         media: {
           title: 'Media library',
-          description: 'Upload your photos once, then copy their URL into a dish or gallery photo.',
+          description:
+            'Upload your photos once, then copy their URL into a dish or gallery photo.',
           upload: 'Import images',
           uploading: 'Uploading…',
           imported: '{count} image(s) imported.',
@@ -1225,15 +1771,20 @@ export const ui: Record<Locale, UiMessages> = {
           empty: 'No images in the library.',
         },
         errorUnknown: 'Unknown error',
+        errorValidation:
+          'Check the form fields before saving (price, dates, required fields).',
       },
     },
     pages: {
       accueil: 'Home',
       menu: 'Menu',
+      pizzas: 'Our Pizzas',
+      platsDuJour: 'Daily specials',
       histoire: 'Our Story',
       galerie: 'Photo Gallery',
       reservation: 'Booking & Contact',
       infos: 'Practical Information',
+      evenements: 'Events',
       admin: 'Administration',
     },
   },
@@ -1241,12 +1792,15 @@ export const ui: Record<Locale, UiMessages> = {
     nav: {
       home: 'الرئيسية',
       menu: 'القائمة',
+      pizzas: 'البيتزا',
+      dailySpecials: 'أطباق اليوم',
       history: 'قصتنا',
       gallery: 'المعرض',
       infos: 'معلومات عملية',
       reservation: 'احجز',
       reservationContact: 'الحجز والتواصل',
       admin: 'الإدارة',
+      events: 'الفعاليات',
       mainAria: 'التنقل الرئيسي',
       mobileAria: 'تنقل الهاتف',
       openMenu: 'فتح القائمة',
@@ -1284,7 +1838,8 @@ export const ui: Record<Locale, UiMessages> = {
       pricesNote: 'الأسعار بالفرنك القمري شاملة الضريبة.',
       validateOrder: 'تأكيد الطلب',
       emptyCart: 'إفراغ السلة',
-      orderNote: 'تفاصيل طلبك تُجهّز مسبقًا في واتساب. سيؤكد المطعم التوفر ووقت التحضير قبل الدفع في الموقع.',
+      orderNote:
+        'تفاصيل طلبك تُجهّز مسبقًا في واتساب. سيؤكد المطعم التوفر ووقت التحضير قبل الدفع في الموقع.',
       closePreview: 'إغلاق المعاينة',
       previousPhoto: 'الصورة السابقة',
       nextPhoto: 'الصورة التالية',
@@ -1303,7 +1858,8 @@ export const ui: Record<Locale, UiMessages> = {
     home: {
       location: 'ساحة فرنسا · موروني، القمر الكبرى',
       taglineFallback: 'مطبخ فرنسي وأوروبي في قلب موروني',
-      intro: 'من قهوة الصباح عند الساعة 07:00 إلى عشاء تحت أشجار ساحة فرنسا، يمزج لو نيو سيليكت بين تقاليد البيسترو ومنتجات البحر الطازجة وتوابل المحيط الهندي.',
+      intro:
+        'من قهوة الصباح عند الساعة 07:00 إلى عشاء تحت أشجار ساحة فرنسا، يمزج لو نيو سيليكت بين تقاليد البيسترو ومنتجات البحر الطازجة وتوابل المحيط الهندي.',
       heroAlt: 'الشرفة المظللة لمطعم لو نيو سيليكت في ساحة فرنسا بموروني',
       viewMenuBtn: 'عرض القائمة',
       itineraryBtn: 'الاتجاهات إلى ساحة فرنسا',
@@ -1316,6 +1872,14 @@ export const ui: Record<Locale, UiMessages> = {
       signatureKicker: 'اختيارات البيت · الأسعار بالفرنك القمري',
       signatureTitle: 'أطباقنا الثلاثة المميزة',
       signatureAll: 'عرض القائمة كاملة',
+      dailySpecialKicker: 'طبق اليوم · حسب وصول المنتجات',
+      dailySpecialTitle: 'طبق اليوم',
+      dailySpecialAll: 'عرض جميع أطباق اليوم',
+      eventsKicker: 'فعاليات قادمة · ساحة فرنسا',
+      eventsTitle: 'الفعاليات القادمة',
+      eventsAll: 'جميع الفعاليات',
+      eventsEmpty: 'لا توجد فعاليات قادمة حاليًا.',
+      eventsNextBadge: 'الموعد القادم',
       reviewsKicker: 'آراء موثقة · تريب أدفايزر موروني',
       reviewsTitle: 'آراء ضيوفنا والمسافرين',
       avgRatingAria: 'التقييم المتوسط: 4.6 من 5',
@@ -1325,18 +1889,37 @@ export const ui: Record<Locale, UiMessages> = {
     menu: {
       kicker: 'القائمة · أسعار صافية بالفرنك القمري (KMF)',
       title: 'قائمة تتناغم مع ساعات اليوم',
-      intro: 'من الإفطار الصباحي إلى المشويات المسائية، تُحضّر أطباقنا عند الطلب باستخدام صيد ساحل القمر الكبرى. اختر أطباقك، يُحسب المجموع تلقائيًا ويُرسل طلبك مباشرة عبر واتساب.',
+      intro:
+        'من الإفطار الصباحي إلى المشويات المسائية، تُحضّر أطباقنا عند الطلب باستخدام صيد ساحل القمر الكبرى. اختر أطباقك، يُحسب المجموع تلقائيًا ويُرسل طلبك مباشرة عبر واتساب.',
       tabsAria: 'تصفية القائمة حسب وقت اليوم',
       all: 'القائمة كاملة',
       breakfast: 'الإفطار · من 07:00',
       lunch: 'الغداء · 12:00–15:00',
       dinner: 'العشاء · 18:30–23:00',
       dessertsDrinks: 'الحلويات والمشروبات',
+      categories: {
+        breakfast: 'الإفطار',
+        lunch: 'الغداء',
+        dinner: 'العشاء',
+        dessertsDrinks: 'الحلويات والمشروبات',
+      },
+      chooseOption: 'اختر الخيار',
+      noDailySpecial: 'لا يوجد طبق اليوم حاليًا.',
+      empty: 'لا توجد أطباق متاحة لهذه الخدمة.',
       headings: {
-        breakfast: { title: 'الإفطار', hours: 'يُقدّم من 07:00 حتى 10:30 في الشرفة والقاعة' },
+        breakfast: {
+          title: 'الإفطار',
+          hours: 'يُقدّم من 07:00 حتى 10:30 في الشرفة والقاعة',
+        },
         lunch: { title: 'الغداء', hours: 'يُقدّم من 12:00 حتى 15:00 · وجبات وقائمة كاملة' },
-        dinner: { title: 'العشاء', hours: 'يُقدّم من 18:30 حتى 23:00 · مشويات وأسماك وأطباق بيسترو' },
-        dessertsDrinks: { title: 'حلويات منزلية ومشروبات', hours: 'حلويات اليوم وعصائر طازجة وقهوة' },
+        dinner: {
+          title: 'العشاء',
+          hours: 'يُقدّم من 18:30 حتى 23:00 · مشويات وأسماك وأطباق بيسترو',
+        },
+        dessertsDrinks: {
+          title: 'حلويات منزلية ومشروبات',
+          hours: 'حلويات اليوم وعصائر طازجة وقهوة',
+        },
       },
       chefSuggestion: 'اقتراح الشيف',
       cartAria: 'طلبك',
@@ -1362,15 +1945,29 @@ export const ui: Record<Locale, UiMessages> = {
     history: {
       kicker: 'قصتنا · موروني، ساحة فرنسا',
       title: 'مائدة مفتوحة على ساحة فرنسا',
-      intro1: 'يقع لو نيو سيليكت مقابل أروقة ساحة فرنسا التاريخية، وأصبح على مر السنين مكان لقاء مألوفًا في قلب موروني. يجتمع الزوار هنا لتناول قهوة صباحية منذ الساعة السابعة، أو غداء عمل في القاعة المكيفة، أو عشاء هادئ تحت ظلال أشجار البادامير.',
-      intro2: 'يدافع مطعمنا عن مطبخ واضح وصادق: تقنيات البيسترو الفرنسي تُطبّق بعناية على كنوز القمر الكبرى البحرية والزراعية.',
+      intro1:
+        'يقع لو نيو سيليكت مقابل أروقة ساحة فرنسا التاريخية، وأصبح على مر السنين مكان لقاء مألوفًا في قلب موروني. يجتمع الزوار هنا لتناول قهوة صباحية منذ الساعة السابعة، أو غداء عمل في القاعة المكيفة، أو عشاء هادئ تحت ظلال أشجار البادامير.',
+      intro2:
+        'يدافع مطعمنا عن مطبخ واضح وصادق: تقنيات البيسترو الفرنسي تُطبّق بعناية على كنوز القمر الكبرى البحرية والزراعية.',
       discoverMenu: 'اكتشف القائمة',
       pillarsKicker: 'فلسفتنا في الطهي',
       pillarsTitle: 'ركائزنا الثلاث',
       pillars: [
-        { title: 'روح البيسترو الفرنسي', description: 'طهي دقيق، وصلصات بالزبدة، مرق يُحضّر في المكان وخدمة منتبهة: دقة طهوية موروثة من المطاعم التقليدية.' },
-        { title: 'منتجات طازجة من المحيط الهندي', description: 'سمك الكابتن والتونة الصفراء والهامور والكركند تأتي من صيد الصيادين صباحًا في موروني وإتساندرا وميتساميوولي.' },
-        { title: 'توريد محلي من نغازيدجا', description: 'فانيليا بوربون والفلفل الأخضر والقرنفل والكومبافا والخضروات المحلية والكسافا من سفوح جبل كارتالا تمنح كل طبق هوية قمرية.' },
+        {
+          title: 'روح البيسترو الفرنسي',
+          description:
+            'طهي دقيق، وصلصات بالزبدة، مرق يُحضّر في المكان وخدمة منتبهة: دقة طهوية موروثة من المطاعم التقليدية.',
+        },
+        {
+          title: 'منتجات طازجة من المحيط الهندي',
+          description:
+            'سمك الكابتن والتونة الصفراء والهامور والكركند تأتي من صيد الصيادين صباحًا في موروني وإتساندرا وميتساميوولي.',
+        },
+        {
+          title: 'توريد محلي من نغازيدجا',
+          description:
+            'فانيليا بوربون والفلفل الأخضر والقرنفل والكومبافا والخضروات المحلية والكسافا من سفوح جبل كارتالا تمنح كل طبق هوية قمرية.',
+        },
       ],
       teamKicker: 'فريق المطبخ والقاعة',
       teamTitle: 'الطاقم ومسؤولو الخدمة',
@@ -1379,7 +1976,8 @@ export const ui: Record<Locale, UiMessages> = {
     reservation: {
       kicker: 'الحجز والتواصل · موروني، ساحة فرنسا',
       title: 'احجز طاولتك',
-      intro: 'اختر الجلوس في الشرفة المظللة تحت الأشجار أو في القاعة المكيفة. تأكيد فوري أو عبر الهاتف على ',
+      intro:
+        'اختر الجلوس في الشرفة المظللة تحت الأشجار أو في القاعة المكيفة. تأكيد فوري أو عبر الهاتف على ',
       seatingLegend: 'اختيار مكان الجلوس',
       terraceTitle: 'شرفة مظللة',
       terraceDetail: 'تحت أشجار البادامير · إطلالة على ساحة فرنسا',
@@ -1399,7 +1997,8 @@ export const ui: Record<Locale, UiMessages> = {
       serviceHours: 'خدمة مستمرة من 07:00 إلى 23:00',
       confirmedKicker: 'المرجع {ref}',
       confirmedTitle: 'تم تسجيل طلب الحجز',
-      confirmedThanks: 'شكرًا {name}. طلبك جاهز؛ أرسله عبر واتساب ليتم التعامل معه فورًا من قبل مسؤول القاعة.',
+      confirmedThanks:
+        'شكرًا {name}. طلبك جاهز؛ أرسله عبر واتساب ليتم التعامل معه فورًا من قبل مسؤول القاعة.',
       dateTime: 'التاريخ والوقت',
       covers: 'عدد الأشخاص',
       seating: 'مكان الجلوس المطلوب',
@@ -1417,20 +2016,59 @@ export const ui: Record<Locale, UiMessages> = {
     infos: {
       kicker: 'معلومات عملية · موروني',
       title: 'استعد لزيارتك إلى لو نيو سيليكت',
-      intro: 'الوصول، ومواقف السيارات حول ساحة فرنسا، ووسائل الدفع، والإجابات على الأسئلة الشائعة.',
+      intro:
+        'الوصول، ومواقف السيارات حول ساحة فرنسا، ووسائل الدفع، والإجابات على الأسئلة الشائعة.',
       accessKicker: '01. الوصول ومواقف السيارات',
       accessTitle: 'بالقرب من ساحة فرنسا',
-      accessText: 'يقع المطعم في وسط مدينة موروني، ويمكن الوصول إليه سيرًا على الأقدام من الوزارات والبنوك والسفارات والميناء. تتوفر مواقف عامة على طول ساحة فرنسا والشارع المجاور، على بُعد أقل من خمسين مترًا من مدخل الشرفة.',
+      accessText:
+        'يقع المطعم في وسط مدينة موروني، ويمكن الوصول إليه سيرًا على الأقدام من الوزارات والبنوك والسفارات والميناء. تتوفر مواقف عامة على طول ساحة فرنسا والشارع المجاور، على بُعد أقل من خمسين مترًا من مدخل الشرفة.',
       takeawayKicker: '02. الطلبات الخارجية والمجموعات',
       takeawayTitle: 'طلبات خارجية وطاولات كبيرة',
-      takeawayText: 'يمكن طلب جميع أطباق القائمة للوجبات الخارجية إلى مكتبك أو منزلك بالاتصال قبل عشرين دقيقة من الوصول. للمجموعات من 8 إلى 30 شخصًا (غداءات رسمية، اجتماعات، عشاءات عائلية)، نخصص منطقة في القاعة المكيفة أو الشرفة.',
+      takeawayText:
+        'يمكن طلب جميع أطباق القائمة للوجبات الخارجية إلى مكتبك أو منزلك بالاتصال قبل عشرين دقيقة من الوصول. للمجموعات من 8 إلى 30 شخصًا (غداءات رسمية، اجتماعات، عشاءات عائلية)، نخصص منطقة في القاعة المكيفة أو الشرفة.',
       paymentKicker: 'الدفع في الموقع أو للطلبات الخارجية',
       paymentTitle: 'وسائل الدفع المقبولة',
       faqKicker: 'خدمات القاعة والشرفة',
       faqTitle: 'الأسئلة الشائعة',
     },
+    events: {
+      kicker: 'الفعاليات · لو نيو سيليكت، موروني',
+      title: 'الفعاليات القادمة',
+      intro:
+        'أمسيات موسيقية واحتفالات ولقاءات مهنية: اكتشف مواعيد لو نيو سيليكت القادمة تحت أشجار البادامير في ساحة فرنسا أو في قاعتنا المكيفة.',
+      all: 'جميع الفعاليات',
+      filtersAria: 'تصفية الفعاليات حسب الفئة',
+      empty: 'لا توجد فعاليات في هذه الفئة.',
+      dateLabel: 'التاريخ',
+      timeLabel: 'الوقت',
+      locationLabel: 'المكان',
+      free: 'مجاني',
+      priceOnRequest: 'السعر عند الطلب',
+      bookTickets: 'احجز تذاكر',
+      ticketsRemaining: 'بقي {count} تذكرة',
+      salePoints: 'أماكن البيع',
+      buyOnline: 'اشترِ عبر الإنترنت',
+      ticketFormTitle: 'حجز تذاكر — {title}',
+      ticketQuantity: 'عدد التذاكر',
+      ticketName: 'الاسم الكامل',
+      ticketPhone: 'واتساب / الهاتف',
+      ticketEmail: 'البريد الإلكتروني (اختياري)',
+      ticketSubmit: 'إرسال طلب الحجز',
+      ticketSending: 'جارٍ الإرسال…',
+      ticketConfirmTitle: 'تم تسجيل طلب التذاكر',
+      ticketConfirmText:
+        'تم تسجيل طلبك (المرجع {ref}). سيتواصل معك فريقنا للتأكيد والدفع.',
+      ticketReference: 'المرجع',
+      ticketWhatsapp: 'إتمام الطلب عبر واتساب',
+      ticketError: 'تعذر تسجيل الطلب. أعد المحاولة أو اتصل بنا.',
+      organizeTitle: 'تنظيم فعالية',
+      organizeText:
+        'عيد ميلاد أو زفاف أو سهرة للفريق أو استقبال رسمي: يعد فريقنا قائمة ومكانًا مناسبين لضيوفك.',
+      organizeCta: 'طلب عرض سعر',
+    },
     footer: {
-      description: 'بيت مفتوح كل يوم في ساحة فرنسا، يجمع بين منتجات المحيط الهندي الطازجة وخبرة البيسترو.',
+      description:
+        'بيت مفتوح كل يوم في ساحة فرنسا، يجمع بين منتجات المحيط الهندي الطازجة وخبرة البيسترو.',
       navigation: 'التنقل',
       location: 'موروني · ساحة فرنسا',
       rights: '© {year} {name} · موروني، اتحاد جزر القمر',
@@ -1440,6 +2078,7 @@ export const ui: Record<Locale, UiMessages> = {
       menuLink: 'القائمة',
       historyLink: 'قصتنا',
       galleryLink: 'معرض الصور',
+      eventsLink: 'الفعاليات',
       reservationLink: 'الحجز والتواصل',
       infosLink: 'معلومات عملية',
     },
@@ -1449,6 +2088,9 @@ export const ui: Record<Locale, UiMessages> = {
       tabs: {
         overview: 'لوحة التحكم',
         dishes: 'الأطباق',
+        menuCategories: 'فئات القائمة',
+        dailySpecials: 'أطباق اليوم',
+        events: 'الفعاليات',
         info: 'المعلومات',
         gallery: 'المعرض',
         team: 'الفريق',
@@ -1464,7 +2106,8 @@ export const ui: Record<Locale, UiMessages> = {
       logout: 'تسجيل الخروج',
       setup: {
         title: 'إعداد Supabase مطلوب',
-        notice: 'لوحة التحكم جاهزة، لكن مفتاح Supabase العام غير مُعرّف بعد في بيئة التطبيق.',
+        notice:
+          'لوحة التحكم جاهزة، لكن مفتاح Supabase العام غير مُعرّف بعد في بيئة التطبيق.',
         varsTitle: 'المتغيرات المطلوب ضبطها:',
         help: 'أضفها إلى .env.local محليًا، ثم إلى متغيرات البيئة في Vercel. بعد ذلك نفّذ supabase/migrations/001_lns_site_content.sql في محرر SQL في Supabase. يُكشف مفتاح anon فقط للمتصفح: يجب عدم استخدام مفتاح service_role هنا.',
       },
@@ -1479,7 +2122,8 @@ export const ui: Record<Locale, UiMessages> = {
       },
       clients: {
         title: 'العملاء والطلبات',
-        description: 'بيانات تُحفظ تلقائيًا عندما يؤكد العميل طلبًا (السلة) أو يؤكد طلب حجز.',
+        description:
+          'بيانات تُحفظ تلقائيًا عندما يؤكد العميل طلبًا (السلة) أو يؤكد طلب حجز.',
         refresh: 'تحديث',
         deleteAll: 'حذف الكل',
         deleteAllConfirm: 'حذف جميع سجلات العملاء؟',
@@ -1491,9 +2135,11 @@ export const ui: Record<Locale, UiMessages> = {
         loadError: 'تعذّر تحميل بيانات العملاء.',
         order: 'طلب',
         reservation: 'حجز',
+        ticket: 'تذاكر',
         deleteRecord: 'حذف سجل {name}',
         note: 'ملاحظة: {note}',
-        migrationNotice: 'إذا لم تكن جدول Supabase lns_client_records مُنشأ بعد، نفّذ الترحيل 003_lns_client_records.sql. تُحفظ السجلات أيضًا محليًا في هذا المتصفح كنسخة احتياطية.',
+        migrationNotice:
+          'إذا لم تكن جدول Supabase lns_client_records مُنشأ بعد، نفّذ الترحيل 003_lns_client_records.sql. وللتذاكر نفّذ أيضًا 005_lns_ticket_records.sql. تُحفظ السجلات أيضًا محليًا في هذا المتصفح كنسخة احتياطية.',
       },
       editors: {
         common: {
@@ -1517,11 +2163,17 @@ export const ui: Record<Locale, UiMessages> = {
         overview: {
           kicker: 'نظرة عامة',
           title: 'مرحبًا بك في مساحة المالك',
-          description: 'عدّل الأطباق وبيانات الاتصال والصور والفريق: يتم تحديث موقع العملاء تلقائيًا عبر Supabase Realtime.',
+          description:
+            'عدّل الأطباق وبيانات الاتصال والصور والفريق: يتم تحديث موقع العملاء تلقائيًا عبر Supabase Realtime.',
           statDishes: 'أطباق القائمة',
           statGallery: 'صور المعرض',
           statTeam: 'أعضاء الفريق',
           statFaq: 'الأسئلة الشائعة',
+          statCategories: 'فئات القائمة',
+          statEvents: 'الفعاليات القادمة',
+          importNew: 'استيراد المحتوى الجديد',
+          importNewConfirm:
+            'استيراد الفئات وأطباق اليوم والفعاليات الناقصة؟ ستُحفظ تعديلاتك الحالية.',
           syncTitle: 'حالة المزامنة',
           sourceLabel: 'مصدر البيانات',
           sourceSupabase: 'Supabase',
@@ -1529,7 +2181,10 @@ export const ui: Record<Locale, UiMessages> = {
           liveLabel: 'التحديثات المباشرة',
           liveActive: 'نشطة',
           liveInactive: 'غير نشطة',
-          noDataNotice: 'لا توجد بيانات في Supabase بعد. استورد المحتوى الأصلي للبدء في إدارة الموقع من لوحة التحكم.',
+          noDataNotice:
+            'لا توجد بيانات في Supabase بعد. استورد المحتوى الأصلي للبدء في إدارة الموقع من لوحة التحكم.',
+          migrationNotice:
+            'جداول مفقودة في Supabase: {tables}. نفّذ الترحيل 004_lns_menu_events.sql في محرر SQL لنشر هذه الأقسام على الموقع.',
           importMissing: 'استيراد المحتوى الناقص',
           imported: 'تم استيراد المحتوى الناقص (مع الحفاظ على التعديلات).',
           viewSite: 'عرض الموقع',
@@ -1541,12 +2196,21 @@ export const ui: Record<Locale, UiMessages> = {
         },
         menu: {
           title: 'الأطباق',
-          description: 'أضف طبقًا أو عدّل سعره أو صورته أو أخفه أثناء النفاد. يتم تحديث إجمالي سلة العميل تلقائيًا.',
+          description:
+            'أضف طبقًا أو عدّل سعره أو صورته أو أخفه أثناء النفاد. يتم تحديث إجمالي سلة العميل تلقائيًا.',
           all: 'الكل',
           editDish: 'تعديل الطبق',
           newDish: 'طبق جديد',
           name: 'اسم الطبق',
           priceKmf: 'السعر (KMF)',
+          category: 'الفئة',
+          noCategory: 'بدون فئة',
+          priceOptions: 'خيارات الأسعار',
+          priceOptionsHint: 'مثال: 26 سم / 33 سم، حصة صغيرة / كبيرة.',
+          optionLabel: 'اسم الخيار',
+          optionPrice: 'سعر الخيار (KMF)',
+          addOption: 'إضافة خيار',
+          removeOption: 'إزالة الخيار',
           moment: 'وقت التقديم',
           section: 'قسم القائمة',
           badge: 'شارة (اختياري)',
@@ -1564,9 +2228,81 @@ export const ui: Record<Locale, UiMessages> = {
           hiddenBadge: 'مخفي',
           signatureBadge: 'مميز',
         },
+        menuCategories: {
+          title: 'فئات القائمة',
+          description: 'نظّم أقسام قائمتك: الاسم والوصف وترتيب العرض والظهور.',
+          newCategory: 'فئة جديدة',
+          editCategory: 'تعديل الفئة',
+          name: 'اسم الفئة',
+          descriptionField: 'الوصف',
+          showOnSite: 'إظهار في القائمة',
+          saved: 'تم حفظ الفئة.',
+          deleted: 'تم حذف الفئة.',
+          empty: 'لا توجد فئات بعد.',
+          hiddenBadge: 'مخفية',
+        },
+        dailySpecials: {
+          title: 'أطباق اليوم',
+          description:
+            'جدولة أطباق اليوم مع فترات صلاحيتها: يُعرض الطبق الحالي فقط في الموقع.',
+          newSpecial: 'طبق يوم جديد',
+          editSpecial: 'تعديل طبق اليوم',
+          dishName: 'اسم الطبق',
+          descriptionField: 'الوصف',
+          priceKmf: 'السعر (KMF)',
+          image: 'صورة الطبق',
+          startDate: 'تاريخ البداية',
+          endDate: 'تاريخ النهاية',
+          availability: 'التوفر',
+          showOnSite: 'إظهار في الموقع',
+          saved: 'تم حفظ طبق اليوم.',
+          deleted: 'تم حذف طبق اليوم.',
+          empty: 'لا توجد أطباق يوم مجدولة.',
+          hiddenBadge: 'مخفي',
+        },
+        events: {
+          title: 'الفعاليات',
+          description:
+            'أضف الفعاليات وفئاتها: تظهر التواريخ والمكان والسعر والظهور في صفحة الفعاليات.',
+          newEvent: 'فعالية جديدة',
+          editEvent: 'تعديل الفعالية',
+          eventTitle: 'عنوان الفعالية',
+          descriptionField: 'الوصف',
+          category: 'الفئة',
+          date: 'تاريخ البداية',
+          endDate: 'تاريخ النهاية (اختياري)',
+          time: 'الوقت',
+          location: 'المكان',
+          priceKmf: 'السعر (KMF)',
+          freeHint: 'اترك القيمة 0 لفعالية مجانية.',
+          ticketPriceKmf: 'سعر التذكرة (KMF)',
+          ticketsAvailable: 'التذاكر المتاحة',
+          salePoints: 'أماكن البيع / طريقة الشراء',
+          ticketingUrl: 'رابط البيع عبر الإنترنت (اختياري)',
+          ticketHint: 'تظهر هذه المعلومات في قسم التذاكر بصفحة الفعاليات.',
+          bookTicketsBadge: 'التذاكر',
+          seatsBadge: '{count} مقعد',
+          image: 'صورة الفعالية',
+          showOnSite: 'إظهار في الموقع',
+          saved: 'تم حفظ الفعالية.',
+          deleted: 'تم حذف الفعالية.',
+          empty: 'لا توجد فعاليات بعد.',
+          hiddenBadge: 'مخفي',
+          categoriesTitle: 'فئات الفعاليات',
+          categoriesHint: 'صنّف الفعاليات (احتفالات، مناسبات، سهرات، إلخ).',
+          newCategory: 'فئة جديدة',
+          categoryName: 'اسم الفئة',
+          categoryDescription: 'الوصف',
+          categorySaved: 'تم حفظ الفئة.',
+          categoryDeleted: 'تم حذف الفئة.',
+          categoryDeleteConfirm: 'حذف الفئة {name}؟',
+          categoryInUse: 'لا تزال هناك {count} فعالية تستخدم الفئة {name}.',
+          deleteConfirm: 'حذف الفعالية {name}؟',
+        },
         settings: {
           title: 'المعلومات الأساسية',
-          description: 'الاسم وبيانات الاتصال وساعات العمل والصورة الرئيسية وطبق اليوم: تغذي هذه الحقول جميع صفحات الموقع.',
+          description:
+            'الاسم وبيانات الاتصال وساعات العمل والصورة الرئيسية وطبق اليوم: تغذي هذه الحقول جميع صفحات الموقع.',
           saved: 'تم حفظ المعلومات.',
           restaurantName: 'اسم المطعم',
           tagline: 'الشعار',
@@ -1593,7 +2329,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         gallery: {
           title: 'معرض الصور',
-          description: 'استبدل صور الشرفة والقاعة والأطباق. تُخزّن الصور المرفوعة في حاوية Supabase المخصصة.',
+          description:
+            'استبدل صور الشرفة والقاعة والأطباق. تُخزّن الصور المرفوعة في حاوية Supabase المخصصة.',
           newPhoto: 'صورة جديدة',
           editPhoto: 'تعديل الصورة',
           category: 'الفئة',
@@ -1638,15 +2375,20 @@ export const ui: Record<Locale, UiMessages> = {
           empty: 'لا توجد صور في المكتبة.',
         },
         errorUnknown: 'خطأ غير معروف',
+        errorValidation:
+          'تحقق من حقول النموذج قبل الحفظ (السعر، التواريخ، الحقول الإلزامية).',
       },
     },
     pages: {
       accueil: 'الرئيسية',
       menu: 'القائمة',
+      pizzas: 'بيتزاتنا',
+      platsDuJour: 'أطباق اليوم',
       histoire: 'قصتنا',
       galerie: 'معرض الصور',
       reservation: 'الحجز والتواصل',
       infos: 'معلومات عملية',
+      evenements: 'الفعاليات',
       admin: 'الإدارة',
     },
   },
@@ -1654,12 +2396,15 @@ export const ui: Record<Locale, UiMessages> = {
     nav: {
       home: 'Mwanzo',
       menu: 'Menyu',
+      pizzas: 'Pizza',
+      dailySpecials: 'Sahani za Siku',
       history: 'Historia Yetu',
       gallery: 'Matunzio',
       infos: 'Taarifa Muhimu',
       reservation: 'Hifadhi',
       reservationContact: 'Uhifadhi & Mawasiliano',
       admin: 'Usimamizi',
+      events: 'Matukio',
       mainAria: 'Urambazaji mkuu',
       mobileAria: 'Urambazaji wa simu',
       openMenu: 'Fungua menyu',
@@ -1689,7 +2434,8 @@ export const ui: Record<Locale, UiMessages> = {
       viewCart: 'Tazama kikapu ({count}) · {total}',
       yourCart: 'Kikapu chako',
       currentOrder: 'Oda ya sasa',
-      cartEmpty: 'Hakuna chakula kilichochaguliwa. Ongeza chakula kutoka kwenye menyu ili kuunda oda yako.',
+      cartEmpty:
+        'Hakuna chakula kilichochaguliwa. Ongeza chakula kutoka kwenye menyu ili kuunda oda yako.',
       remove: 'Ondoa {name} kwenye kikapu',
       removeUnit: 'Punguza moja ya {name}',
       addUnit: 'Ongeza moja ya {name}',
@@ -1697,7 +2443,8 @@ export const ui: Record<Locale, UiMessages> = {
       pricesNote: 'Bei zimeonyeshwa kwa faranga za Komori, kodi imejumuishwa.',
       validateOrder: 'Thibitisha oda',
       emptyCart: 'Futa kikapu',
-      orderNote: 'Maelezo ya oda yako hujazwa tayari kwenye WhatsApp. Mgahawa utathibitisha upatikanaji na muda wa maandalizi kabla ya malipo hapa.',
+      orderNote:
+        'Maelezo ya oda yako hujazwa tayari kwenye WhatsApp. Mgahawa utathibitisha upatikanaji na muda wa maandalizi kabla ya malipo hapa.',
       closePreview: 'Funga mwonekano',
       previousPhoto: 'Picha iliyotangulia',
       nextPhoto: 'Picha inayofuata',
@@ -1716,8 +2463,10 @@ export const ui: Record<Locale, UiMessages> = {
     home: {
       location: 'Place de France · Moroni, Ngazidja',
       taglineFallback: 'Vyakula vya Kifaransa na Ulaya katikati ya Moroni',
-      intro: 'Kutoka kahawa ya asubuhi saa 1:00 asubuhi hadi chakula cha jioni chini ya miti ya Place de France, Le New Select huunganisha utamaduni wa bistrot na samaki safi na viungo vya Bahari ya Hindi.',
-      heroAlt: 'Mtaro wenye kivuli wa mgahawa wa Le New Select kwenye Place de France huko Moroni',
+      intro:
+        'Kutoka kahawa ya asubuhi saa 1:00 asubuhi hadi chakula cha jioni chini ya miti ya Place de France, Le New Select huunganisha utamaduni wa bistrot na samaki safi na viungo vya Bahari ya Hindi.',
+      heroAlt:
+        'Mtaro wenye kivuli wa mgahawa wa Le New Select kwenye Place de France huko Moroni',
       viewMenuBtn: 'Tazama Menyu',
       itineraryBtn: 'Maelekezo kwenda Place de France',
       hoursLabel: 'Saa za kufungua',
@@ -1729,6 +2478,14 @@ export const ui: Record<Locale, UiMessages> = {
       signatureKicker: 'Chaguo la nyumba · Bei kwa Faranga za Komori',
       signatureTitle: 'Vyakula vyetu vitatu maarufu',
       signatureAll: 'Tazama menyu yote',
+      dailySpecialKicker: 'Chakula cha siku · Kulingana na upatikanaji',
+      dailySpecialTitle: 'Chakula cha siku',
+      dailySpecialAll: 'Tazama vyakula vyote vya siku',
+      eventsKicker: 'Matukio yajayo · Place de France',
+      eventsTitle: 'Matukio yajayo',
+      eventsAll: 'Matukio yote',
+      eventsEmpty: 'Hakuna matukio yajayo kwa sasa.',
+      eventsNextBadge: 'Tukio linalofuata',
       reviewsKicker: 'Maoni yaliyothibitishwa · TripAdvisor Moroni',
       reviewsTitle: 'Maoni ya wageni wetu',
       avgRatingAria: 'Wastani wa ukadiriaji: 4.6 kati ya 5',
@@ -1738,18 +2495,41 @@ export const ui: Record<Locale, UiMessages> = {
     menu: {
       kicker: 'Menyu · Bei halisi kwa Faranga za Komori (KMF)',
       title: 'Menyu inayofuata mwendo wa siku',
-      intro: 'Kutoka kifungua kinywa hadi nyama choma jioni, vyakula vyetu huandaliwa unapoiagiza kwa samaki wa pwani ya Ngazidja. Chagua vyakula vyako, jumla huhesabiwa kiotomatiki na oda yako hutumwa moja kwa moja kwenye WhatsApp.',
+      intro:
+        'Kutoka kifungua kinywa hadi nyama choma jioni, vyakula vyetu huandaliwa unapoiagiza kwa samaki wa pwani ya Ngazidja. Chagua vyakula vyako, jumla huhesabiwa kiotomatiki na oda yako hutumwa moja kwa moja kwenye WhatsApp.',
       tabsAria: 'Chuja menyu kulingana na wakati wa siku',
       all: 'Menyu yote',
       breakfast: 'Kifungua kinywa · kuanzia 07:00',
       lunch: 'Chakula cha mchana · 12:00–15:00',
       dinner: 'Chakula cha jioni · 18:30–23:00',
       dessertsDrinks: 'Vitindamcho & Vinywaji',
+      categories: {
+        breakfast: 'Kifungua kinywa',
+        lunch: 'Chakula cha mchana',
+        dinner: 'Chakula cha jioni',
+        dessertsDrinks: 'Vitindamcho & Vinywaji',
+      },
+      chooseOption: 'Chagua chaguo',
+      noDailySpecial: 'Hakuna chakula cha siku kwa sasa.',
+      empty: 'Hakuna vyakula vinavyopatikana kwa huduma hii.',
       headings: {
-        breakfast: { title: 'Kifungua kinywa', hours: 'Hutolewa kuanzia 07:00 hadi 10:30 mtaroni na ndani' },
-        lunch: { title: 'Chakula cha mchana', hours: 'Hutolewa kuanzia 12:00 hadi 15:00 · Seti na menyu kamili' },
-        dinner: { title: 'Chakula cha jioni', hours: 'Hutolewa kuanzia 18:30 hadi 23:00 · Nyama choma, samaki na vyakula vya bistrot' },
-        dessertsDrinks: { title: 'Vitindamcho vya nyumbani & Vinywaji', hours: 'Keki za siku, juisi safi na kahawa' },
+        breakfast: {
+          title: 'Kifungua kinywa',
+          hours: 'Hutolewa kuanzia 07:00 hadi 10:30 mtaroni na ndani',
+        },
+        lunch: {
+          title: 'Chakula cha mchana',
+          hours: 'Hutolewa kuanzia 12:00 hadi 15:00 · Seti na menyu kamili',
+        },
+        dinner: {
+          title: 'Chakula cha jioni',
+          hours:
+            'Hutolewa kuanzia 18:30 hadi 23:00 · Nyama choma, samaki na vyakula vya bistrot',
+        },
+        dessertsDrinks: {
+          title: 'Vitindamcho vya nyumbani & Vinywaji',
+          hours: 'Keki za siku, juisi safi na kahawa',
+        },
       },
       chefSuggestion: 'Pendekezo la mpishi mkuu',
       cartAria: 'Oda yako',
@@ -1759,12 +2539,14 @@ export const ui: Record<Locale, UiMessages> = {
       customerWhatsApp: 'Nambari ya WhatsApp',
       customerNamePlaceholder: 'Jina lako',
       customerWhatsAppPlaceholder: '+269 3XX XX XX',
-      customerRequired: 'Tafadhali weka jina lako na nambari ya WhatsApp ili kuthibitisha oda.',
+      customerRequired:
+        'Tafadhali weka jina lako na nambari ya WhatsApp ili kuthibitisha oda.',
     },
     gallery: {
       kicker: 'Matunzio ya Picha · Mazingira & Sahani',
       title: 'Chini ya miti ya mkungu na jikoni',
-      intro: 'Tembelea mtaro wa Place de France, chumba chenye kiyoyozi na sahani zetu zilizoandaliwa siku nzima.',
+      intro:
+        'Tembelea mtaro wa Place de France, chumba chenye kiyoyozi na sahani zetu zilizoandaliwa siku nzima.',
       filtersAria: 'Chuja matunzio ya picha',
       all: 'Maoni yote',
       terrace: 'Mtaro',
@@ -1775,24 +2557,40 @@ export const ui: Record<Locale, UiMessages> = {
     history: {
       kicker: 'Historia Yetu · Moroni, Place de France',
       title: 'Meza iliyo wazi kuelekea Place de France',
-      intro1: 'Likiwa limeelekea matao ya kihistoria ya Place de France, Le New Select limekuwa mahali pa kukutana pa kawaida katikati ya Moroni kwa miaka mingi. Wageni huja kunywa kahawa kali kuanzia saa moja asubuhi, chakula cha mchana cha kazi katika chumba chenye kiyoyozi, au chakula cha jioni tulivu chini ya kivuli cha miti ya mkungu.',
-      intro2: 'Nyumba yetu inatetea upishi ulio wazi na wa kweli: mbinu za bistrot ya Kifaransa zinazotumika kwa uangalifu kwenye hazina za baharini na kilimo za Ngazidja.',
+      intro1:
+        'Likiwa limeelekea matao ya kihistoria ya Place de France, Le New Select limekuwa mahali pa kukutana pa kawaida katikati ya Moroni kwa miaka mingi. Wageni huja kunywa kahawa kali kuanzia saa moja asubuhi, chakula cha mchana cha kazi katika chumba chenye kiyoyozi, au chakula cha jioni tulivu chini ya kivuli cha miti ya mkungu.',
+      intro2:
+        'Nyumba yetu inatetea upishi ulio wazi na wa kweli: mbinu za bistrot ya Kifaransa zinazotumika kwa uangalifu kwenye hazina za baharini na kilimo za Ngazidja.',
       discoverMenu: 'Gundua menyu',
       pillarsKicker: 'Falsafa ya upishi',
       pillarsTitle: 'Misingi yetu mitatu',
       pillars: [
-        { title: 'Roho ya bistrot ya Kifaransa', description: 'Upishi sahihi, michuzi ya siagi, mchuzi unaopikwa hapa na huduma makini: umahiri wa upishi uliorithiwa kutoka kwa migahawa ya jadi.' },
-        { title: 'Bidhaa safi kutoka Bahari ya Hindi', description: 'Samaki capitaine, jodari, chewa na kamba hutoka kwa wavuvi wa asubuhi wa Moroni, Itsandra na Mitsamiouli.' },
-        { title: 'Ugavi wa ndani kutoka Ngazidja', description: 'Vanila ya Bourbon, pilipili hoho kijani, karafuu, combava, mboga za majani na mihogo kutoka miteremko ya Mlima Karthala huipa kila sahani utambulisho wa Komori.' },
+        {
+          title: 'Roho ya bistrot ya Kifaransa',
+          description:
+            'Upishi sahihi, michuzi ya siagi, mchuzi unaopikwa hapa na huduma makini: umahiri wa upishi uliorithiwa kutoka kwa migahawa ya jadi.',
+        },
+        {
+          title: 'Bidhaa safi kutoka Bahari ya Hindi',
+          description:
+            'Samaki capitaine, jodari, chewa na kamba hutoka kwa wavuvi wa asubuhi wa Moroni, Itsandra na Mitsamiouli.',
+        },
+        {
+          title: 'Ugavi wa ndani kutoka Ngazidja',
+          description:
+            'Vanila ya Bourbon, pilipili hoho kijani, karafuu, combava, mboga za majani na mihogo kutoka miteremko ya Mlima Karthala huipa kila sahani utambulisho wa Komori.',
+        },
       ],
       teamKicker: 'Timu ya jikoni na ukumbini',
       teamTitle: 'Kikosi na wahudumu wakuu',
-      heroAlt: 'Chumba chenye kiyoyozi na mbao katika mgahawa wa Le New Select huko Moroni',
+      heroAlt:
+        'Chumba chenye kiyoyozi na mbao katika mgahawa wa Le New Select huko Moroni',
     },
     reservation: {
       kicker: 'Uhifadhi & Mawasiliano · Moroni, Place de France',
       title: 'Hifadhi meza yako',
-      intro: 'Chagua kukaa mtaroni chini ya miti au ndani ya chumba chenye kiyoyozi. Uthibitisho wa papo hapo au kwa simu kwa ',
+      intro:
+        'Chagua kukaa mtaroni chini ya miti au ndani ya chumba chenye kiyoyozi. Uthibitisho wa papo hapo au kwa simu kwa ',
       seatingLegend: 'Chaguo la kukaa',
       terraceTitle: 'Mtaro wenye kivuli',
       terraceDetail: 'Chini ya miti ya mkungu · Mtazamo wa Place de France',
@@ -1812,7 +2610,8 @@ export const ui: Record<Locale, UiMessages> = {
       serviceHours: 'Huduma mfululizo kuanzia 07:00 hadi 23:00',
       confirmedKicker: 'Rejea {ref}',
       confirmedTitle: 'Ombi la uhifadhi limehifadhiwa',
-      confirmedThanks: 'Asante {name}. Ombi lako liko tayari; litume kupitia WhatsApp kwa kushughulikiwa mara moja na mhudumu wetu mkuu.',
+      confirmedThanks:
+        'Asante {name}. Ombi lako liko tayari; litume kupitia WhatsApp kwa kushughulikiwa mara moja na mhudumu wetu mkuu.',
       dateTime: 'Tarehe & Saa',
       covers: 'Idadi ya wageni',
       seating: 'Mahali unayopendelea',
@@ -1823,27 +2622,67 @@ export const ui: Record<Locale, UiMessages> = {
       whatsappQuick: 'Jibu la haraka',
       mapKicker: 'Mahali · Moroni',
       mapTitle: 'Ramani ya Place de France',
-      mapAlt: 'Ramani ya mchoro ya Place de France huko Moroni na alama karibu na mgahawa wa Le New Select',
+      mapAlt:
+        'Ramani ya mchoro ya Place de France huko Moroni na alama karibu na mgahawa wa Le New Select',
       viewLandmark: 'Tazama alama: {name}',
       whatsappPrefill: 'Habari Le New Select, ningependa kuhifadhi meza.',
     },
     infos: {
       kicker: 'Taarifa Muhimu · Moroni',
       title: 'Jiandae kwa ziara yako Le New Select',
-      intro: 'Ufikiaji, maegesho karibu na Place de France, njia za malipo na majibu ya maswali yanayoulizwa mara kwa mara.',
+      intro:
+        'Ufikiaji, maegesho karibu na Place de France, njia za malipo na majibu ya maswali yanayoulizwa mara kwa mara.',
       accessKicker: '01. Ufikiaji & Maegesho',
       accessTitle: 'Karibu na Place de France',
-      accessText: 'Likiwa katikati mwa jiji la Moroni, mgahawa unafikika kwa miguu kutoka wizara, benki, ubalozi na bandari. Nafasi za maegesho ya umma ziko kando ya Place de France na barabara ya karibu, chini ya mita hamsini kutoka lango la mtaro.',
+      accessText:
+        'Likiwa katikati mwa jiji la Moroni, mgahawa unafikika kwa miguu kutoka wizara, benki, ubalozi na bandari. Nafasi za maegesho ya umma ziko kando ya Place de France na barabara ya karibu, chini ya mita hamsini kutoka lango la mtaro.',
       takeawayKicker: '02. Kuchukua & Vikundi',
       takeawayTitle: 'Chakula cha kuchukua na meza kubwa',
-      takeawayText: 'Vyakula vyote kwenye menyu vinaweza kuagizwa kuchukuliwa kwenda ofisini au nyumbani kwako kwa kupiga simu dakika ishirini kabla ya kufika. Kwa vikundi vya watu 8 hadi 30 (mikutano rasmi, vikao, chakula cha familia), tunaweza kutenga eneo la chumba chenye kiyoyozi au mtaro.',
+      takeawayText:
+        'Vyakula vyote kwenye menyu vinaweza kuagizwa kuchukuliwa kwenda ofisini au nyumbani kwako kwa kupiga simu dakika ishirini kabla ya kufika. Kwa vikundi vya watu 8 hadi 30 (mikutano rasmi, vikao, chakula cha familia), tunaweza kutenga eneo la chumba chenye kiyoyozi au mtaro.',
       paymentKicker: 'Malipo hapa au kuchukua',
       paymentTitle: 'Njia za malipo zinazokubaliwa',
       faqKicker: 'Huduma ndani na mtaroni',
       faqTitle: 'Maswali yanayoulizwa mara kwa mara',
     },
+    events: {
+      kicker: 'Matukio · Le New Select, Moroni',
+      title: 'Matukio yajayo',
+      intro:
+        'Jioni za muziki, sherehe na mikutano ya kazi: gundua matukio yajayo ya Le New Select chini ya miti ya mkungu ya Place de France au ndani ya chumba chetu chenye kiyoyozi.',
+      all: 'Matukio yote',
+      filtersAria: 'Chuja matukio kulingana na kundi',
+      empty: 'Hakuna matukio katika kundi hili.',
+      dateLabel: 'Tarehe',
+      timeLabel: 'Saa',
+      locationLabel: 'Mahali',
+      free: 'Bure',
+      priceOnRequest: 'Bei hutolewa unapouliza',
+      bookTickets: 'Hifadhi tiketi',
+      ticketsRemaining: 'Tiketi {count} zimesalia',
+      salePoints: 'Mahali pa kununua',
+      buyOnline: 'Nunua mtandaoni',
+      ticketFormTitle: 'Hifadhi tiketi — {title}',
+      ticketQuantity: 'Idadi ya tiketi',
+      ticketName: 'Jina kamili',
+      ticketPhone: 'WhatsApp / Simu',
+      ticketEmail: 'Barua pepe (si lazima)',
+      ticketSubmit: 'Tuma ombi la uhifadhi',
+      ticketSending: 'Inatuma…',
+      ticketConfirmTitle: 'Ombi la tiketi limehifadhiwa',
+      ticketConfirmText:
+        'Ombi lako limehifadhiwa (marejeo {ref}). Timu yetu itawasiliana ili kuthibitisha na kulipa.',
+      ticketReference: 'Marejeo',
+      ticketWhatsapp: 'Maliza kwenye WhatsApp',
+      ticketError: 'Imeshindwa kuhifadhi ombi. Jaribu tena au wasiliana nasi.',
+      organizeTitle: 'Panga tukio',
+      organizeText:
+        'Siku ya kuzaliwa, harusi, jioni ya timu au mapokezi rasmi: timu yetu huandaa menyu na nafasi inayofaa wageni wako.',
+      organizeCta: 'Omba makadirio',
+    },
     footer: {
-      description: 'Nyumba iliyo wazi kila siku kwenye Place de France, ikichanganya mazao safi ya Bahari ya Hindi na ujuzi wa bistrot.',
+      description:
+        'Nyumba iliyo wazi kila siku kwenye Place de France, ikichanganya mazao safi ya Bahari ya Hindi na ujuzi wa bistrot.',
       navigation: 'Urambazaji',
       location: 'Moroni · Place de France',
       rights: '© {year} {name} · Moroni, Umoja wa Komori',
@@ -1853,6 +2692,7 @@ export const ui: Record<Locale, UiMessages> = {
       menuLink: 'Menyu',
       historyLink: 'Historia Yetu',
       galleryLink: 'Matunzio ya Picha',
+      eventsLink: 'Matukio',
       reservationLink: 'Uhifadhi & Mawasiliano',
       infosLink: 'Taarifa Muhimu',
     },
@@ -1862,6 +2702,9 @@ export const ui: Record<Locale, UiMessages> = {
       tabs: {
         overview: 'Dashibodi',
         dishes: 'Vyakula',
+        menuCategories: 'Makundi ya menyu',
+        dailySpecials: 'Vyakula vya siku',
+        events: 'Matukio',
         info: 'Taarifa',
         gallery: 'Matunzio',
         team: 'Timu',
@@ -1877,14 +2720,16 @@ export const ui: Record<Locale, UiMessages> = {
       logout: 'Toka',
       setup: {
         title: 'Usanidi wa Supabase unahitajika',
-        notice: 'Dashibodi iko tayari, lakini ufunguo wa umma wa Supabase bado haujawekwa katika mazingira ya programu.',
+        notice:
+          'Dashibodi iko tayari, lakini ufunguo wa umma wa Supabase bado haujawekwa katika mazingira ya programu.',
         varsTitle: 'Vigezo vya kuweka:',
         help: 'Viongeze kwenye .env.local ndani ya kifaa, kisha kwenye vigezo vya mazingira vya Vercel. Kisha endesha supabase/migrations/001_lns_site_content.sql katika Kihariri cha SQL cha Supabase. Ufunguo wa anon pekee ndio unaoonekana kwenye kivinjari: ufunguo wa service_role haupaswi kutumika hapa.',
       },
       login: {
         kicker: 'Eneo la mmiliki',
         title: 'Ingia',
-        intro: 'Imetengwa kwa mmiliki wa mgahawa. Tumia akaunti iliyoidhinishwa ya Supabase Auth.',
+        intro:
+          'Imetengwa kwa mmiliki wa mgahawa. Tumia akaunti iliyoidhinishwa ya Supabase Auth.',
         email: 'Barua pepe',
         password: 'Nenosiri',
         submit: 'Ingia',
@@ -1892,21 +2737,25 @@ export const ui: Record<Locale, UiMessages> = {
       },
       clients: {
         title: 'Wateja na maombi',
-        description: 'Data iliyohifadhiwa kiotomatiki mteja anapothibitisha oda (kikapu) au kuthibitisha ombi la uhifadhi.',
+        description:
+          'Data iliyohifadhiwa kiotomatiki mteja anapothibitisha oda (kikapu) au kuthibitisha ombi la uhifadhi.',
         refresh: 'Onyesha upya',
         deleteAll: 'Futa vyote',
         deleteAllConfirm: 'Futa rekodi zote za wateja?',
         count: 'Rekodi {count}',
-        empty: 'Hakuna rekodi bado. Data itaonekana hapa mteja anapothibitisha oda au ombi la uhifadhi.',
+        empty:
+          'Hakuna rekodi bado. Data itaonekana hapa mteja anapothibitisha oda au ombi la uhifadhi.',
         deleted: 'Rekodi imefutwa.',
         cleared: 'Rekodi zote zimefutwa.',
         deleteError: 'Imeshindwa kufuta.',
         loadError: 'Imeshindwa kupakia data ya wateja.',
         order: 'Oda',
         reservation: 'Uhifadhi',
+        ticket: 'Tiketi',
         deleteRecord: 'Futa rekodi ya {name}',
         note: 'Kumbuka: {note}',
-        migrationNotice: 'Ikiwa jedwali la Supabase lns_client_records bado halijaundwa, endesha uhamishaji 003_lns_client_records.sql. Rekodi pia huhifadhiwa ndani ya kivinjari hiki kama nakala ya akiba.',
+        migrationNotice:
+          'Ikiwa jedwali la Supabase lns_client_records bado halijaundwa, endesha uhamishaji 003_lns_client_records.sql. Kwa tiketi, endesha pia 005_lns_ticket_records.sql. Rekodi pia huhifadhiwa ndani ya kivinjari hiki kama nakala ya akiba.',
       },
       editors: {
         common: {
@@ -1930,11 +2779,17 @@ export const ui: Record<Locale, UiMessages> = {
         overview: {
           kicker: 'Muhtasari',
           title: 'Karibu katika eneo la mmiliki',
-          description: 'Hariri vyakula, maelezo ya mawasiliano, picha au timu: tovuti ya wateja husasishwa kiotomatiki kupitia Supabase Realtime.',
+          description:
+            'Hariri vyakula, maelezo ya mawasiliano, picha au timu: tovuti ya wateja husasishwa kiotomatiki kupitia Supabase Realtime.',
           statDishes: 'Vyakula vya menyu',
           statGallery: 'Picha za matunzio',
           statTeam: 'Wanachama wa timu',
           statFaq: 'Maswali ya mara kwa mara',
+          statCategories: 'Makundi ya menyu',
+          statEvents: 'Matukio yajayo',
+          importNew: 'Ingiza maudhui mapya',
+          importNewConfirm:
+            'Ingiza makundi, vyakula vya siku na matukio yanayokosekana? Mabadiliko yako yaliyohifadhiwa yatabaki.',
           syncTitle: 'Hali ya usawazishaji',
           sourceLabel: 'Chanzo cha data',
           sourceSupabase: 'Supabase',
@@ -1942,9 +2797,13 @@ export const ui: Record<Locale, UiMessages> = {
           liveLabel: 'Masasisho ya moja kwa moja',
           liveActive: 'Yanafanya kazi',
           liveInactive: 'Hayafanyi kazi',
-          noDataNotice: 'Hakuna data ya Supabase bado. Ingiza maudhui asilia ili kuanza kusimamia tovuti kutoka dashibodi.',
+          noDataNotice:
+            'Hakuna data ya Supabase bado. Ingiza maudhui asilia ili kuanza kusimamia tovuti kutoka dashibodi.',
+          migrationNotice:
+            'Jedwali zinazokosekana kwenye Supabase: {tables}. Endesha uhamishaji 004_lns_menu_events.sql kwenye Kihariri cha SQL ili kuchapisha sehemu hizi kwenye tovuti.',
           importMissing: 'Ingiza maudhui yanayokosekana',
-          imported: 'Maudhui yanayokosekana yameingizwa (mabadiliko yaliyohifadhiwa yamehifadhiwa).',
+          imported:
+            'Maudhui yanayokosekana yameingizwa (mabadiliko yaliyohifadhiwa yamehifadhiwa).',
           viewSite: 'Tazama tovuti',
           howTitle: 'Inavyofanya kazi',
           how1: 'Ingiza maudhui yanayokosekana mara moja: mabadiliko yako yaliyohifadhiwa hayatafutwa.',
@@ -1954,12 +2813,21 @@ export const ui: Record<Locale, UiMessages> = {
         },
         menu: {
           title: 'Vyakula',
-          description: 'Ongeza chakula, hariri bei au picha yake, au kifiche wakati hakipatikani. Jumla ya kikapu cha mteja husasishwa kiotomatiki.',
+          description:
+            'Ongeza chakula, hariri bei au picha yake, au kifiche wakati hakipatikani. Jumla ya kikapu cha mteja husasishwa kiotomatiki.',
           all: 'Vyote',
           editDish: 'Hariri chakula',
           newDish: 'Chakula kipya',
           name: 'Jina la chakula',
           priceKmf: 'Bei (KMF)',
+          category: 'Kundi',
+          noCategory: 'Bila kundi',
+          priceOptions: 'Chaguo za bei',
+          priceOptionsHint: 'Mfano: 26 cm / 33 cm, sehemu ndogo / kubwa.',
+          optionLabel: 'Jina la chaguo',
+          optionPrice: 'Bei ya chaguo (KMF)',
+          addOption: 'Ongeza chaguo',
+          removeOption: 'Ondoa chaguo',
           moment: 'Wakati wa huduma',
           section: 'Sehemu ya menyu',
           badge: 'Beji (hiari)',
@@ -1977,9 +2845,83 @@ export const ui: Record<Locale, UiMessages> = {
           hiddenBadge: 'Imefichwa',
           signatureBadge: 'Maalum',
         },
+        menuCategories: {
+          title: 'Makundi ya menyu',
+          description:
+            'Panga sehemu za menyu yako: jina, maelezo, mpangilio na uwonekano.',
+          newCategory: 'Kundi jipya',
+          editCategory: 'Hariri kundi',
+          name: 'Jina la kundi',
+          descriptionField: 'Maelezo',
+          showOnSite: 'Onyesha kwenye menyu',
+          saved: 'Kundi limehifadhiwa.',
+          deleted: 'Kundi limefutwa.',
+          empty: 'Hakuna makundi bado.',
+          hiddenBadge: 'Imefichwa',
+        },
+        dailySpecials: {
+          title: 'Vyakula vya siku',
+          description:
+            'Panga vyakula vya siku na tarehe zake: kile kilicho katika kipindi cha sasa tu ndicho kinachoonyeshwa kwenye tovuti.',
+          newSpecial: 'Chakula kipya cha siku',
+          editSpecial: 'Hariri chakula cha siku',
+          dishName: 'Jina la chakula',
+          descriptionField: 'Maelezo',
+          priceKmf: 'Bei (KMF)',
+          image: 'Picha ya chakula',
+          startDate: 'Tarehe ya kuanza',
+          endDate: 'Tarehe ya mwisho',
+          availability: 'Upatikanaji',
+          showOnSite: 'Onyesha kwenye tovuti',
+          saved: 'Chakula cha siku kimehifadhiwa.',
+          deleted: 'Chakula cha siku kimefutwa.',
+          empty: 'Hakuna vyakula vya siku vilivyopangwa.',
+          hiddenBadge: 'Imefichwa',
+        },
+        events: {
+          title: 'Matukio',
+          description:
+            'Ongeza matukio na makundi yake: tarehe, mahali, bei na uwonekano vinaonyeshwa kwenye ukurasa wa Matukio.',
+          newEvent: 'Tukio jipya',
+          editEvent: 'Hariri tukio',
+          eventTitle: 'Kichwa cha tukio',
+          descriptionField: 'Maelezo',
+          category: 'Kundi',
+          date: 'Tarehe ya kuanza',
+          endDate: 'Tarehe ya mwisho (hiari)',
+          time: 'Saa',
+          location: 'Mahali',
+          priceKmf: 'Bei (KMF)',
+          freeHint: 'Acha 0 kwa tukio la bure.',
+          ticketPriceKmf: 'Bei ya tiketi (KMF)',
+          ticketsAvailable: 'Tiketi zinazopatikana',
+          salePoints: 'Mahali pa kununua / namna ya kununua',
+          ticketingUrl: 'Kiungo cha tiketi mtandaoni (hiari)',
+          ticketHint:
+            'Maelezo haya yanaonekana kwenye sehemu ya tiketi ya ukurasa wa Matukio.',
+          bookTicketsBadge: 'Tiketi',
+          seatsBadge: 'Vitengo {count}',
+          image: 'Picha ya tukio',
+          showOnSite: 'Onyesha kwenye tovuti',
+          saved: 'Tukio limehifadhiwa.',
+          deleted: 'Tukio limefutwa.',
+          empty: 'Hakuna matukio bado.',
+          hiddenBadge: 'Imefichwa',
+          categoriesTitle: 'Makundi ya matukio',
+          categoriesHint: 'Panga matukio (sherehe, harusi, jioni, n.k.).',
+          newCategory: 'Kundi jipya',
+          categoryName: 'Jina la kundi',
+          categoryDescription: 'Maelezo',
+          categorySaved: 'Kundi limehifadhiwa.',
+          categoryDeleted: 'Kundi limefutwa.',
+          categoryDeleteConfirm: 'Futa kundi {name}?',
+          categoryInUse: 'Matukio {count} bado yanatumia kundi {name}.',
+          deleteConfirm: 'Futa tukio {name}?',
+        },
         settings: {
           title: 'Taarifa muhimu',
-          description: 'Jina, maelezo ya mawasiliano, saa, picha ya mwanzo na chakula cha siku: sehemu hizi huendesha kurasa zote za tovuti.',
+          description:
+            'Jina, maelezo ya mawasiliano, saa, picha ya mwanzo na chakula cha siku: sehemu hizi huendesha kurasa zote za tovuti.',
           saved: 'Taarifa zimehifadhiwa.',
           restaurantName: 'Jina la mgahawa',
           tagline: 'Kauli mbiu',
@@ -2006,7 +2948,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         gallery: {
           title: 'Matunzio ya picha',
-          description: 'Badilisha picha za mtaro, chumba cha kulia na vyakula. Picha zinazopakiwa huhifadhiwa kwenye hifadhi maalum ya Supabase.',
+          description:
+            'Badilisha picha za mtaro, chumba cha kulia na vyakula. Picha zinazopakiwa huhifadhiwa kwenye hifadhi maalum ya Supabase.',
           newPhoto: 'Picha mpya',
           editPhoto: 'Hariri picha',
           category: 'Kundi',
@@ -2030,7 +2973,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         faq: {
           title: 'Maswali ya mara kwa mara',
-          description: 'Simamia majibu yanayoonyeshwa kwenye ukurasa wa “Taarifa muhimu”.',
+          description:
+            'Simamia majibu yanayoonyeshwa kwenye ukurasa wa “Taarifa muhimu”.',
           newQuestion: 'Swali jipya',
           question: 'Swali',
           answer: 'Jibu',
@@ -2040,7 +2984,8 @@ export const ui: Record<Locale, UiMessages> = {
         },
         media: {
           title: 'Maktaba ya midia',
-          description: 'Pakia picha zako mara moja, kisha nakili URL yake kwenye chakula au picha ya matunzio.',
+          description:
+            'Pakia picha zako mara moja, kisha nakili URL yake kwenye chakula au picha ya matunzio.',
           upload: 'Ingiza picha',
           uploading: 'Inapakia…',
           imported: 'Picha {count} zimeingizwa.',
@@ -2051,20 +2996,30 @@ export const ui: Record<Locale, UiMessages> = {
           empty: 'Hakuna picha katika maktaba.',
         },
         errorUnknown: 'Hitilafu isiyojulikana',
+        errorValidation:
+          'Angalia sehemu za fomu kabla ya kuhifadhi (bei, tarehe, sehemu zinazotakiwa).',
       },
     },
     pages: {
       accueil: 'Mwanzo',
       menu: 'Menyu',
+      pizzas: 'Pizza Zetu',
+      platsDuJour: 'Sahani za Siku',
       histoire: 'Historia Yetu',
       galerie: 'Matunzio ya Picha',
       reservation: 'Uhifadhi & Mawasiliano',
       infos: 'Taarifa Muhimu',
+      evenements: 'Matukio',
       admin: 'Usimamizi',
     },
   },
 };
 
-export function formatMessage(template: string, values: Record<string, string | number>): string {
-  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`));
+export function formatMessage(
+  template: string,
+  values: Record<string, string | number>,
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) =>
+    String(values[key] ?? `{${key}}`),
+  );
 }

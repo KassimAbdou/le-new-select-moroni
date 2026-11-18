@@ -72,12 +72,16 @@ export function ReservationPage() {
   const [confirmedRef, setConfirmedRef] = useState<string | null>(null);
 
   const landmarks = useMemo(() => {
-    const overrides = locale === 'fr' ? {} : (contentTranslations[locale]?.landmarks ?? {});
+    const overrides =
+      locale === 'fr' ? {} : (contentTranslations[locale]?.landmarks ?? {});
     return BASE_LANDMARKS.map((lm) => ({ ...lm, ...(overrides[lm.id] ?? {}) }));
   }, [locale]);
 
-  const [selectedLandmarkId, setSelectedLandmarkId] = useState<string>(BASE_LANDMARKS[0]!.id);
-  const selectedLandmark = landmarks.find((l) => l.id === selectedLandmarkId) ?? landmarks[0]!;
+  const [selectedLandmarkId, setSelectedLandmarkId] = useState<string>(
+    BASE_LANDMARKS[0]!.id,
+  );
+  const selectedLandmark =
+    landmarks.find((l) => l.id === selectedLandmarkId) ?? landmarks[0]!;
 
   useEffect(() => {
     if (!landmarks.some((l) => l.id === selectedLandmarkId)) {
@@ -91,7 +95,10 @@ export function ReservationPage() {
       Déjeuner: t('menu.headings.lunch.title'),
       Dîner: t('menu.headings.dinner.title'),
     };
-    return TIME_SLOTS.map((group) => ({ ...group, label: labels[group.label] ?? group.label }));
+    return TIME_SLOTS.map((group) => ({
+      ...group,
+      label: labels[group.label] ?? group.label,
+    }));
   }, [t]);
 
   const seatingLabels: Record<SeatingChoice, string> = {
@@ -112,27 +119,27 @@ export function ReservationPage() {
     setFormError(error);
     if (error) return;
     const ref = createReference();
-    try {
-      await saveClientRecord({
-        kind: 'reservation',
-        name: reservation.fullName.trim(),
-        phone: reservation.phone.trim(),
-        email: reservation.email.trim() || null,
-        locale,
-        details: {
-          reference: ref,
-          date: reservation.date,
-          timeSlot: reservation.timeSlot,
-          guests: reservation.guests,
-          seating: reservation.seating,
-          notes: reservation.notes.trim() || null,
-          email: reservation.email.trim() || null,
-        },
-      });
-    } catch {
-      // Best effort: do not block confirmation flow if storage fails.
-    }
+    // La confirmation s'affiche immédiatement : l'enregistrement est best-effort
+    // et ne doit jamais bloquer le client si Supabase est lent ou indisponible.
     setConfirmedRef(ref);
+    void saveClientRecord({
+      kind: 'reservation',
+      name: reservation.fullName.trim(),
+      phone: reservation.phone.trim(),
+      email: reservation.email.trim() || null,
+      locale,
+      details: {
+        reference: ref,
+        date: reservation.date,
+        timeSlot: reservation.timeSlot,
+        guests: reservation.guests,
+        seating: reservation.seating,
+        notes: reservation.notes.trim() || null,
+        email: reservation.email.trim() || null,
+      },
+    }).catch(() => {
+      // Best effort: do not block confirmation flow if storage fails.
+    });
   };
 
   const whatsappUrl = `${info.whatsappHref}?text=${encodeURIComponent(
@@ -144,17 +151,13 @@ export function ReservationPage() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header */}
         <div className="space-y-2 max-w-2xl border-b border-line pb-8">
-          <p className="text-xs font-medium text-ocean">
-            {t('reservation.kicker')}
-          </p>
+          <p className="text-xs font-medium text-ocean">{t('reservation.kicker')}</p>
           <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink text-balance">
             {t('reservation.title')}
           </h1>
           <p className="text-base text-ink-muted leading-relaxed">
             {t('reservation.intro')}
-            <span className="font-medium text-ink tabular-nums">
-              {info.phoneDisplay}
-            </span>
+            <span className="font-medium text-ink tabular-nums">{info.phoneDisplay}</span>
             .
           </p>
         </div>
@@ -185,7 +188,9 @@ export function ReservationPage() {
 
                 <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-surface-alt border border-line text-sm">
                   <div>
-                    <dt className="text-xs text-ink-muted">{t('reservation.dateTime')}</dt>
+                    <dt className="text-xs text-ink-muted">
+                      {t('reservation.dateTime')}
+                    </dt>
                     <dd className="font-semibold text-ink tabular-nums">
                       {reservation.date} · {reservation.timeSlot}
                     </dd>
@@ -196,7 +201,9 @@ export function ReservationPage() {
                       {reservation.guests === GROUP_OPTION
                         ? t('common.group15')
                         : `${reservation.guests} ${
-                            Number(reservation.guests) > 1 ? t('common.people') : t('common.person')
+                            Number(reservation.guests) > 1
+                              ? t('common.people')
+                              : t('common.person')
                           }`}
                     </dd>
                   </div>
@@ -207,7 +214,9 @@ export function ReservationPage() {
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-ink-muted">{t('reservation.phoneLabel')}</dt>
+                    <dt className="text-xs text-ink-muted">
+                      {t('reservation.phoneLabel')}
+                    </dt>
                     <dd className="font-semibold text-ink tabular-nums">
                       {reservation.phone}
                     </dd>
@@ -219,7 +228,7 @@ export function ReservationPage() {
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors whitespace-nowrap shrink-0"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-burgundy text-white text-sm font-medium hover:bg-burgundy-hover transition-colors whitespace-nowrap shrink-0"
                   >
                     <MessageCircle className="w-4 h-4" aria-hidden="true" />
                     <span>{t('reservation.confirmWhatsApp')}</span>
@@ -234,7 +243,11 @@ export function ReservationPage() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={(e) => void handleSubmit(e)} noValidate className="space-y-6">
+              <form
+                onSubmit={(e) => void handleSubmit(e)}
+                noValidate
+                className="space-y-6"
+              >
                 <fieldset className="space-y-2">
                   <legend className="text-sm font-medium text-ink">
                     {t('reservation.seatingLegend')}
@@ -265,9 +278,7 @@ export function ReservationPage() {
                             : 'border-line hover:bg-canvas'
                         }`}
                       >
-                        <p className="text-sm font-semibold text-ink">
-                          {option.title}
-                        </p>
+                        <p className="text-sm font-semibold text-ink">{option.title}</p>
                         <p className="text-xs text-ink-muted mt-0.5">{option.detail}</p>
                       </button>
                     ))}
@@ -423,7 +434,7 @@ export function ReservationPage() {
                     id="res-error"
                     role="alert"
                     aria-live="assertive"
-                    className="text-sm font-medium text-[#9B2C2C] bg-[#9B2C2C]/8 border border-[#9B2C2C]/25 rounded-lg px-4 py-2.5"
+                    className="text-sm font-medium text-burgundy bg-burgundy/8 border border-burgundy/25 rounded-lg px-4 py-2.5"
                   >
                     {formError}
                   </p>
@@ -432,7 +443,7 @@ export function ReservationPage() {
                 <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
+                    className="px-6 py-3 rounded-lg bg-burgundy text-white text-sm font-medium hover:bg-burgundy-hover transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
                   >
                     {t('common.confirmRequest')}
                   </button>
@@ -449,7 +460,9 @@ export function ReservationPage() {
             {/* Direct Contact */}
             <div className="bg-surface border border-line rounded-xl p-6 space-y-5">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-ink-muted">{t('reservation.directLine')}</p>
+                <p className="text-xs font-medium text-ink-muted">
+                  {t('reservation.directLine')}
+                </p>
                 <h2 className="font-display text-2xl font-semibold text-ink">
                   {t('reservation.contactWithoutWaiting')}
                 </h2>
@@ -473,13 +486,15 @@ export function ReservationPage() {
                   href={`${info.whatsappHref}?text=${encodeURIComponent(t('reservation.whatsappPrefill'))}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0F4C45] text-white hover:bg-[#0B3A35] transition-colors"
+                  className="flex items-center justify-between px-4 py-3 rounded-lg bg-burgundy text-white hover:bg-burgundy-hover transition-colors"
                 >
                   <span className="inline-flex items-center gap-2.5 text-sm font-medium">
                     <MessageCircle className="w-4 h-4" aria-hidden="true" />
                     <span>{t('common.writeWhatsApp')}</span>
                   </span>
-                  <span className="text-xs opacity-90">{t('reservation.whatsappQuick')}</span>
+                  <span className="text-xs opacity-90">
+                    {t('reservation.whatsappQuick')}
+                  </span>
                 </a>
               </div>
             </div>
@@ -506,24 +521,28 @@ export function ReservationPage() {
                 </a>
               </div>
 
-              <div className="rounded-lg border border-line bg-surface-alt overflow-hidden">
+              <div className="rounded-lg border border-line bg-surface-alt overflow-x-auto overscroll-x-contain">
                 <svg
                   viewBox="0 0 420 250"
                   role="img"
                   aria-label={t('reservation.mapAlt')}
-                  className="w-full h-auto block"
+                  className="w-full min-w-[420px] h-auto block"
                 >
                   {/* Indian Ocean */}
-                  <path d="M 0 0 L 145 0 Q 115 115 88 250 L 0 250 Z" fill="#DCE7E4" />
+                  <path d="M 0 0 L 145 0 Q 115 115 88 250 L 0 250 Z" fill="#F7E7EA" />
                   <text
                     x="18"
                     y="45"
-                    fill="#4A6B66"
+                    fill="#7B1E2B"
                     fontSize="10"
                     fontFamily="Plus Jakarta Sans, sans-serif"
                     fontWeight="600"
                   >
-                    {locale === 'ar' ? 'المحيط الهندي' : locale === 'sw' ? 'Bahari ya Hindi' : 'Indian Ocean'}
+                    {locale === 'ar'
+                      ? 'المحيط الهندي'
+                      : locale === 'sw'
+                        ? 'Bahari ya Hindi'
+                        : 'Indian Ocean'}
                   </text>
 
                   {/* Corniche / Coastal road */}
@@ -553,8 +572,8 @@ export function ReservationPage() {
                     width="125"
                     height="82"
                     rx="10"
-                    fill="#E5EAE2"
-                    stroke="#C7D1C2"
+                    fill="#FFF5F6"
+                    stroke="#EBC6CD"
                     strokeWidth="1.5"
                   />
                   <text
@@ -578,7 +597,9 @@ export function ReservationPage() {
                         key={landmark.id}
                         role="button"
                         tabIndex={0}
-                        aria-label={t('reservation.viewLandmark', { name: landmark.name })}
+                        aria-label={t('reservation.viewLandmark', {
+                          name: landmark.name,
+                        })}
                         aria-pressed={isSelected}
                         className="cursor-pointer focus:outline-none"
                         onClick={() => setSelectedLandmarkId(landmark.id)}
@@ -594,16 +615,16 @@ export function ReservationPage() {
                           cy={landmark.y}
                           r={isPrimary ? 10 : 7}
                           fill={
-                            isPrimary ? '#0F4C45' : isSelected ? '#151A19' : '#FFFFFF'
+                            isPrimary ? '#7B1E2B' : isSelected ? '#2A0F15' : '#FFFFFF'
                           }
-                          stroke={isPrimary ? '#FFFFFF' : '#0F4C45'}
+                          stroke={isPrimary ? '#FFFFFF' : '#7B1E2B'}
                           strokeWidth="2.5"
                         />
                         <text
                           x={landmark.x}
                           y={landmark.y - 14}
                           textAnchor="middle"
-                          fill="#151A19"
+                          fill="#2A0F15"
                           fontSize={isPrimary ? '11' : '9.5'}
                           fontWeight={isPrimary || isSelected ? '700' : '500'}
                           fontFamily="Plus Jakarta Sans, sans-serif"

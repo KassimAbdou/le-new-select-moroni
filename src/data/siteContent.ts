@@ -1,9 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   BrigadeMember,
+  DailySpecial,
+  EventCategory,
+  EventItem,
   FaqItem,
   GalleryCategory,
   GalleryItem,
+  MenuCategory,
   MenuItem,
   MenuMoment,
   ReviewItem,
@@ -11,10 +15,14 @@ import type {
 import {
   BRIGADE,
   CHEF_DAILY_SPECIAL,
+  DAILY_SPECIALS,
+  EVENTS,
+  EVENT_CATEGORIES,
   FAQ_ITEMS,
   FULL_MENU,
   GALLERY_ITEMS,
   IMAGES,
+  MENU_CATEGORIES,
   RESTAURANT_INFO,
   SIGNATURE_DISHES,
   TRIPADVISOR_REVIEWS,
@@ -51,6 +59,10 @@ export interface SiteSettings {
 export interface SiteContent {
   settings: SiteSettings;
   menu: MenuItem[];
+  menuCategories: MenuCategory[];
+  dailySpecials: DailySpecial[];
+  events: EventItem[];
+  eventCategories: EventCategory[];
   signature: MenuItem[];
   gallery: GalleryItem[];
   brigade: BrigadeMember[];
@@ -88,6 +100,10 @@ export const DEFAULT_CONTENT: SiteContent = {
     chef: CHEF_DAILY_SPECIAL,
   },
   menu: FULL_MENU,
+  menuCategories: MENU_CATEGORIES,
+  dailySpecials: DAILY_SPECIALS,
+  events: EVENTS,
+  eventCategories: EVENT_CATEGORIES,
   signature: SIGNATURE_DISHES,
   gallery: GALLERY_ITEMS,
   brigade: BRIGADE,
@@ -127,9 +143,61 @@ interface MenuRow {
   price_kmf: number | null;
   moment: Nullable;
   section_label: Nullable;
+  category_id: Nullable;
+  price_options: unknown;
   tag: Nullable;
   is_signature: boolean | null;
   image_url: Nullable;
+  is_visible: boolean | null;
+  sort_order: number | null;
+}
+
+interface MenuCategoryRow {
+  id: string;
+  name: Nullable;
+  description: Nullable;
+  is_visible: boolean | null;
+  sort_order: number | null;
+}
+
+interface DailySpecialRow {
+  id: string;
+  title: Nullable;
+  dish_name: Nullable;
+  description: Nullable;
+  price_kmf: number | null;
+  image_url: Nullable;
+  start_date: Nullable;
+  end_date: Nullable;
+  availability: Nullable;
+  is_visible: boolean | null;
+  sort_order: number | null;
+}
+
+interface EventCategoryRow {
+  id: string;
+  name: Nullable;
+  description: Nullable;
+  is_visible: boolean | null;
+  sort_order: number | null;
+}
+
+interface EventRow {
+  id: string;
+  title: Nullable;
+  description: Nullable;
+  category_id: Nullable;
+  category_label: Nullable;
+  event_date: Nullable;
+  end_date: Nullable;
+  time: Nullable;
+  location: Nullable;
+  price_kmf: number | null;
+  image_url: Nullable;
+  ticket_price_kmf: number | null;
+  tickets_available: number | null;
+  ticket_sale_points: Nullable;
+  ticketing_url: Nullable;
   is_visible: boolean | null;
   sort_order: number | null;
 }
@@ -169,6 +237,28 @@ function parseMoment(value: Nullable): MenuItem['moment'] {
 
 function parseCategory(value: Nullable): Exclude<GalleryCategory, 'all'> {
   return GALLERY_CATEGORIES.find((category) => category === value) ?? 'plats';
+}
+
+function parsePriceOptions(value: unknown): MenuItem['priceOptions'] {
+  if (!Array.isArray(value)) return undefined;
+  const options = value.flatMap((option) => {
+    if (!option || typeof option !== 'object') return [];
+    const candidate = option as {
+      label?: unknown;
+      price_kmf?: unknown;
+      priceKmf?: unknown;
+    };
+    const label = typeof candidate.label === 'string' ? candidate.label : '';
+    const price = Number(candidate.price_kmf ?? candidate.priceKmf);
+    return label && Number.isFinite(price) ? [{ label, priceKmf: price }] : [];
+  });
+  return options.length > 0 ? options : undefined;
+}
+
+function parseDate(value: Nullable, fallback: string): string {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? value
+    : fallback;
 }
 
 function settingsToRow(settings: SiteSettings) {
@@ -249,6 +339,8 @@ export function menuItemToRow(item: MenuItem, rank: Ranked) {
     price_kmf: item.priceKmf,
     moment: item.moment,
     section_label: item.sectionLabel,
+    category_id: item.categoryId ?? null,
+    price_options: item.priceOptions ?? [],
     tag: item.tag ?? null,
     is_signature: item.isSignature ?? false,
     image_url: item.image ?? null,
@@ -266,9 +358,133 @@ function rowToMenuItem(row: MenuRow): MenuItem {
     priceKmf: Number(row.price_kmf ?? 0),
     moment: parseMoment(row.moment),
     sectionLabel: row.section_label ?? '',
+    categoryId: row.category_id ?? undefined,
+    priceOptions: parsePriceOptions(row.price_options),
     tag: row.tag ?? undefined,
     isSignature: row.is_signature ?? undefined,
     image: row.image_url ?? undefined,
+    isVisible: row.is_visible ?? true,
+    sortOrder: row.sort_order ?? 0,
+  };
+}
+
+export function menuCategoryToRow(category: MenuCategory, rank: Ranked) {
+  return {
+    id: category.id,
+    name: category.name,
+    description: category.description,
+    is_visible: rank.isVisible,
+    sort_order: rank.sortOrder,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function rowToMenuCategory(row: MenuCategoryRow): MenuCategory {
+  return {
+    id: row.id,
+    name: row.name ?? 'Catégorie',
+    description: row.description ?? '',
+    isVisible: row.is_visible ?? true,
+    sortOrder: row.sort_order ?? 0,
+  };
+}
+
+export function dailySpecialToRow(special: DailySpecial, rank: Ranked) {
+  return {
+    id: special.id,
+    title: special.title,
+    dish_name: special.dishName,
+    description: special.description,
+    price_kmf: special.priceKmf,
+    image_url: special.image ?? null,
+    start_date: special.startDate,
+    end_date: special.endDate,
+    availability: special.availability ?? null,
+    is_visible: rank.isVisible,
+    sort_order: rank.sortOrder,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function rowToDailySpecial(row: DailySpecialRow): DailySpecial {
+  return {
+    id: row.id,
+    title: row.title ?? 'Plat du jour',
+    dishName: row.dish_name ?? '',
+    description: row.description ?? '',
+    priceKmf: Number(row.price_kmf ?? 0),
+    image: row.image_url ?? undefined,
+    startDate: parseDate(row.start_date, ''),
+    endDate: parseDate(row.end_date, row.start_date ?? ''),
+    availability: row.availability ?? undefined,
+    isVisible: row.is_visible ?? true,
+    sortOrder: row.sort_order ?? 0,
+  };
+}
+
+export function eventCategoryToRow(category: EventCategory, rank: Ranked) {
+  return {
+    id: category.id,
+    name: category.name,
+    description: category.description,
+    is_visible: rank.isVisible,
+    sort_order: rank.sortOrder,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function rowToEventCategory(row: EventCategoryRow): EventCategory {
+  return {
+    id: row.id,
+    name: row.name ?? 'Catégorie',
+    description: row.description ?? '',
+    isVisible: row.is_visible ?? true,
+    sortOrder: row.sort_order ?? 0,
+  };
+}
+
+export function eventToRow(event: EventItem, rank: Ranked) {
+  return {
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    category_id: event.categoryId ?? null,
+    category_label: event.categoryLabel ?? '',
+    event_date: event.eventDate,
+    end_date: event.endDate ?? null,
+    time: event.time ?? null,
+    location: event.location ?? null,
+    price_kmf: event.priceKmf ?? null,
+    image_url: event.image ?? null,
+    ticket_price_kmf: event.ticketPriceKmf ?? null,
+    tickets_available: event.ticketsAvailable ?? null,
+    ticket_sale_points: event.ticketSalePoints ?? null,
+    ticketing_url: event.ticketingUrl ?? null,
+    is_visible: rank.isVisible,
+    sort_order: rank.sortOrder,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function rowToEvent(row: EventRow): EventItem {
+  return {
+    id: row.id,
+    title: row.title ?? 'Événement',
+    description: row.description ?? '',
+    categoryId: row.category_id ?? undefined,
+    categoryLabel: row.category_label ?? undefined,
+    eventDate: parseDate(row.event_date, ''),
+    endDate: row.end_date ? parseDate(row.end_date, row.event_date ?? '') : undefined,
+    time: row.time ?? undefined,
+    location: row.location ?? undefined,
+    priceKmf: row.price_kmf === null ? undefined : Number(row.price_kmf),
+    image: row.image_url ?? undefined,
+    ticketPriceKmf:
+      row.ticket_price_kmf === null ? undefined : Number(row.ticket_price_kmf),
+    ticketsAvailable:
+      row.tickets_available === null ? undefined : Number(row.tickets_available),
+    ticketSalePoints: row.ticket_sale_points ?? undefined,
+    ticketingUrl: row.ticketing_url ?? undefined,
     isVisible: row.is_visible ?? true,
     sortOrder: row.sort_order ?? 0,
   };
@@ -356,36 +572,68 @@ function withRank<T>(items: T[]): (T & Ranked)[] {
   }));
 }
 
-/** Charge tout le contenu éditable. Les lignes masquées remontent aussi au dashboard. */
+interface OptionalRows<T> {
+  rows: T[];
+  /** false = table absente (migration 004 non exécutée). */
+  available: boolean;
+}
+
+function isMissingTableError(error: { code?: string; message?: string }): boolean {
+  return (
+    error.code === 'PGRST205' ||
+    error.code === '42P01' ||
+    /could not find the table/i.test(error.message ?? '')
+  );
+}
+
+/**
+ * Charge tout le contenu éditable. Les lignes masquées remontent aussi au dashboard.
+ *
+ * Les tables ajoutées par la migration 004 sont optionnelles : si elle n'a pas
+ * encore été exécutée dans Supabase, le site utilise le contenu local pour ces
+ * nouvelles sections, mais continue à charger toutes les modifications faites
+ * dans les tables historiques (menu, infos, galerie, équipe, FAQ).
+ */
 export async function loadSiteContent(client: SupabaseClient): Promise<SiteContent> {
-  const [settingsResult, menuResult, galleryResult, brigadeResult, faqResult] =
-    await Promise.all([
-      client
-        .from('lns_site_settings')
-        .select('*')
-        .eq('id', 'main')
-        .maybeSingle<SettingsRow>(),
-      client
-        .from('lns_menu_items')
-        .select('*')
-        .order('sort_order', { ascending: true })
-        .returns<MenuRow[]>(),
-      client
-        .from('lns_gallery_items')
-        .select('*')
-        .order('sort_order', { ascending: true })
-        .returns<GalleryRow[]>(),
-      client
-        .from('lns_brigade_members')
-        .select('*')
-        .order('sort_order', { ascending: true })
-        .returns<BrigadeRow[]>(),
-      client
-        .from('lns_faq_items')
-        .select('*')
-        .order('sort_order', { ascending: true })
-        .returns<FaqRow[]>(),
-    ]);
+  const ordered = <T>(table: string) =>
+    client
+      .from(table)
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .returns<T[]>();
+
+  const optional = async <T>(table: string): Promise<OptionalRows<T>> => {
+    const { data, error } = await ordered<T>(table);
+    if (!error) return { rows: data ?? [], available: true };
+    if (isMissingTableError(error)) return { rows: [], available: false };
+    throw new Error(error.message);
+  };
+
+  const [
+    settingsResult,
+    menuResult,
+    galleryResult,
+    brigadeResult,
+    faqResult,
+    menuCategoriesResult,
+    dailySpecialsResult,
+    eventsResult,
+    eventCategoriesResult,
+  ] = await Promise.all([
+    client
+      .from('lns_site_settings')
+      .select('*')
+      .eq('id', 'main')
+      .maybeSingle<SettingsRow>(),
+    ordered<MenuRow>('lns_menu_items'),
+    ordered<GalleryRow>('lns_gallery_items'),
+    ordered<BrigadeRow>('lns_brigade_members'),
+    ordered<FaqRow>('lns_faq_items'),
+    optional<MenuCategoryRow>('lns_menu_categories'),
+    optional<DailySpecialRow>('lns_daily_specials'),
+    optional<EventRow>('lns_events'),
+    optional<EventCategoryRow>('lns_event_categories'),
+  ]);
 
   const firstError = [
     settingsResult.error,
@@ -400,12 +648,35 @@ export async function loadSiteContent(client: SupabaseClient): Promise<SiteConte
   if (!settingsResult.data) return DEFAULT_CONTENT;
 
   const menu = (menuResult.data ?? []).map(rowToMenuItem);
+  const menuCategories = menuCategoriesResult.available
+    ? menuCategoriesResult.rows.map(rowToMenuCategory)
+    : DEFAULT_CONTENT.menuCategories;
+  const dailySpecials = dailySpecialsResult.available
+    ? dailySpecialsResult.rows.map(rowToDailySpecial)
+    : DEFAULT_CONTENT.dailySpecials;
+  const eventCategories = eventCategoriesResult.available
+    ? eventCategoriesResult.rows.map(rowToEventCategory)
+    : DEFAULT_CONTENT.eventCategories;
+  const events = eventsResult.available
+    ? eventsResult.rows.map(rowToEvent)
+    : DEFAULT_CONTENT.events;
+  const categoryNames = new Map(
+    eventCategories.map((category) => [category.id, category.name]),
+  );
   const signatureFromMenu = menu
     .filter((item) => item.isSignature && item.isVisible !== false)
     .slice(0, 3);
   return {
     settings: rowToSettings(settingsResult.data),
     menu,
+    menuCategories,
+    dailySpecials,
+    events: events.map((event) => ({
+      ...event,
+      categoryLabel:
+        event.categoryLabel ?? categoryNames.get(event.categoryId ?? '') ?? '',
+    })),
+    eventCategories,
     signature:
       signatureFromMenu.length > 0 ? signatureFromMenu : DEFAULT_CONTENT.signature,
     gallery: (galleryResult.data ?? []).map(rowToGalleryItem),
@@ -413,6 +684,26 @@ export async function loadSiteContent(client: SupabaseClient): Promise<SiteConte
     faq: (faqResult.data ?? []).map(rowToFaqItem),
     reviews: DEFAULT_CONTENT.reviews,
   };
+}
+
+/**
+ * Tables nouvelles (migration 004) encore absentes de la base Supabase.
+ * Permet au dashboard d'afficher un avertissement au lieu d'échouer silencieusement.
+ */
+export async function getMissingContentTables(client: SupabaseClient): Promise<string[]> {
+  const tables = [
+    'lns_menu_categories',
+    'lns_daily_specials',
+    'lns_events',
+    'lns_event_categories',
+  ];
+  const results = await Promise.all(
+    tables.map((table) => client.from(table).select('id').limit(1)),
+  );
+  return tables.filter((_, index) => {
+    const error = results[index]?.error;
+    return Boolean(error && isMissingTableError(error));
+  });
 }
 
 /** Ajoute le contenu d'origine manquant, sans écraser les modifications existantes. */
@@ -424,6 +715,28 @@ export async function initializeSiteContent(client: SupabaseClient) {
       .upsert(settingsToRow(DEFAULT_CONTENT.settings), options),
     client.from('lns_menu_items').upsert(
       withRank(DEFAULT_CONTENT.menu).map((item) => menuItemToRow(item, item)),
+      options,
+    ),
+    client.from('lns_menu_categories').upsert(
+      withRank(DEFAULT_CONTENT.menuCategories).map((item) =>
+        menuCategoryToRow(item, item),
+      ),
+      options,
+    ),
+    client.from('lns_daily_specials').upsert(
+      withRank(DEFAULT_CONTENT.dailySpecials).map((item) =>
+        dailySpecialToRow(item, item),
+      ),
+      options,
+    ),
+    client.from('lns_events').upsert(
+      withRank(DEFAULT_CONTENT.events).map((item) => eventToRow(item, item)),
+      options,
+    ),
+    client.from('lns_event_categories').upsert(
+      withRank(DEFAULT_CONTENT.eventCategories).map((item) =>
+        eventCategoryToRow(item, item),
+      ),
       options,
     ),
     client.from('lns_gallery_items').upsert(
@@ -444,6 +757,54 @@ export async function initializeSiteContent(client: SupabaseClient) {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Applique la nouvelle carte (catégories, plats, plats du jour et événements)
+ * en écrasant les lignes correspondantes. Les photos, horaires et textes du
+ * restaurant ne sont pas modifiés.
+ */
+export async function importNewMenuContent(client: SupabaseClient) {
+  const options = { onConflict: 'id' } as const;
+  const operations = [
+    client.from('lns_menu_items').upsert(
+      withRank(DEFAULT_CONTENT.menu).map((item) => menuItemToRow(item, item)),
+      options,
+    ),
+    client.from('lns_menu_categories').upsert(
+      withRank(DEFAULT_CONTENT.menuCategories).map((item) =>
+        menuCategoryToRow(item, item),
+      ),
+      options,
+    ),
+    client.from('lns_daily_specials').upsert(
+      withRank(DEFAULT_CONTENT.dailySpecials).map((item) =>
+        dailySpecialToRow(item, item),
+      ),
+      options,
+    ),
+    client.from('lns_events').upsert(
+      withRank(DEFAULT_CONTENT.events).map((item) => eventToRow(item, item)),
+      options,
+    ),
+    client.from('lns_event_categories').upsert(
+      withRank(DEFAULT_CONTENT.eventCategories).map((item) =>
+        eventCategoryToRow(item, item),
+      ),
+      options,
+    ),
+  ];
+  const results = await Promise.all(operations);
+  const error = results.find((result) => result.error !== null)?.error;
+  if (error) throw new Error(error.message);
+
+  // Les anciens plats qui ne font plus partie de la carte sont masqués.
+  const ids = DEFAULT_CONTENT.menu.map((item) => item.id);
+  const { error: hideError } = await client
+    .from('lns_menu_items')
+    .update({ is_visible: false })
+    .not('id', 'in', `(${ids.join(',')})`);
+  if (hideError) throw new Error(hideError.message);
+}
+
 export async function saveSiteSettings(client: SupabaseClient, settings: SiteSettings) {
   const { error } = await client
     .from('lns_site_settings')
@@ -460,6 +821,63 @@ export async function saveMenuItem(client: SupabaseClient, item: MenuItem & Rank
 
 export async function deleteMenuItem(client: SupabaseClient, id: string) {
   const { error } = await client.from('lns_menu_items').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function saveMenuCategory(
+  client: SupabaseClient,
+  category: MenuCategory & Ranked,
+) {
+  const { error } = await client
+    .from('lns_menu_categories')
+    .upsert(menuCategoryToRow(category, category), { onConflict: 'id' });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteMenuCategory(client: SupabaseClient, id: string) {
+  const { error } = await client.from('lns_menu_categories').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function saveDailySpecial(
+  client: SupabaseClient,
+  special: DailySpecial & Ranked,
+) {
+  const { error } = await client
+    .from('lns_daily_specials')
+    .upsert(dailySpecialToRow(special, special), { onConflict: 'id' });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteDailySpecial(client: SupabaseClient, id: string) {
+  const { error } = await client.from('lns_daily_specials').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function saveEventCategory(
+  client: SupabaseClient,
+  category: EventCategory & Ranked,
+) {
+  const { error } = await client
+    .from('lns_event_categories')
+    .upsert(eventCategoryToRow(category, category), { onConflict: 'id' });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteEventCategory(client: SupabaseClient, id: string) {
+  const { error } = await client.from('lns_event_categories').delete().eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function saveEvent(client: SupabaseClient, event: EventItem & Ranked) {
+  const { error } = await client
+    .from('lns_events')
+    .upsert(eventToRow(event, event), { onConflict: 'id' });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteEvent(client: SupabaseClient, id: string) {
+  const { error } = await client.from('lns_events').delete().eq('id', id);
   if (error) throw new Error(error.message);
 }
 

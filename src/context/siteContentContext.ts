@@ -11,7 +11,8 @@ export interface SiteContentContextValue {
   loading: boolean;
   error: string | null;
   client: SupabaseClient | null;
-  refresh: () => Promise<void>;
+  /** strict=true remonte l'erreur à l'appelant (utilisé après un enregistrement). */
+  refresh: (strict?: boolean) => Promise<void>;
 }
 
 export const SiteContentContext = createContext<SiteContentContextValue | null>(null);

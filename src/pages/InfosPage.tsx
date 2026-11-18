@@ -68,7 +68,9 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
             <h2 className="font-display text-3xl font-semibold text-ink">
               {t('infos.accessTitle')}
             </h2>
-            <p className="text-sm text-ink-muted leading-relaxed">{t('infos.accessText')}</p>
+            <p className="text-sm text-ink-muted leading-relaxed">
+              {t('infos.accessText')}
+            </p>
             <div className="pt-2 flex flex-wrap items-center gap-4 text-sm">
               <a
                 href={info.directionsUrl}
@@ -90,11 +92,13 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
             <h2 className="font-display text-3xl font-semibold text-ink">
               {t('infos.takeawayTitle')}
             </h2>
-            <p className="text-sm text-ink-muted leading-relaxed">{t('infos.takeawayText')}</p>
+            <p className="text-sm text-ink-muted leading-relaxed">
+              {t('infos.takeawayText')}
+            </p>
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <a
                 href={info.phoneHref}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors tabular-nums"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-burgundy text-white text-sm font-medium hover:bg-burgundy-hover transition-colors tabular-nums"
               >
                 <Phone className="w-4 h-4" />
                 <span>{info.phoneDisplay}</span>
@@ -113,7 +117,9 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
         {/* Moyens de paiement */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-ink-muted">{t('infos.paymentKicker')}</p>
+            <p className="text-xs font-medium text-ink-muted">
+              {t('infos.paymentKicker')}
+            </p>
             <h2 className="font-display text-3xl font-semibold text-ink">
               {t('infos.paymentTitle')}
             </h2>
@@ -154,9 +160,7 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
                     onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
                     className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left hover:bg-canvas transition-colors cursor-pointer"
                   >
-                    <span className="text-base font-medium text-ink">
-                      {faq.question}
-                    </span>
+                    <span className="text-base font-medium text-ink">{faq.question}</span>
                     <ChevronDown
                       className={`w-5 h-5 text-ink-muted shrink-0 transition-transform duration-150 ${
                         isOpen ? 'rotate-180 text-ocean' : ''

@@ -9,13 +9,13 @@ export const inputClass =
   'w-full px-3 py-2 rounded-lg border border-line-strong bg-surface text-sm text-ink placeholder:text-ink-faint focus:outline-2 focus:outline-ocean';
 
 export const primaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-burgundy text-white text-sm font-medium hover:bg-burgundy-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const secondaryButtonClass =
   'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-line-strong bg-surface text-sm font-medium text-ink hover:bg-surface-alt transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const dangerButtonClass =
-  'inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-[#9B2C2C]/30 text-sm font-medium text-[#9B2C2C] hover:bg-[#9B2C2C]/8 transition-colors cursor-pointer';
+  'inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-burgundy/30 text-sm font-medium text-burgundy hover:bg-burgundy/8 transition-colors cursor-pointer';
 
 export function Field({
   label,
@@ -47,9 +47,9 @@ export function Notice({
   children: ReactNode;
 }) {
   const classes = {
-    info: 'bg-[#0F4C45]/8 border-[#0F4C45]/25 text-ocean',
-    error: 'bg-[#9B2C2C]/8 border-[#9B2C2C]/25 text-[#9B2C2C]',
-    success: 'bg-[#0F4C45]/8 border-ocean/30 text-ocean',
+    info: 'bg-burgundy/8 border-burgundy/25 text-ocean',
+    error: 'bg-burgundy/8 border-burgundy/25 text-burgundy',
+    success: 'bg-burgundy/8 border-ocean/30 text-ocean',
   }[tone];
   return (
     <div
@@ -77,10 +77,7 @@ export function ToggleRow({
   return (
     <div className="flex items-start justify-between gap-4 rounded-lg border border-line bg-surface px-4 py-3">
       <div className="space-y-0.5">
-        <label
-          htmlFor={id}
-          className="block text-sm font-medium text-ink cursor-pointer"
-        >
+        <label htmlFor={id} className="block text-sm font-medium text-ink cursor-pointer">
           {label}
         </label>
         {description && <p className="text-xs text-ink-muted">{description}</p>}
@@ -90,7 +87,7 @@ export function ToggleRow({
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="w-4 h-4 mt-0.5 accent-[#0F4C45] cursor-pointer"
+        className="w-4 h-4 mt-0.5 accent-burgundy cursor-pointer"
       />
     </div>
   );
@@ -132,10 +129,10 @@ export function ImageField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="https://… ou /chemin/local"
-          className={inputClass}
+          className={`${inputClass} flex-1 min-w-0`}
         />
         <label
-          className={`${secondaryButtonClass} whitespace-nowrap ${
+          className={`${secondaryButtonClass} shrink-0 whitespace-nowrap ${
             uploading ? 'opacity-50 cursor-wait' : ''
           }`}
         >
@@ -150,14 +147,10 @@ export function ImageField({
           />
         </label>
       </div>
-      {error && <p className="text-xs text-[#9B2C2C]">{error}</p>}
+      {error && <p className="text-xs text-burgundy">{error}</p>}
       {value && (
-        <div className="w-full max-w-sm aspect-[16/9] rounded-lg overflow-hidden border border-line bg-surface-muted">
-          <ResilientImage
-            src={value}
-            alt="Aperçu de l’image"
-            aspectClassName="aspect-[16/9]"
-          />
+        <div className="w-full max-w-sm rounded-lg overflow-hidden border border-line bg-surface-muted">
+          <ResilientImage src={value} alt="Aperçu de l’image" />
         </div>
       )}
     </div>

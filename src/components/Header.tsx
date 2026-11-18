@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Globe, Menu, Moon, Sun, X } from 'lucide-react';
+import { CalendarDays, Globe, Menu, Moon, Sun, X } from 'lucide-react';
 import type { PageId } from '../types';
 import { useLocale } from '../i18n/LocaleContext';
 import { LOCALES, LOCALE_META } from '../i18n/types';
@@ -18,8 +18,11 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
   const navLinks: { id: PageId; label: string }[] = [
     { id: 'accueil', label: t('nav.home') },
     { id: 'menu', label: t('nav.menu') },
+    { id: 'pizzas', label: t('nav.pizzas') },
+    { id: 'plats-du-jour', label: t('nav.dailySpecials') },
     { id: 'histoire', label: t('nav.history') },
     { id: 'galerie', label: t('nav.gallery') },
+    { id: 'evenements', label: t('nav.events') },
     { id: 'infos', label: t('nav.infos') },
   ];
 
@@ -38,16 +41,30 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
   }, [mobileOpen]);
 
   const LanguageSwitcher = ({ mobile = false }: { mobile?: boolean }) => (
-    <label
-      className={`inline-flex items-center gap-1.5 ${mobile ? 'w-full' : ''}`}
-    >
+    <label className={`inline-flex items-center gap-1.5 ${mobile ? 'w-full' : ''}`}>
       <Globe className="w-4 h-4 text-ink-muted" aria-hidden="true" />
-      <span className="sr-only">{locale === 'fr' ? 'Langue' : locale === 'ar' ? 'اللغة' : locale === 'sw' ? 'Lugha' : 'Language'}</span>
+      <span className="sr-only">
+        {locale === 'fr'
+          ? 'Langue'
+          : locale === 'ar'
+            ? 'اللغة'
+            : locale === 'sw'
+              ? 'Lugha'
+              : 'Language'}
+      </span>
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value as typeof locale)}
         className={`bg-surface border border-line-strong rounded-lg px-2 py-1.5 text-xs font-medium text-ink focus:outline-2 focus:outline-ocean cursor-pointer ${mobile ? 'flex-1' : ''}`}
-        aria-label={locale === 'fr' ? 'Choisir la langue' : locale === 'ar' ? 'اختر اللغة' : locale === 'sw' ? 'Chagua lugha' : 'Select language'}
+        aria-label={
+          locale === 'fr'
+            ? 'Choisir la langue'
+            : locale === 'ar'
+              ? 'اختر اللغة'
+              : locale === 'sw'
+                ? 'Chagua lugha'
+                : 'Select language'
+        }
       >
         {LOCALES.map((code) => (
           <option key={code} value={code}>
@@ -68,15 +85,15 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
             e.preventDefault();
             handleNav('accueil');
           }}
-          className="font-display text-2xl font-semibold tracking-tight text-ink whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ocean"
+          className="font-display text-xl sm:text-2xl font-semibold tracking-tight text-ink whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ocean"
         >
           Le New Select
         </a>
 
-        {/* Zone 2: 5 concise single-line text navigation links */}
+        {/* Zone 2: concise single-line text navigation links */}
         <nav
           aria-label={t('nav.mainAria')}
-          className="hidden lg:flex items-center gap-6"
+          className="hidden lg:flex items-center gap-3 xl:gap-5 min-w-0 overflow-x-auto no-scrollbar"
         >
           {navLinks.map((item) => {
             const isActive = activePage === item.id;
@@ -89,7 +106,7 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
                   handleNav(item.id);
                 }}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative py-1 text-sm font-medium whitespace-nowrap shrink-0 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ocean ${
+                className={`relative py-1 text-xs xl:text-sm font-medium whitespace-nowrap shrink-0 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ocean ${
                   isActive ? 'text-ocean' : 'text-ink-muted hover:text-ink'
                 }`}
               >
@@ -111,24 +128,32 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
             <button
               type="button"
               onClick={toggleTheme}
-              aria-label={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+              aria-label={
+                theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')
+              }
               title={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
               className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-line-strong bg-surface text-ink hover:bg-surface-alt transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
             </button>
             <LanguageSwitcher />
           </div>
           <button
             type="button"
             onClick={() => handleNav('reservation')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean ${
+            aria-label={t('nav.reservation')}
+            className={`inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean ${
               activePage === 'reservation'
                 ? 'bg-ink text-canvas'
-                : 'bg-[#0F4C45] text-white hover:bg-[#0B3A35]'
+                : 'bg-burgundy text-white hover:bg-burgundy-hover'
             }`}
           >
-            {t('nav.reservation')}
+            <CalendarDays className="w-4 h-4 sm:hidden" aria-hidden="true" />
+            <span className="hidden sm:inline">{t('nav.reservation')}</span>
           </button>
 
           <button
@@ -149,19 +174,25 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
         <nav
           id="navigation-mobile"
           aria-label={t('nav.mobileAria')}
-          className="lg:hidden border-t border-line bg-canvas px-4 py-3 space-y-2"
+          className="lg:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-line bg-canvas px-4 py-3 space-y-2"
         >
           <div className="pb-2 border-b border-line space-y-2">
             <button
               type="button"
               onClick={toggleTheme}
               className="w-full inline-flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-line-strong bg-surface text-ink hover:bg-surface-alt transition-colors cursor-pointer"
-              aria-label={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+              aria-label={
+                theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')
+              }
             >
               <span className="text-sm font-medium">
                 {theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
               </span>
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
             </button>
             <LanguageSwitcher mobile />
           </div>
@@ -177,9 +208,7 @@ export function Header({ activePage, onNavigate }: HeaderProps) {
                 }}
                 aria-current={isActive ? 'page' : undefined}
                 className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-ocean/10 text-ocean'
-                    : 'text-ink hover:bg-surface-alt'
+                  isActive ? 'bg-ocean/10 text-ocean' : 'text-ink hover:bg-surface-alt'
                 }`}
               >
                 {item.label}

@@ -93,9 +93,7 @@ export function GalleryPage() {
         {/* Header & Filter Bar */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line pb-8">
           <div className="space-y-2 max-w-2xl">
-            <p className="text-xs font-medium text-ocean">
-              {t('gallery.kicker')}
-            </p>
+            <p className="text-xs font-medium text-ocean">{t('gallery.kicker')}</p>
             <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink text-balance">
               {t('gallery.title')}
             </h1>
@@ -143,12 +141,8 @@ export function GalleryPage() {
               aria-label={t('common.enlargePhoto', { title: item.title })}
               className="group text-left bg-surface border border-line rounded-xl overflow-hidden transition-transform duration-150 hover:-translate-y-0.5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-surface-muted">
-                <ResilientImage
-                  src={item.image}
-                  alt={item.title}
-                  className="transition-transform duration-300 group-hover:scale-[1.02]"
-                />
+              <div className="overflow-hidden bg-surface-muted">
+                <ResilientImage src={item.image} alt={item.title} />
               </div>
               <div className="p-5 space-y-1.5">
                 <p className="text-xs text-ocean font-medium">{item.categoryLabel}</p>
@@ -165,33 +159,36 @@ export function GalleryPage() {
       {/* Lightbox Modal */}
       {activeLightboxItem && lightboxIndex !== null && (
         <div
+          ref={dialogRef}
           role="presentation"
-          className="fixed inset-0 z-50 bg-[#151A19]/90 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-50 bg-basalt/90 flex items-center justify-center p-4 sm:p-6"
           onClick={() => setLightboxIndex(null)}
         >
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              setLightboxIndex(null);
+            }}
+            aria-label={t('common.closePreview')}
+            className="absolute top-3 right-3 z-10 w-10 h-10 shrink-0 rounded-lg bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            <X className="w-5 h-5" />
+          </button>
           <div
-            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label={activeLightboxItem.title}
-            className="relative max-w-4xl w-full bg-surface rounded-xl overflow-hidden border border-line"
+            className="relative max-w-4xl w-full max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain bg-surface rounded-xl border border-line"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="aspect-[16/10] bg-[#151A19] relative">
+            <div className="relative w-fit max-w-full mx-auto bg-basalt">
               <ResilientImage
                 src={activeLightboxItem.image}
                 alt={activeLightboxItem.title}
-                aspectClassName="aspect-[16/10]"
+                imageClassName="block max-w-full max-h-[65dvh] w-auto h-auto object-contain"
               />
-              <button
-                ref={closeButtonRef}
-                type="button"
-                onClick={() => setLightboxIndex(null)}
-                aria-label={t('common.closePreview')}
-                className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
 
             <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

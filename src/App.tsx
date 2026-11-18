@@ -6,6 +6,7 @@ import { SiteContentProvider } from './context/SiteContentContext';
 import { useHashRoute } from './hooks/useHashRoute';
 import { LocaleProvider, useLocale } from './i18n/LocaleContext';
 import { ThemeProvider } from './theme/ThemeContext';
+import { EventsPage } from './pages/EventsPage';
 import { GalleryPage } from './pages/GalleryPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { HomePage } from './pages/HomePage';
@@ -38,7 +39,7 @@ function AppShell() {
       <button
         type="button"
         onClick={() => document.getElementById('contenu')?.focus()}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[#0F4C45] focus:text-white no-print focus:outline-2 focus:outline-offset-2 focus:outline-ink"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-burgundy focus:text-white no-print focus:outline-2 focus:outline-offset-2 focus:outline-ink"
       >
         {t('nav.skipToContent')}
       </button>
@@ -48,9 +49,22 @@ function AppShell() {
 
         <main id="contenu" className="flex-1" tabIndex={-1}>
           {page === 'accueil' && <HomePage onNavigate={navigate} />}
-          {page === 'menu' && <MenuPage onNavigate={navigate} />}
+          {(page === 'menu' || page === 'pizzas' || page === 'plats-du-jour') && (
+            <MenuPage
+              key={page}
+              onNavigate={navigate}
+              focus={
+                page === 'pizzas'
+                  ? 'pizzas'
+                  : page === 'plats-du-jour'
+                    ? 'daily-specials'
+                    : undefined
+              }
+            />
+          )}
           {page === 'histoire' && <HistoryPage onNavigate={navigate} />}
           {page === 'galerie' && <GalleryPage />}
+          {page === 'evenements' && <EventsPage onNavigate={navigate} />}
           {page === 'reservation' && <ReservationPage />}
           {page === 'infos' && <InfosPage onNavigate={navigate} />}
         </main>

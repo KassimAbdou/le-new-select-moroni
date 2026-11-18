@@ -7,13 +7,16 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-  --color-ocean: #0f4c45;
-  --color-ocean-hover: #0b3a35;
-  --color-basalt: #151a19;
-  --color-slate-ink: #4a5552;
-  --color-chalk: #f8f9f7;
-  --color-limestone: #f1f3ef;
-  --color-brass: #9a6b26;
+  /* Accent bordeaux : constant pour les boutons, éclairci en mode sombre pour le texte. */
+  --color-ocean: #7b1e2b;
+  --color-ocean-hover: #5d1621;
+  --color-burgundy: #7b1e2b;
+  --color-burgundy-hover: #5d1621;
+  --color-basalt: #2a0f15;
+  --color-slate-ink: #6b3a43;
+  --color-chalk: #fff7f8;
+  --color-limestone: #f9edf0;
+  --color-brass: #9c3a4a;
 
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
@@ -28,30 +31,39 @@
 
 :root {
   color-scheme: light;
-  --canvas: #f8f9f7;
+  --canvas: #ffffff;
   --surface: #ffffff;
-  --surface-alt: #f1f3ef;
-  --surface-muted: #ebf0eb;
-  --ink: #151a19;
-  --ink-muted: #4a5552;
-  --ink-faint: #8a948f;
-  --line: #e2e6df;
-  --line-strong: #d4dad0;
+  --surface-alt: #fbf3f4;
+  --surface-muted: #f7e8eb;
+  --ink: #2a0f15;
+  --ink-muted: #6b3a43;
+  --ink-faint: #a17a83;
+  --line: #f0dce0;
+  --line-strong: #e3c2c9;
 }
 
 .dark {
   color-scheme: dark;
-  --canvas: #0f1312;
-  --surface: #171c1b;
-  --surface-alt: #1e2422;
-  --surface-muted: #242b29;
-  --ink: #e8edeb;
-  --ink-muted: #a7b1ad;
-  --ink-faint: #7d8984;
-  --line: #2b3331;
-  --line-strong: #3a4441;
-  --color-ocean: #45c4a8;
-  --color-ocean-hover: #62d4bc;
+  --canvas: #1d0c10;
+  --surface: #251116;
+  --surface-alt: #2e171d;
+  --surface-muted: #381e25;
+  --ink: #fff5f6;
+  --ink-muted: #e2bcc4;
+  --ink-faint: #b89099;
+  --line: #47242d;
+  --line-strong: #5d343f;
+  --color-ocean: #f1a7b3;
+  --color-ocean-hover: #f7c8d0;
+  --color-brass: #f1a7b3;
+}
+
+/* Navigation dense : barre défilable sans barre de défilement visible. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @layer base {
@@ -60,11 +72,41 @@
     scroll-behavior: smooth;
   }
 
+  /* Une image ne doit jamais déborder de son cadre, quelle que soit sa taille. */
+  img,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+
+  /* Les textes longs (e-mails, adresses, noms) se cassent au lieu de déborder. */
+  body {
+    overflow-wrap: break-word;
+  }
+
+  /* Évite le double-tap qui zoome sur les boutons et liens tactiles. */
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
   h1,
   h2,
   h3,
   .font-display {
     font-family: var(--font-display);
+  }
+}
+
+/*
+ * iOS zoome automatiquement quand un champ fait moins de 16px.
+ * Sur téléphone, on garde donc une taille lisible sans zoom forcé.
+ */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }
 

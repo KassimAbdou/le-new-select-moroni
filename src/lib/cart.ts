@@ -1,4 +1,4 @@
-import type { MenuItem } from '../types';
+import type { MenuItem, PriceOption } from '../types';
 import type { Locale } from '../i18n/types';
 import { formatKmf } from './format';
 
@@ -13,24 +13,29 @@ export interface CartLine {
   priceKmf: number;
   quantity: number;
   moment: MenuItem['moment'];
+  /** Ex. : « 33 cm » ou « GM » pour un plat décliné en plusieurs prix. */
+  optionLabel?: string;
 }
 
 export type Cart = CartLine[];
 
 /** Ajoute un plat au panier, ou incrémente sa quantité s'il est déjà présent. */
-export function addToCart(cart: Cart, item: MenuItem): Cart {
-  if (cart.some((line) => line.id === item.id)) {
-    return changeQuantity(cart, item.id, 1);
+export function addToCart(cart: Cart, item: MenuItem, option?: PriceOption): Cart {
+  const id = option ? `${item.id}::${option.label}` : item.id;
+  const name = option ? `${item.name} (${option.label})` : item.name;
+  if (cart.some((line) => line.id === id)) {
+    return changeQuantity(cart, id, 1);
   }
 
   return [
     ...cart,
     {
-      id: item.id,
-      name: item.name,
-      priceKmf: item.priceKmf,
+      id,
+      name,
+      priceKmf: option?.priceKmf ?? item.priceKmf,
       quantity: 1,
       moment: item.moment,
+      optionLabel: option?.label,
     },
   ];
 }

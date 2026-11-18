@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import App from './App';
 
@@ -24,6 +24,20 @@ describe('application', () => {
     ).toBeInTheDocument();
     expect(window.location.hash).toBe('#reservation');
     expect(document.title).toContain('Réservation');
+  });
+
+  it('donne un accès direct aux pizzas et aux plats du jour depuis le header', () => {
+    render(<App />);
+    const header = within(screen.getByRole('banner'));
+
+    fireEvent.click(header.getByRole('link', { name: 'Pizzas' }));
+    expect(window.location.hash).toBe('#pizzas');
+    expect(document.title).toContain('Pizzas');
+    expect(document.getElementById('menu-pizzas')).not.toBeNull();
+
+    fireEvent.click(header.getByRole('link', { name: 'Plats du jour' }));
+    expect(window.location.hash).toBe('#plats-du-jour');
+    expect(document.getElementById('menu-daily-specials')).not.toBeNull();
   });
 
   it('suit les changements d’URL et les événements du navigateur', () => {

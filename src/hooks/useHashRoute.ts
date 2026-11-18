@@ -7,8 +7,11 @@ export type RouteId = PageId | 'admin';
 export const PAGES: readonly PageId[] = [
   'accueil',
   'menu',
+  'pizzas',
+  'plats-du-jour',
   'histoire',
   'galerie',
+  'evenements',
   'reservation',
   'infos',
 ];

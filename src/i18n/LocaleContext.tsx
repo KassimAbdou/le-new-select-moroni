@@ -45,7 +45,10 @@ function getByPath(obj: unknown, path: string): unknown {
   }, obj);
 }
 
-const META: Record<Locale, { description: string; ogTitle: string; ogDescription: string; ogLocale: string }> = {
+const META: Record<
+  Locale,
+  { description: string; ogTitle: string; ogDescription: string; ogLocale: string }
+> = {
   fr: {
     description:
       "Le New Select à Moroni, Place de France. Cuisine française et européenne au cœur des Comores : terrasse ombragée, salle climatisée, poissons de l'océan Indien et réservations.",
@@ -80,7 +83,11 @@ const META: Record<Locale, { description: string; ogTitle: string; ogDescription
   },
 };
 
-function setMeta(selector: string, content: string, attr: 'content' | 'href' = 'content') {
+function setMeta(
+  selector: string,
+  content: string,
+  attr: 'content' | 'href' = 'content',
+) {
   const el = document.head.querySelector(selector);
   if (el) el.setAttribute(attr, content);
 }

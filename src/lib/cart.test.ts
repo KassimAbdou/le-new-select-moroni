@@ -54,4 +54,22 @@ describe('panier', () => {
     expect(message).toContain('7 500 KMF');
     expect(message).toContain('Total : 10 500 KMF');
   });
+
+  it('distingue les options de prix dans le panier', () => {
+    const pizza: MenuItem = {
+      ...dish,
+      id: 'pizza-test',
+      name: 'Pizza test',
+      priceKmf: 2750,
+    };
+    const small = { label: '26 cm', priceKmf: 2750 };
+    const large = { label: '33 cm', priceKmf: 4000 };
+    const cart = addToCart(addToCart([], pizza, small), pizza, large);
+
+    expect(cart).toHaveLength(2);
+    expect(cart[0]?.id).toBe('pizza-test::26 cm');
+    expect(cart[0]?.name).toBe('Pizza test (26 cm)');
+    expect(getCartTotal(cart)).toBe(6750);
+    expect(buildOrderMessage(cart)).toContain('Pizza test (33 cm)');
+  });
 });

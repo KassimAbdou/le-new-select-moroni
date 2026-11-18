@@ -3,7 +3,7 @@ import type { Locale } from '../i18n/types';
 import type { Cart } from './cart';
 import { supabase } from './supabase';
 
-export type ClientRecordKind = 'order' | 'reservation';
+export type ClientRecordKind = 'order' | 'reservation' | 'ticket';
 
 export interface ClientRecord {
   id: string;
@@ -124,7 +124,7 @@ function isMissingTableError(message: string): boolean {
   return (
     m.includes('schema cache') ||
     m.includes('could not find the table') ||
-    m.includes('relation') && m.includes('does not exist') ||
+    (m.includes('relation') && m.includes('does not exist')) ||
     m.includes('42p01')
   );
 }

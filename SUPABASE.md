@@ -40,6 +40,35 @@ Il crée uniquement :
 
 Il active aussi la RLS : lecture publique des éléments visibles, écriture réservée aux administrateurs, ajout des tables au canal Realtime. Les policies de storage filtrent toutes sur `bucket_id = 'lns-media'`.
 
+### Migration 004 — nouvelle carte, plats du jour et événements
+
+Exécuter ensuite :
+
+```text
+supabase/migrations/004_lns_menu_events.sql
+```
+
+Cette migration est **non destructive** : elle ajoute `category_id` et `price_options` à `lns_menu_items`, puis crée quatre tables avec les mêmes règles RLS/Realtime que les précédentes. Elle ajoute aussi les colonnes de billetterie (`ticket_price_kmf`, `tickets_available`, `ticket_sale_points`, `ticketing_url`) à `lns_events` :
+
+| Table                  | Rôle                                                    |
+| ---------------------- | ------------------------------------------------------- |
+| `lns_menu_categories`  | Catégories de la carte, éditables depuis le dashboard   |
+| `lns_daily_specials`   | Plats du jour avec dates de début/fin                   |
+| `lns_event_categories` | Catégories d'événements, ajoutables depuis le dashboard |
+| `lns_events`           | Événements, festivités et cérémonies                    |
+
+Sans cette migration, le site continue d'afficher vos modifications des tables existantes (carte, infos, galerie, équipe, FAQ) et utilise le contenu livré uniquement pour les nouvelles sections. Le dashboard affiche un avertissement avec la liste des tables manquantes ; les nouveaux onglets ne peuvent pas enregistrer leurs données tant que la migration n'est pas exécutée.
+
+### Migration 005 — réservations de billets
+
+Exécuter ensuite :
+
+```text
+supabase/migrations/005_lns_ticket_records.sql
+```
+
+Elle autorise le type `ticket` dans `lns_client_records` : sans elle, une réservation de billets est refusée par la contrainte `kind in ('order', 'reservation')`.
+
 ## 3. Créer le compte propriétaire
 
 1. Supabase → **Authentication → Users → Add user** : créer le compte avec e-mail et mot de passe.
@@ -55,7 +84,14 @@ on conflict (user_id) do nothing;
 
 ## 4. Première utilisation
 
-Dans le dashboard, onglet **Tableau de bord**, cliquer sur **Importer le contenu manquant** : la carte actuelle, la galerie, l'équipe, la FAQ et les informations sont ajoutées dans Supabase. Le bouton n'écrase jamais une modification déjà enregistrée. Ensuite, modifier un plat, un prix ou une photo : la modification est visible immédiatement sur le site public, sans rechargement.
+Dans le dashboard, onglet **Tableau de bord** :
+
+- **Importer le contenu manquant** ajoute les données absentes sans jamais écraser une modification existante.
+- **Appliquer la nouvelle carte** remplace la carte, ses catégories, les plats du jour et les événements par la version livrée dans le projet, et masque les anciens plats. À utiliser une seule fois, après la migration 004. Les photos téléversées et les coordonnées du restaurant ne sont pas touchées.
+
+Ensuite, modifier un plat, un prix ou une photo : la modification est visible immédiatement sur le site public, sans rechargement. Les nouveaux onglets **Catégories du menu**, **Plats du jour** et **Événements** permettent notamment d'ajouter une catégorie d'événement au moment de créer un événement.
+
+Pour la billetterie, renseigner sur chaque événement le **prix d'un billet**, le **nombre de places**, les **points de vente** et, si besoin, un **lien de billetterie en ligne**. Le bouton « Réserver des billets » de la page Événements ouvre un formulaire : la demande apparaît dans l'onglet **Clients** du dashboard avec la référence, la quantité et le total, puis le client finalise sur WhatsApp. Les photos d'affiches sont affichées en entier (sans recadrage).
 
 Le bouton **Masquer** retire temporairement un élément du site sans le supprimer ; **Supprimer** le retire définitivement de Supabase.
 

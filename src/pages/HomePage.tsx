@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { ArrowRight, MapPin, Phone, Star, StarHalf, UtensilsCrossed } from 'lucide-react';
 import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { useLocale } from '../i18n/LocaleContext';
+import { formatSpecialPeriod, getActiveDailySpecials } from '../lib/dailySpecials';
+import { formatEventDate, getUpcomingEvents } from '../lib/events';
 import { formatKmf } from '../lib/format';
-import type { PageId } from '../types';
+import type { EventItem, PageId } from '../types';
 import { ResilientImage } from '../components/ResilientImage';
+import { ImageLightbox } from '../components/ImageLightbox';
 
 interface HomePageProps {
   onNavigate: (page: PageId) => void;
@@ -14,6 +18,14 @@ export function HomePage({ onNavigate }: HomePageProps) {
   const { t } = useLocale();
   const { info, heroImage } = content.settings;
   const signatureDishes = content.signature.filter((dish) => dish.isVisible !== false);
+  const dailySpecials = getActiveDailySpecials(content.dailySpecials).slice(0, 2);
+  // Tous les événements à venir sont affichés : aucun ajout du propriétaire
+  // ne doit passer inaperçu auprès des passants.
+  const upcomingEvents = getUpcomingEvents(content.events);
+  const eventCategories = content.eventCategories.filter(
+    (category) => category.isVisible !== false,
+  );
+  const [photoEvent, setPhotoEvent] = useState<EventItem | null>(null);
 
   return (
     <div className="space-y-20 pb-20">
@@ -39,7 +51,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 <button
                   type="button"
                   onClick={() => onNavigate('menu')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-burgundy text-white text-sm font-medium hover:bg-burgundy-hover transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
                 >
                   <UtensilsCrossed className="w-4 h-4" />
                   <span>{t('home.viewMenuBtn')}</span>
@@ -66,12 +78,11 @@ export function HomePage({ onNavigate }: HomePageProps) {
             </div>
 
             <div className="lg:col-span-6">
-              <div className="relative h-full min-h-[280px] lg:min-h-[420px] rounded-xl overflow-hidden border border-line bg-surface-muted">
+              <div className="relative w-fit max-w-full rounded-xl overflow-hidden border border-line bg-surface-muted">
                 <ResilientImage
                   src={heroImage}
                   alt={t('home.heroAlt')}
-                  aspectClassName="aspect-[16/9] lg:aspect-auto lg:h-full"
-                  className="lg:h-full"
+                  imageClassName="block max-w-full max-h-[520px] w-auto h-auto object-contain"
                   priority
                 />
               </div>
@@ -88,15 +99,11 @@ export function HomePage({ onNavigate }: HomePageProps) {
             </div>
             <div className="p-5 space-y-1">
               <p className="text-xs text-ink-muted">{t('home.outdoorLabel')}</p>
-              <p className="text-sm font-semibold text-ink">
-                {t('home.outdoorValue')}
-              </p>
+              <p className="text-sm font-semibold text-ink">{t('home.outdoorValue')}</p>
             </div>
             <div className="p-5 space-y-1">
               <p className="text-xs text-ink-muted">{t('home.indoorLabel')}</p>
-              <p className="text-sm font-semibold text-ink">
-                {t('home.indoorValue')}
-              </p>
+              <p className="text-sm font-semibold text-ink">{t('home.indoorValue')}</p>
             </div>
             <div className="p-5 space-y-1">
               <p className="text-xs text-ink-muted">{t('home.reservationLabel')}</p>
@@ -139,7 +146,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 key={dish.id}
                 className="group flex flex-col bg-surface border border-line rounded-xl overflow-hidden transition-transform duration-150 hover:-translate-y-0.5"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-surface-muted">
+                <div className="overflow-hidden bg-surface-muted">
                   <ResilientImage
                     src={dish.image || heroImage}
                     alt={`${dish.name} — Le New Select Moroni`}
@@ -177,6 +184,184 @@ export function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </section>
 
+      {/* Plats du jour en cours */}
+      <section aria-labelledby="daily-special-home-heading">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-line pb-5">
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-ink-muted">
+                {t('home.dailySpecialKicker')}
+              </p>
+              <h2
+                id="daily-special-home-heading"
+                className="font-display text-3xl md:text-4xl font-semibold text-ink text-balance"
+              >
+                {t('home.dailySpecialTitle')}
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('menu')}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-ocean hover:text-ocean-hover transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              <span>{t('home.dailySpecialAll')}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {dailySpecials.length === 0 ? (
+            <p className="text-sm text-ink-muted leading-relaxed rounded-xl bg-surface border border-dashed border-line-strong p-6">
+              {t('menu.noDailySpecial')}
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+              {dailySpecials.map((special) => {
+                const period = formatSpecialPeriod(special);
+                return (
+                  <article
+                    key={special.id}
+                    className="group flex flex-col bg-surface border border-line rounded-xl overflow-hidden transition-transform duration-150 hover:-translate-y-0.5"
+                  >
+                    <div className="overflow-hidden bg-surface-muted">
+                      <ResilientImage
+                        src={special.image ?? heroImage}
+                        alt={special.dishName}
+                      />
+                    </div>
+                    <div className="p-6 flex-1 flex flex-col gap-3">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                        <span className="font-semibold text-ocean">{special.title}</span>
+                        {period && <span className="text-ink-muted">{period}</span>}
+                      </div>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h3 className="font-display text-2xl font-semibold text-ink leading-snug">
+                          {special.dishName}
+                        </h3>
+                        <span className="text-sm font-semibold text-ocean tabular-nums whitespace-nowrap shrink-0">
+                          {formatKmf(special.priceKmf)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-ink-muted leading-relaxed">
+                        {special.description}
+                      </p>
+                      <div className="pt-3 mt-auto border-t border-surface-alt flex items-center justify-between gap-3">
+                        <span className="text-xs text-ink-muted">
+                          {special.availability ?? t('common.accordingToArrival')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onNavigate('menu')}
+                          className="font-medium text-ocean hover:underline cursor-pointer shrink-0"
+                        >
+                          {t('home.viewMenuBtn')}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Événements à venir */}
+      <section aria-labelledby="home-events-heading">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-line pb-5">
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-ink-muted">
+                {t('home.eventsKicker')}
+              </p>
+              <h2
+                id="home-events-heading"
+                className="font-display text-3xl md:text-4xl font-semibold text-ink text-balance"
+              >
+                {t('home.eventsTitle')}
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('evenements')}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-ocean hover:text-ocean-hover transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              <span>{t('home.eventsAll')}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {upcomingEvents.length === 0 ? (
+            <p className="text-sm text-ink-muted leading-relaxed rounded-xl bg-surface border border-dashed border-line-strong p-6">
+              {t('home.eventsEmpty')}
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
+              {upcomingEvents.map((event, eventIndex) => {
+                const categoryLabel =
+                  event.categoryLabel ||
+                  eventCategories.find((category) => category.id === event.categoryId)
+                    ?.name ||
+                  '';
+                const details = [event.time, event.location]
+                  .filter((detail): detail is string => Boolean(detail))
+                  .join(' · ');
+
+                return (
+                  <article
+                    key={event.id}
+                    className="group flex flex-col bg-surface border border-line rounded-xl overflow-hidden transition-transform duration-150 hover:-translate-y-0.5"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setPhotoEvent(event)}
+                      aria-label={t('common.enlargePhoto', { title: event.title })}
+                      className="block w-full bg-surface-muted overflow-hidden cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ocean"
+                    >
+                      <ResilientImage
+                        src={event.image ?? heroImage}
+                        alt={event.title}
+                        fit="contain"
+                      />
+                    </button>
+                    <div className="p-6 flex-1 flex flex-col gap-3">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                        {eventIndex === 0 && (
+                          <span className="uppercase tracking-wide bg-ocean text-white font-semibold px-2 py-0.5 rounded">
+                            {t('home.eventsNextBadge')}
+                          </span>
+                        )}
+                        <span className="font-semibold text-ocean tabular-nums">
+                          {formatEventDate(event)}
+                        </span>
+                        {categoryLabel && (
+                          <span className="text-ink-muted">{categoryLabel}</span>
+                        )}
+                      </div>
+                      <h3 className="font-display text-xl font-semibold text-ink leading-snug">
+                        {event.title}
+                      </h3>
+                      <p className="text-sm text-ink-muted leading-relaxed line-clamp-3">
+                        {event.description}
+                      </p>
+                      <div className="pt-3 mt-auto border-t border-surface-alt flex items-center justify-between gap-3">
+                        <span className="text-xs text-ink-muted">{details}</span>
+                        <button
+                          type="button"
+                          onClick={() => onNavigate('evenements')}
+                          className="font-medium text-ocean hover:underline cursor-pointer shrink-0"
+                        >
+                          {t('home.eventsAll')}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Avis clients certifiés TripAdvisor */}
       <section aria-labelledby="avis-tripadvisor-heading">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -196,7 +381,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
               <div className="flex items-center gap-3 text-sm text-ink">
                 <div
-                  className="flex items-center gap-0.5 text-[#9A6B26]"
+                  className="flex items-center gap-0.5 text-brass"
                   aria-label={t('home.avgRatingAria')}
                 >
                   <Star className="w-4 h-4 fill-current" aria-hidden="true" />
@@ -220,7 +405,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-2 text-xs text-ink-muted">
                       <span>{review.date}</span>
-                      <span className="text-[#9A6B26] font-medium tabular-nums">
+                      <span className="text-brass font-medium tabular-nums">
                         {review.rating}/5
                       </span>
                     </div>
@@ -233,9 +418,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                   </div>
 
                   <div className="pt-4 border-t border-surface-alt space-y-0.5">
-                    <p className="text-sm font-semibold text-ink">
-                      {review.author}
-                    </p>
+                    <p className="text-sm font-semibold text-ink">{review.author}</p>
                     <p className="text-xs text-ink-muted">
                       {review.origin} · {review.context}
                     </p>
@@ -246,6 +429,14 @@ export function HomePage({ onNavigate }: HomePageProps) {
           </div>
         </div>
       </section>
+
+      {photoEvent && (
+        <ImageLightbox
+          image={photoEvent.image ?? heroImage}
+          title={photoEvent.title}
+          onClose={() => setPhotoEvent(null)}
+        />
+      )}
     </div>
   );
 }

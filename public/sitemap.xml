@@ -11,6 +11,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://lenewselect-moroni.km/#pizzas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lenewselect-moroni.km/#plats-du-jour</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://lenewselect-moroni.km/#histoire</loc>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
@@ -19,6 +29,11 @@
     <loc>https://lenewselect-moroni.km/#galerie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://lenewselect-moroni.km/#evenements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://lenewselect-moroni.km/#reservation</loc>

@@ -14,9 +14,21 @@ export function HistoryPage({ onNavigate }: HistoryPageProps) {
   const brigade = content.brigade.filter((member) => member.isVisible !== false);
 
   const pillars = [
-    { number: '01.', title: t('history.pillars.0.title'), description: t('history.pillars.0.description') },
-    { number: '02.', title: t('history.pillars.1.title'), description: t('history.pillars.1.description') },
-    { number: '03.', title: t('history.pillars.2.title'), description: t('history.pillars.2.description') },
+    {
+      number: '01.',
+      title: t('history.pillars.0.title'),
+      description: t('history.pillars.0.description'),
+    },
+    {
+      number: '02.',
+      title: t('history.pillars.1.title'),
+      description: t('history.pillars.1.description'),
+    },
+    {
+      number: '03.',
+      title: t('history.pillars.2.title'),
+      description: t('history.pillars.2.description'),
+    },
   ];
 
   return (
@@ -26,9 +38,7 @@ export function HistoryPage({ onNavigate }: HistoryPageProps) {
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
           <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <p className="text-xs font-medium text-ocean">
-                {t('history.kicker')}
-              </p>
+              <p className="text-xs font-medium text-ocean">{t('history.kicker')}</p>
               <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink leading-[1.1] text-balance">
                 {t('history.title')}
               </h1>
@@ -42,7 +52,7 @@ export function HistoryPage({ onNavigate }: HistoryPageProps) {
               <button
                 type="button"
                 onClick={() => onNavigate('reservation')}
-                className="px-5 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                className="px-5 py-2.5 rounded-lg bg-burgundy text-white text-sm font-medium hover:bg-burgundy-hover transition-colors whitespace-nowrap shrink-0 cursor-pointer"
               >
                 {t('common.bookTable')}
               </button>
@@ -57,13 +67,8 @@ export function HistoryPage({ onNavigate }: HistoryPageProps) {
           </div>
 
           <div className="lg:col-span-6">
-            <div className="h-full min-h-[280px] rounded-xl overflow-hidden border border-line bg-surface-muted">
-              <ResilientImage
-                src={IMAGES.salle}
-                alt={t('history.heroAlt')}
-                aspectClassName="aspect-[4/3] lg:aspect-auto lg:h-full"
-                className="lg:h-full"
-              />
+            <div className="rounded-xl overflow-hidden border border-line bg-surface-muted">
+              <ResilientImage src={IMAGES.salle} alt={t('history.heroAlt')} />
             </div>
           </div>
         </section>
@@ -71,7 +76,9 @@ export function HistoryPage({ onNavigate }: HistoryPageProps) {
         {/* Three Foundations */}
         <section className="border-t border-line pt-12 space-y-8">
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-ink-muted">{t('history.pillarsKicker')}</p>
+            <p className="text-xs font-medium text-ink-muted">
+              {t('history.pillarsKicker')}
+            </p>
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink">
               {t('history.pillarsTitle')}
             </h2>

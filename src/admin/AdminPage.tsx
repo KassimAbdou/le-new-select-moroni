@@ -1,15 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, CheckCircle2, Globe, LogOut, Moon, ShieldCheck, Sun } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Globe,
+  LogOut,
+  Moon,
+  ShieldCheck,
+  Sun,
+} from 'lucide-react';
 import { useSiteContent } from '../hooks/useSiteContent';
 import { SUPABASE_URL, isSupabaseConfigured } from '../lib/supabase';
 import type { PageId } from '../types';
 import {
   BrigadeEditor,
   ClientRecordsEditor,
+  DailySpecialsEditor,
   DashboardOverview,
+  EventsEditor,
   FaqEditor,
   GalleryEditor,
   MediaLibrary,
+  MenuCategoriesEditor,
   MenuEditor,
   SettingsEditor,
 } from './AdminEditors';
@@ -19,33 +30,64 @@ import { useLocale } from '../i18n/LocaleContext';
 import { useTheme } from '../theme/ThemeContext';
 import { LOCALES, LOCALE_META } from '../i18n/types';
 
-type Tab = 'tableau' | 'plats' | 'infos' | 'galerie' | 'equipe' | 'faq' | 'medias' | 'clients';
+type Tab =
+  | 'tableau'
+  | 'plats'
+  | 'menuCategories'
+  | 'dailySpecials'
+  | 'evenements'
+  | 'infos'
+  | 'galerie'
+  | 'equipe'
+  | 'faq'
+  | 'medias'
+  | 'clients';
 
-const TAB_IDS: Tab[] = ['tableau', 'plats', 'infos', 'galerie', 'equipe', 'faq', 'medias', 'clients'];
+const TAB_IDS: Tab[] = [
+  'tableau',
+  'plats',
+  'menuCategories',
+  'dailySpecials',
+  'evenements',
+  'infos',
+  'galerie',
+  'equipe',
+  'faq',
+  'medias',
+  'clients',
+];
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   const { locale, setLocale, t } = useLocale();
   const { theme, toggleTheme } = useTheme();
   return (
     <div className="min-h-screen bg-canvas text-ink">
-      <header className="bg-[#151A19] text-white">
+      <header className="bg-basalt text-white">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-2 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="w-5 h-5 text-[#8FC7B8]" aria-hidden="true" />
+            <ShieldCheck className="w-5 h-5 text-white/80" aria-hidden="true" />
             <span className="font-display text-xl font-semibold">
               Le New Select{' '}
-              <span className="text-white/60 font-sans text-sm">· {t('dashboard.title')}</span>
+              <span className="text-white/60 font-sans text-sm">
+                · {t('dashboard.title')}
+              </span>
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={toggleTheme}
-              aria-label={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+              aria-label={
+                theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')
+              }
               title={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
               className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-white/20 bg-white/5 text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4" aria-hidden="true" />
+              ) : (
+                <Moon className="w-4 h-4" aria-hidden="true" />
+              )}
             </button>
             <label className="inline-flex items-center gap-1.5">
               <Globe className="w-4 h-4 text-white/70" aria-hidden="true" />
@@ -89,7 +131,9 @@ function SetupScreen() {
         <div className="mt-6 space-y-5">
           <Notice>{t('dashboard.setup.notice')}</Notice>
           <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
-            <p className="text-sm font-medium text-ink">{t('dashboard.setup.varsTitle')}</p>
+            <p className="text-sm font-medium text-ink">
+              {t('dashboard.setup.varsTitle')}
+            </p>
             <pre className="bg-surface-alt rounded-lg p-4 text-xs overflow-x-auto">
               {`VITE_SUPABASE_URL=${SUPABASE_URL}\nVITE_SUPABASE_ANON_KEY=la_cle_anon_du_projet`}
             </pre>
@@ -121,7 +165,9 @@ function LoginScreen({
       <main className="max-w-md mx-auto px-4 py-14">
         <div className="bg-surface border border-line rounded-xl p-7 space-y-6">
           <div className="space-y-2">
-            <p className="text-xs font-medium text-ocean">{t('dashboard.login.kicker')}</p>
+            <p className="text-xs font-medium text-ocean">
+              {t('dashboard.login.kicker')}
+            </p>
             <h1 className="font-display text-3xl font-semibold text-ink">
               {t('dashboard.login.title')}
             </h1>
@@ -236,18 +282,47 @@ export default function AdminPage({
         live={live}
         error={error}
         onNavigate={onNavigate}
-        onChanged={refresh}
+        onChanged={() => refresh(true)}
         notify={notify}
       />
     ),
     plats: (
-      <MenuEditor client={client} content={content} onChanged={refresh} notify={notify} />
+      <MenuEditor
+        client={client}
+        content={content}
+        onChanged={() => refresh(true)}
+        notify={notify}
+      />
+    ),
+    menuCategories: (
+      <MenuCategoriesEditor
+        client={client}
+        content={content}
+        onChanged={() => refresh(true)}
+        notify={notify}
+      />
+    ),
+    dailySpecials: (
+      <DailySpecialsEditor
+        client={client}
+        content={content}
+        onChanged={() => refresh(true)}
+        notify={notify}
+      />
+    ),
+    evenements: (
+      <EventsEditor
+        client={client}
+        content={content}
+        onChanged={() => refresh(true)}
+        notify={notify}
+      />
     ),
     infos: (
       <SettingsEditor
         client={client}
         content={content}
-        onChanged={refresh}
+        onChanged={() => refresh(true)}
         notify={notify}
       />
     ),
@@ -255,7 +330,7 @@ export default function AdminPage({
       <GalleryEditor
         client={client}
         content={content}
-        onChanged={refresh}
+        onChanged={() => refresh(true)}
         notify={notify}
       />
     ),
@@ -263,12 +338,17 @@ export default function AdminPage({
       <BrigadeEditor
         client={client}
         content={content}
-        onChanged={refresh}
+        onChanged={() => refresh(true)}
         notify={notify}
       />
     ),
     faq: (
-      <FaqEditor client={client} content={content} onChanged={refresh} notify={notify} />
+      <FaqEditor
+        client={client}
+        content={content}
+        onChanged={() => refresh(true)}
+        notify={notify}
+      />
     ),
     medias: <MediaLibrary client={client} notify={notify} />,
     clients: <ClientRecordsEditor client={client} notify={notify} />,
@@ -277,6 +357,9 @@ export default function AdminPage({
   const tabLabels: Record<Tab, string> = {
     tableau: t('dashboard.tabs.overview'),
     plats: t('dashboard.tabs.dishes'),
+    menuCategories: t('dashboard.tabs.menuCategories'),
+    dailySpecials: t('dashboard.tabs.dailySpecials'),
+    evenements: t('dashboard.tabs.events'),
     infos: t('dashboard.tabs.info'),
     galerie: t('dashboard.tabs.gallery'),
     equipe: t('dashboard.tabs.team'),
@@ -289,27 +372,32 @@ export default function AdminPage({
     <AdminLayout>
       <div className="border-b border-line bg-surface">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <nav aria-label={t('dashboard.title')} className="flex flex-wrap gap-1 py-3">
-            {TAB_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setTab(id)}
-                aria-current={tab === id ? 'page' : undefined}
-                className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                  tab === id
-                    ? 'bg-ocean/10 text-ocean'
-                    : 'text-ink-muted hover:bg-surface-alt'
-                }`}
-              >
-                {tabLabels[id]}
-              </button>
-            ))}
+          <nav
+            aria-label={t('dashboard.title')}
+            className="-mx-4 overflow-x-auto px-4 py-3 sm:mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <div className="flex w-max gap-1 sm:w-auto sm:flex-wrap">
+              {TAB_IDS.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setTab(id)}
+                  aria-current={tab === id ? 'page' : undefined}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
+                    tab === id
+                      ? 'bg-ocean/10 text-ocean'
+                      : 'text-ink-muted hover:bg-surface-alt'
+                  }`}
+                >
+                  {tabLabels[id]}
+                </button>
+              ))}
+            </div>
           </nav>
           <div className="flex items-center gap-3 py-3 text-xs text-ink-muted">
             <span className="inline-flex items-center gap-1.5">
               <span
-                className={`w-2 h-2 rounded-full ${live ? 'bg-ocean' : 'bg-[#9A6B26]'}`}
+                className={`w-2 h-2 rounded-full ${live ? 'bg-ocean' : 'bg-brass'}`}
                 aria-hidden="true"
               />
               {live ? t('dashboard.status.live') : t('dashboard.status.local')}
@@ -326,19 +414,27 @@ export default function AdminPage({
         </div>
       </div>
 
-      <main className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {toast && (
-          <div className="mb-6">
-            <Notice tone={toast.tone}>
-              <span className="inline-flex items-center gap-2">
-                {toast.tone === 'success' && (
-                  <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
-                )}
-                {toast.message}
-              </span>
-            </Notice>
-          </div>
-        )}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 sm:max-w-sm"
+        >
+          <Notice tone={toast.tone}>
+            <span className="inline-flex items-center gap-2">
+              {toast.tone === 'success' && (
+                <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+              )}
+              {toast.message}
+            </span>
+          </Notice>
+        </div>
+      )}
+
+      <main
+        className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10"
+        onInvalidCapture={() => notify(t('dashboard.editors.errorValidation'), 'error')}
+      >
         {editors[tab]}
       </main>
     </AdminLayout>

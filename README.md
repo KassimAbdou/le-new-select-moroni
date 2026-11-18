@@ -13,7 +13,7 @@ Site vitrine du restaurant **Le New Select**, Place de France à Moroni (Union d
 - Vitest + Testing Library (tests unitaires)
 - ESLint + Prettier (qualité et formatage)
 
-L'application est **statique** (Vite + Vercel). Sans configuration, elle utilise un contenu local de secours. Avec Supabase, le dashboard propriétaire (`#admin`) modifie les plats, les coordonnées, la galerie, l'équipe et la FAQ ; le site client se met à jour automatiquement via Realtime. La réservation et la commande préparent un message pré-rempli envoyé via WhatsApp.
+L'application est **statique** (Vite + Vercel). Sans configuration, elle utilise un contenu local de secours. Avec Supabase, le dashboard propriétaire (`#admin`) modifie les plats, les catégories de la carte, les plats du jour datés, les événements et leurs catégories, les coordonnées, la galerie, l'équipe et la FAQ ; le site client se met à jour automatiquement via Realtime. La carte est regroupée par catégories (entrées froides/chaudes, viandes, volailles, poissons, fruits de mer, pizzas, desserts, boulangerie…), avec gestion des prix par taille (26/33 cm, PM/GM). La réservation et la commande préparent un message pré-rempli envoyé via WhatsApp.
 
 Voir [`SUPABASE.md`](./SUPABASE.md) pour la configuration complète.
 
@@ -22,10 +22,11 @@ Voir [`SUPABASE.md`](./SUPABASE.md) pour la configuration complète.
 L’espace propriétaire est accessible sur **`#admin`** (par exemple <http://localhost:3001/#admin>, puis `https://votre-domaine/#admin` en production).
 
 - Connexion via **Supabase Auth** ; seuls les e-mails inscrits dans `lns_admins` peuvent modifier le site.
-- Onglets : tableau de bord, plats, informations essentielles, galerie, équipe, FAQ et bibliothèque de médias.
-- Ajout / modification / suppression / masquage des plats, avec upload des photos dans le bucket `lns-media`.
+- Onglets : tableau de bord, plats, catégories du menu, plats du jour, événements, informations essentielles, galerie, équipe, FAQ, médias et clients.
+- Ajout / modification / suppression / masquage des plats, avec upload des photos dans le bucket `lns-media` et prix multiples par taille.
+- Gestion des catégories de la carte et des catégories d'événements (ajout, renommage, suppression) directement depuis le dashboard.
 - Les pages client se rafraîchissent **automatiquement** via Supabase Realtime, sans rechargement.
-- Le bouton **Importer le contenu manquant** initialise Supabase depuis `restaurantData.ts` sans écraser les modifications déjà enregistrées.
+- Le bouton **Importer le contenu manquant** initialise Supabase depuis `restaurantData.ts` sans écraser les modifications déjà enregistrées ; **Appliquer la nouvelle carte** remplace la carte livrée et masque les anciens plats.
 
 ## Prérequis
 
