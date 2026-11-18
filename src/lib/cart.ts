@@ -1,5 +1,11 @@
 import type { MenuItem } from '../types';
+import type { Locale } from '../i18n/types';
 import { formatKmf } from './format';
+
+export interface OrderCustomer {
+  name: string;
+  phone: string;
+}
 
 export interface CartLine {
   id: string;
@@ -51,20 +57,61 @@ export function getCartTotal(cart: Cart): number {
   return cart.reduce((total, line) => total + line.priceKmf * line.quantity, 0);
 }
 
+const ORDER_MESSAGES: Record<
+  Locale,
+  { intro: string; total: string; outro: string; name: string; phone: string }
+> = {
+  fr: {
+    intro: 'Bonjour Le New Select, je souhaite commander les plats suivants :',
+    total: 'Total :',
+    outro: 'Merci de me confirmer la disponibilité et le délai de préparation.',
+    name: 'Nom',
+    phone: 'WhatsApp',
+  },
+  en: {
+    intro: 'Hello Le New Select, I would like to order the following dishes:',
+    total: 'Total:',
+    outro: 'Please confirm availability and preparation time.',
+    name: 'Name',
+    phone: 'WhatsApp',
+  },
+  ar: {
+    intro: 'مرحبًا لو نيو سيليكت، أود طلب الأطباق التالية:',
+    total: 'الإجمالي:',
+    outro: 'يرجى تأكيد التوفر ووقت التحضير.',
+    name: 'الاسم',
+    phone: 'واتساب',
+  },
+  sw: {
+    intro: 'Habari Le New Select, ningependa kuagiza vyakula vifuatavyo:',
+    total: 'Jumla:',
+    outro: 'Tafadhali thibitisha upatikanaji na muda wa maandalizi.',
+    name: 'Jina',
+    phone: 'WhatsApp',
+  },
+};
+
 /** Message pré-rempli envoyé au restaurant via WhatsApp. */
-export function buildOrderMessage(cart: Cart): string {
+export function buildOrderMessage(
+  cart: Cart,
+  locale: Locale = 'fr',
+  customer?: OrderCustomer,
+): string {
+  const msg = ORDER_MESSAGES[locale];
   const lines = [
-    'Bonjour Le New Select, je souhaite commander les plats suivants :',
+    msg.intro,
     '',
     ...cart.map(
       (line) =>
         `- ${line.quantity} × ${line.name} — ${formatKmf(line.priceKmf * line.quantity)}`,
     ),
     '',
-    `Total : ${formatKmf(getCartTotal(cart))}`,
+    `${msg.total} ${formatKmf(getCartTotal(cart))}`,
+    customer?.name?.trim() ? `- ${msg.name} : ${customer.name.trim()}` : null,
+    customer?.phone?.trim() ? `- ${msg.phone} : ${customer.phone.trim()}` : null,
     '',
-    'Merci de me confirmer la disponibilité et le délai de préparation.',
+    msg.outro,
   ];
 
-  return lines.join('\n');
+  return lines.filter((line): line is string => line !== null).join('\n');
 }

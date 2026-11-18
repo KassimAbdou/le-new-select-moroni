@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { PageId } from '../types';
+import { useLocale } from '../i18n/LocaleContext';
 
 export type RouteId = PageId | 'admin';
 
@@ -14,16 +15,6 @@ export const PAGES: readonly PageId[] = [
 
 const ROUTES: readonly RouteId[] = [...PAGES, 'admin'];
 
-export const PAGE_TITLES: Record<RouteId, string> = {
-  accueil: 'Accueil',
-  menu: 'La Carte & Menus',
-  histoire: 'Notre Histoire',
-  galerie: 'Galerie Photo',
-  reservation: 'Réservation & Contact',
-  infos: 'Informations Pratiques',
-  admin: 'Administration',
-};
-
 function readPageFromHash(): RouteId {
   const hash = decodeURIComponent(window.location.hash.replace(/^#/, ''));
   return ROUTES.find((route) => route === hash) ?? 'accueil';
@@ -35,6 +26,7 @@ function readPageFromHash(): RouteId {
  */
 export function useHashRoute() {
   const [page, setPage] = useState<RouteId>(readPageFromHash);
+  const { t } = useLocale();
 
   useEffect(() => {
     const syncFromUrl = () => setPage(readPageFromHash());
@@ -47,8 +39,8 @@ export function useHashRoute() {
   }, []);
 
   useEffect(() => {
-    document.title = `${PAGE_TITLES[page]} — Le New Select · Moroni`;
-  }, [page]);
+    document.title = `${t(`pages.${page}`)} — Le New Select · Moroni`;
+  }, [page, t]);
 
   const navigate = useCallback((nextPage: RouteId) => {
     if (readPageFromHash() !== nextPage) {

@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, MapPin, MessageCircle, Phone } from 'lucide-react';
-import { useSiteContent } from '../hooks/useSiteContent';
+import { useLocalizedContent } from '../hooks/useLocalizedContent';
+import { useLocale } from '../i18n/LocaleContext';
+import { contentTranslations } from '../i18n/content';
 import { getTodayInMoroni } from '../lib/date';
+import { saveClientRecord } from '../lib/clientRecords';
 import {
   GUEST_OPTIONS,
   GROUP_OPTION,
-  SEATING_LABELS,
   TIME_SLOTS,
   buildWhatsAppMessage,
   createEmptyReservation,
@@ -23,7 +25,7 @@ interface Landmark {
   y: number;
 }
 
-const MORONI_LANDMARKS: Landmark[] = [
+const BASE_LANDMARKS: Landmark[] = [
   {
     id: 'select',
     name: 'Le New Select',
@@ -59,7 +61,8 @@ const MORONI_LANDMARKS: Landmark[] = [
 ];
 
 export function ReservationPage() {
-  const { content } = useSiteContent();
+  const { content } = useLocalizedContent();
+  const { locale, t } = useLocale();
   const { info } = content.settings;
   const today = getTodayInMoroni();
   const [reservation, setReservation] = useState<ReservationInput>(() =>
@@ -67,9 +70,34 @@ export function ReservationPage() {
   );
   const [formError, setFormError] = useState<string | null>(null);
   const [confirmedRef, setConfirmedRef] = useState<string | null>(null);
-  const [selectedLandmark, setSelectedLandmark] = useState<Landmark>(
-    MORONI_LANDMARKS[0]!,
-  );
+
+  const landmarks = useMemo(() => {
+    const overrides = locale === 'fr' ? {} : (contentTranslations[locale]?.landmarks ?? {});
+    return BASE_LANDMARKS.map((lm) => ({ ...lm, ...(overrides[lm.id] ?? {}) }));
+  }, [locale]);
+
+  const [selectedLandmarkId, setSelectedLandmarkId] = useState<string>(BASE_LANDMARKS[0]!.id);
+  const selectedLandmark = landmarks.find((l) => l.id === selectedLandmarkId) ?? landmarks[0]!;
+
+  useEffect(() => {
+    if (!landmarks.some((l) => l.id === selectedLandmarkId)) {
+      setSelectedLandmarkId(landmarks[0]!.id);
+    }
+  }, [landmarks, selectedLandmarkId]);
+
+  const timeSlotGroups = useMemo(() => {
+    const labels: Record<string, string> = {
+      'Petit-déjeuner': t('menu.headings.breakfast.title'),
+      Déjeuner: t('menu.headings.lunch.title'),
+      Dîner: t('menu.headings.dinner.title'),
+    };
+    return TIME_SLOTS.map((group) => ({ ...group, label: labels[group.label] ?? group.label }));
+  }, [t]);
+
+  const seatingLabels: Record<SeatingChoice, string> = {
+    terrasse: t('reservation.terraceTitle'),
+    salle: t('reservation.roomTitle'),
+  };
 
   const updateField = <K extends keyof ReservationInput>(
     key: K,
@@ -78,33 +106,53 @@ export function ReservationPage() {
     setReservation((previous) => ({ ...previous, [key]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const error = validateReservation(reservation, today);
+    const error = validateReservation(reservation, today, locale);
     setFormError(error);
     if (error) return;
-    setConfirmedRef(createReference());
+    const ref = createReference();
+    try {
+      await saveClientRecord({
+        kind: 'reservation',
+        name: reservation.fullName.trim(),
+        phone: reservation.phone.trim(),
+        email: reservation.email.trim() || null,
+        locale,
+        details: {
+          reference: ref,
+          date: reservation.date,
+          timeSlot: reservation.timeSlot,
+          guests: reservation.guests,
+          seating: reservation.seating,
+          notes: reservation.notes.trim() || null,
+          email: reservation.email.trim() || null,
+        },
+      });
+    } catch {
+      // Best effort: do not block confirmation flow if storage fails.
+    }
+    setConfirmedRef(ref);
   };
 
   const whatsappUrl = `${info.whatsappHref}?text=${encodeURIComponent(
-    buildWhatsAppMessage(reservation, confirmedRef ?? undefined),
+    buildWhatsAppMessage(reservation, confirmedRef ?? undefined, locale),
   )}`;
 
   return (
     <div className="py-10 md:py-14 space-y-14">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header */}
-        <div className="space-y-2 max-w-2xl border-b border-[#E2E6DF] pb-8">
-          <p className="text-xs font-medium text-[#0F4C45]">
-            Réservation & Contact · Moroni, Place de France
+        <div className="space-y-2 max-w-2xl border-b border-line pb-8">
+          <p className="text-xs font-medium text-ocean">
+            {t('reservation.kicker')}
           </p>
-          <h1 className="font-display text-4xl md:text-5xl font-semibold text-[#151A19] text-balance">
-            Réserver votre table
+          <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink text-balance">
+            {t('reservation.title')}
           </h1>
-          <p className="text-base text-[#4A5552] leading-relaxed">
-            Choisissez votre placement en terrasse sous les arbres ou dans la salle
-            climatisée. Confirmation immédiate ou par téléphone au{' '}
-            <span className="font-medium text-[#151A19] tabular-nums">
+          <p className="text-base text-ink-muted leading-relaxed">
+            {t('reservation.intro')}
+            <span className="font-medium text-ink tabular-nums">
               {info.phoneDisplay}
             </span>
             .
@@ -114,55 +162,53 @@ export function ReservationPage() {
         {/* Main 2-column split */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left: Reservation Form or Confirmation */}
-          <div className="lg:col-span-7 bg-white border border-[#E2E6DF] rounded-xl p-6 sm:p-8">
+          <div className="lg:col-span-7 bg-surface border border-line rounded-xl p-6 sm:p-8">
             {confirmedRef ? (
               <div className="space-y-6" aria-live="polite">
                 <div className="flex items-start gap-3">
                   <CheckCircle2
-                    className="w-6 h-6 text-[#0F4C45] shrink-0 mt-0.5"
+                    className="w-6 h-6 text-ocean shrink-0 mt-0.5"
                     aria-hidden="true"
                   />
                   <div className="space-y-1">
-                    <p className="text-xs font-mono font-medium text-[#0F4C45]">
-                      Référence {confirmedRef}
+                    <p className="text-xs font-mono font-medium text-ocean">
+                      {t('reservation.confirmedKicker', { ref: confirmedRef })}
                     </p>
-                    <h2 className="font-display text-3xl font-semibold text-[#151A19]">
-                      Demande de réservation enregistrée
+                    <h2 className="font-display text-3xl font-semibold text-ink">
+                      {t('reservation.confirmedTitle')}
                     </h2>
-                    <p className="text-sm text-[#4A5552]">
-                      Merci {reservation.fullName}. Votre demande est prête ;
-                      transmettez-la via WhatsApp pour une prise en charge immédiate par
-                      notre maître d’hôtel.
+                    <p className="text-sm text-ink-muted">
+                      {t('reservation.confirmedThanks', { name: reservation.fullName })}
                     </p>
                   </div>
                 </div>
 
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-[#F1F3EF] border border-[#E2E6DF] text-sm">
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-surface-alt border border-line text-sm">
                   <div>
-                    <dt className="text-xs text-[#4A5552]">Date & Heure</dt>
-                    <dd className="font-semibold text-[#151A19] tabular-nums">
-                      {reservation.date} à {reservation.timeSlot}
+                    <dt className="text-xs text-ink-muted">{t('reservation.dateTime')}</dt>
+                    <dd className="font-semibold text-ink tabular-nums">
+                      {reservation.date} · {reservation.timeSlot}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-[#4A5552]">Nombre de couverts</dt>
-                    <dd className="font-semibold text-[#151A19] tabular-nums">
+                    <dt className="text-xs text-ink-muted">{t('reservation.covers')}</dt>
+                    <dd className="font-semibold text-ink tabular-nums">
                       {reservation.guests === GROUP_OPTION
-                        ? 'Groupe (15+ personnes)'
+                        ? t('common.group15')
                         : `${reservation.guests} ${
-                            Number(reservation.guests) > 1 ? 'personnes' : 'personne'
+                            Number(reservation.guests) > 1 ? t('common.people') : t('common.person')
                           }`}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-[#4A5552]">Placement souhaité</dt>
-                    <dd className="font-semibold text-[#151A19]">
-                      {SEATING_LABELS[reservation.seating]}
+                    <dt className="text-xs text-ink-muted">{t('reservation.seating')}</dt>
+                    <dd className="font-semibold text-ink">
+                      {seatingLabels[reservation.seating]}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-[#4A5552]">Téléphone</dt>
-                    <dd className="font-semibold text-[#151A19] tabular-nums">
+                    <dt className="text-xs text-ink-muted">{t('reservation.phoneLabel')}</dt>
+                    <dd className="font-semibold text-ink tabular-nums">
                       {reservation.phone}
                     </dd>
                   </div>
@@ -176,35 +222,35 @@ export function ReservationPage() {
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors whitespace-nowrap shrink-0"
                   >
                     <MessageCircle className="w-4 h-4" aria-hidden="true" />
-                    <span>Confirmer via WhatsApp</span>
+                    <span>{t('reservation.confirmWhatsApp')}</span>
                   </a>
                   <button
                     type="button"
                     onClick={() => setConfirmedRef(null)}
-                    className="px-4 py-2.5 rounded-lg border border-[#D4DAD0] text-sm font-medium text-[#151A19] hover:bg-[#F1F3EF] transition-colors cursor-pointer"
+                    className="px-4 py-2.5 rounded-lg border border-line-strong text-sm font-medium text-ink hover:bg-surface-alt transition-colors cursor-pointer"
                   >
-                    Modifier la réservation
+                    {t('common.modifyReservation')}
                   </button>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} noValidate className="space-y-6">
+              <form onSubmit={(e) => void handleSubmit(e)} noValidate className="space-y-6">
                 <fieldset className="space-y-2">
-                  <legend className="text-sm font-medium text-[#151A19]">
-                    Choix de placement
+                  <legend className="text-sm font-medium text-ink">
+                    {t('reservation.seatingLegend')}
                   </legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {(
                       [
                         {
                           value: 'terrasse' as SeatingChoice,
-                          title: 'Terrasse ombragée',
-                          detail: 'Sous les badamiers · Vue Place de France',
+                          title: t('reservation.terraceTitle'),
+                          detail: t('reservation.terraceDetail'),
                         },
                         {
                           value: 'salle' as SeatingChoice,
-                          title: 'Salle climatisée',
-                          detail: 'Boiseries calmes · Idéal déjeuners d’affaires',
+                          title: t('reservation.roomTitle'),
+                          detail: t('reservation.roomDetail'),
                         },
                       ] as const
                     ).map((option) => (
@@ -213,16 +259,16 @@ export function ReservationPage() {
                         type="button"
                         onClick={() => updateField('seating', option.value)}
                         aria-pressed={reservation.seating === option.value}
-                        className={`p-4 rounded-xl border text-left transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F4C45] ${
+                        className={`p-4 rounded-xl border text-left transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean ${
                           reservation.seating === option.value
-                            ? 'border-[#0F4C45] bg-[#0F4C45]/5'
-                            : 'border-[#E2E6DF] hover:bg-[#F8F9F7]'
+                            ? 'border-ocean bg-ocean/10'
+                            : 'border-line hover:bg-canvas'
                         }`}
                       >
-                        <p className="text-sm font-semibold text-[#151A19]">
+                        <p className="text-sm font-semibold text-ink">
                           {option.title}
                         </p>
-                        <p className="text-xs text-[#4A5552] mt-0.5">{option.detail}</p>
+                        <p className="text-xs text-ink-muted mt-0.5">{option.detail}</p>
                       </button>
                     ))}
                   </div>
@@ -232,9 +278,9 @@ export function ReservationPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-name"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      Nom complet *
+                      {t('reservation.fullName')}
                     </label>
                     <input
                       id="res-name"
@@ -243,17 +289,17 @@ export function ReservationPage() {
                       required
                       value={reservation.fullName}
                       onChange={(event) => updateField('fullName', event.target.value)}
-                      placeholder="Ex. : Aminata Said"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45]"
+                      placeholder={t('reservation.fullNamePlaceholder')}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-phone"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      Téléphone / WhatsApp *
+                      {t('reservation.phone')}
                     </label>
                     <input
                       id="res-phone"
@@ -262,8 +308,8 @@ export function ReservationPage() {
                       required
                       value={reservation.phone}
                       onChange={(event) => updateField('phone', event.target.value)}
-                      placeholder="+269 3XX XX XX"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45] tabular-nums"
+                      placeholder={t('reservation.phonePlaceholder')}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean tabular-nums"
                     />
                   </div>
                 </div>
@@ -272,9 +318,9 @@ export function ReservationPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-date"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      Date *
+                      {t('reservation.date')}
                     </label>
                     <input
                       id="res-date"
@@ -283,24 +329,24 @@ export function ReservationPage() {
                       required
                       value={reservation.date}
                       onChange={(event) => updateField('date', event.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45] tabular-nums"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean tabular-nums"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-time"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      Heure d’arrivée
+                      {t('reservation.time')}
                     </label>
                     <select
                       id="res-time"
                       value={reservation.timeSlot}
                       onChange={(event) => updateField('timeSlot', event.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45] tabular-nums"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean tabular-nums"
                     >
-                      {TIME_SLOTS.map((group) => (
+                      {timeSlotGroups.map((group) => (
                         <optgroup key={group.label} label={group.label}>
                           {group.slots.map((slot) => (
                             <option key={slot.value} value={slot.value}>
@@ -315,22 +361,22 @@ export function ReservationPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-guests"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      Couverts
+                      {t('reservation.guests')}
                     </label>
                     <select
                       id="res-guests"
                       value={reservation.guests}
                       onChange={(event) => updateField('guests', event.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45] tabular-nums"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean tabular-nums"
                     >
                       {GUEST_OPTIONS.map((count) => (
                         <option key={count} value={String(count)}>
-                          {count} {count > 1 ? 'personnes' : 'personne'}
+                          {count} {count > 1 ? t('common.people') : t('common.person')}
                         </option>
                       ))}
-                      <option value={GROUP_OPTION}>Groupe (15+ personnes)</option>
+                      <option value={GROUP_OPTION}>{t('common.group15')}</option>
                     </select>
                   </div>
                 </div>
@@ -339,9 +385,9 @@ export function ReservationPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-email"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      E-mail (optionnel)
+                      {t('reservation.email')}
                     </label>
                     <input
                       id="res-email"
@@ -349,25 +395,25 @@ export function ReservationPage() {
                       autoComplete="email"
                       value={reservation.email}
                       onChange={(event) => updateField('email', event.target.value)}
-                      placeholder="nom@exemple.com"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45]"
+                      placeholder={t('reservation.emailPlaceholder')}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="res-notes"
-                      className="block text-sm font-medium text-[#151A19]"
+                      className="block text-sm font-medium text-ink"
                     >
-                      Précisions ou allergies
+                      {t('reservation.notes')}
                     </label>
                     <input
                       id="res-notes"
                       type="text"
                       value={reservation.notes}
                       onChange={(event) => updateField('notes', event.target.value)}
-                      placeholder="Chaise haute, table calme, sans crustacés..."
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] focus:outline-2 focus:outline-[#0F4C45]"
+                      placeholder={t('reservation.notesPlaceholder')}
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean"
                     />
                   </div>
                 </div>
@@ -386,12 +432,12 @@ export function ReservationPage() {
                 <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F4C45]"
+                    className="px-6 py-3 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
                   >
-                    Confirmer la demande
+                    {t('common.confirmRequest')}
                   </button>
-                  <span className="text-xs text-[#4A5552]">
-                    Service continu de 07h00 à 23h00
+                  <span className="text-xs text-ink-muted">
+                    {t('reservation.serviceHours')}
                   </span>
                 </div>
               </form>
@@ -401,72 +447,70 @@ export function ReservationPage() {
           {/* Right: Direct Contact + Moroni Situation Map */}
           <div className="lg:col-span-5 space-y-6">
             {/* Direct Contact */}
-            <div className="bg-white border border-[#E2E6DF] rounded-xl p-6 space-y-5">
+            <div className="bg-surface border border-line rounded-xl p-6 space-y-5">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-[#4A5552]">Ligne directe</p>
-                <h2 className="font-display text-2xl font-semibold text-[#151A19]">
-                  Contacter la salle sans attendre
+                <p className="text-xs font-medium text-ink-muted">{t('reservation.directLine')}</p>
+                <h2 className="font-display text-2xl font-semibold text-ink">
+                  {t('reservation.contactWithoutWaiting')}
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
                 <a
                   href={info.phoneHref}
-                  className="flex items-center justify-between px-4 py-3 rounded-lg border border-[#D4DAD0] bg-[#F8F9F7] hover:bg-[#F1F3EF] transition-colors"
+                  className="flex items-center justify-between px-4 py-3 rounded-lg border border-line-strong bg-canvas hover:bg-surface-alt transition-colors"
                 >
-                  <span className="inline-flex items-center gap-2.5 text-sm font-medium text-[#151A19]">
-                    <Phone className="w-4 h-4 text-[#0F4C45]" aria-hidden="true" />
-                    <span>Appeler le restaurant</span>
+                  <span className="inline-flex items-center gap-2.5 text-sm font-medium text-ink">
+                    <Phone className="w-4 h-4 text-ocean" aria-hidden="true" />
+                    <span>{t('common.callRestaurant')}</span>
                   </span>
-                  <span className="font-mono text-sm font-semibold text-[#0F4C45] tabular-nums">
+                  <span className="font-mono text-sm font-semibold text-ocean tabular-nums">
                     {info.phoneDisplay}
                   </span>
                 </a>
 
                 <a
-                  href={`${info.whatsappHref}?text=${encodeURIComponent(
-                    'Bonjour Le New Select, je souhaite réserver une table.',
-                  )}`}
+                  href={`${info.whatsappHref}?text=${encodeURIComponent(t('reservation.whatsappPrefill'))}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0F4C45] text-white hover:bg-[#0B3A35] transition-colors"
                 >
                   <span className="inline-flex items-center gap-2.5 text-sm font-medium">
                     <MessageCircle className="w-4 h-4" aria-hidden="true" />
-                    <span>Écrire sur WhatsApp</span>
+                    <span>{t('common.writeWhatsApp')}</span>
                   </span>
-                  <span className="text-xs opacity-90">Réponse rapide</span>
+                  <span className="text-xs opacity-90">{t('reservation.whatsappQuick')}</span>
                 </a>
               </div>
             </div>
 
             {/* Interactive Situation Map of Place de France, Moroni */}
-            <div className="bg-white border border-[#E2E6DF] rounded-xl p-6 space-y-4">
+            <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
               <div className="flex items-baseline justify-between gap-2">
                 <div>
-                  <p className="text-xs font-medium text-[#4A5552]">
-                    Situation géographique · Moroni
+                  <p className="text-xs font-medium text-ink-muted">
+                    {t('reservation.mapKicker')}
                   </p>
-                  <h2 className="font-display text-2xl font-semibold text-[#151A19]">
-                    Plan de la Place de France
+                  <h2 className="font-display text-2xl font-semibold text-ink">
+                    {t('reservation.mapTitle')}
                   </h2>
                 </div>
                 <a
                   href={info.directionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-[#0F4C45] hover:underline whitespace-nowrap shrink-0"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-ocean hover:underline whitespace-nowrap shrink-0"
                 >
                   <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
-                  <span>Ouvrir la carte GPS</span>
+                  <span>{t('common.openGpsMap')}</span>
                 </a>
               </div>
 
-              <div className="rounded-lg border border-[#E2E6DF] bg-[#F1F3EF] overflow-hidden">
+              <div className="rounded-lg border border-line bg-surface-alt overflow-hidden">
                 <svg
                   viewBox="0 0 420 250"
                   role="img"
-                  aria-label="Carte schématique de la Place de France à Moroni et repères autour du restaurant Le New Select"
+                  aria-label={t('reservation.mapAlt')}
                   className="w-full h-auto block"
                 >
                   {/* Indian Ocean */}
@@ -479,7 +523,7 @@ export function ReservationPage() {
                     fontFamily="Plus Jakarta Sans, sans-serif"
                     fontWeight="600"
                   >
-                    Océan Indien
+                    {locale === 'ar' ? 'المحيط الهندي' : locale === 'sw' ? 'Bahari ya Hindi' : 'Indian Ocean'}
                   </text>
 
                   {/* Corniche / Coastal road */}
@@ -522,11 +566,11 @@ export function ReservationPage() {
                     fontFamily="Plus Jakarta Sans, sans-serif"
                     fontWeight="500"
                   >
-                    Place de France
+                    {locale === 'ar' ? 'ساحة فرنسا' : 'Place de France'}
                   </text>
 
                   {/* Landmarks */}
-                  {MORONI_LANDMARKS.map((landmark) => {
+                  {landmarks.map((landmark) => {
                     const isSelected = selectedLandmark.id === landmark.id;
                     const isPrimary = landmark.id === 'select';
                     return (
@@ -534,14 +578,14 @@ export function ReservationPage() {
                         key={landmark.id}
                         role="button"
                         tabIndex={0}
-                        aria-label={`Voir le repère : ${landmark.name}`}
+                        aria-label={t('reservation.viewLandmark', { name: landmark.name })}
                         aria-pressed={isSelected}
                         className="cursor-pointer focus:outline-none"
-                        onClick={() => setSelectedLandmark(landmark)}
+                        onClick={() => setSelectedLandmarkId(landmark.id)}
                         onKeyDown={(event) => {
                           if (event.key === 'Enter' || event.key === ' ') {
                             event.preventDefault();
-                            setSelectedLandmark(landmark);
+                            setSelectedLandmarkId(landmark.id);
                           }
                         }}
                       >
@@ -573,18 +617,18 @@ export function ReservationPage() {
               </div>
 
               <div
-                className="p-4 rounded-lg bg-[#F8F9F7] border border-[#E2E6DF] space-y-1"
+                className="p-4 rounded-lg bg-canvas border border-line space-y-1"
                 aria-live="polite"
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-sm font-semibold text-[#151A19]">
+                  <p className="text-sm font-semibold text-ink">
                     {selectedLandmark.name}
                   </p>
-                  <span className="text-xs font-medium text-[#0F4C45]">
+                  <span className="text-xs font-medium text-ocean">
                     {selectedLandmark.distance}
                   </span>
                 </div>
-                <p className="text-xs text-[#4A5552] leading-relaxed">
+                <p className="text-xs text-ink-muted leading-relaxed">
                   {selectedLandmark.note}
                 </p>
               </div>

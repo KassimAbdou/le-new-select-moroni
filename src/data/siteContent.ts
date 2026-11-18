@@ -197,6 +197,19 @@ function settingsToRow(settings: SiteSettings) {
   };
 }
 
+const LEGACY_HERO_IMAGE_URLS = new Set([
+  'https://nloedrakjuvdavyenqzy.supabase.co/storage/v1/object/public/lns-media/1794952288782-zx72ww.png',
+]);
+
+function normalizeHeroImage(url: string | null | undefined, fallback: string): string {
+  const value = url?.trim();
+  if (!value) return fallback;
+  if (LEGACY_HERO_IMAGE_URLS.has(value) || value.includes('1794952288782-zx72ww')) {
+    return fallback;
+  }
+  return value;
+}
+
 function rowToSettings(row: SettingsRow | null): SiteSettings {
   if (!row) return DEFAULT_CONTENT.settings;
   const fallback = DEFAULT_CONTENT.settings;
@@ -217,7 +230,7 @@ function rowToSettings(row: SettingsRow | null): SiteSettings {
       },
       directionsUrl: row.directions_url ?? fallback.info.directionsUrl,
     },
-    heroImage: row.hero_image_url ?? fallback.heroImage,
+    heroImage: normalizeHeroImage(row.hero_image_url, fallback.heroImage),
     chef: {
       title: row.chef_title ?? fallback.chef.title,
       subtitle: row.chef_subtitle ?? fallback.chef.subtitle,

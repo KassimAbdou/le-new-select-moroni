@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check, MessageCircle, Minus, Plus, ShoppingBasket, Trash2 } from 'lucide-react';
-import { useSiteContent } from '../hooks/useSiteContent';
+import { useLocalizedContent } from '../hooks/useLocalizedContent';
+import { useLocale } from '../i18n/LocaleContext';
 import {
   addToCart,
   buildOrderMessage,
@@ -9,6 +10,7 @@ import {
   getCartTotal,
   removeFromCart,
 } from '../lib/cart';
+import { saveClientRecord, summarizeCart } from '../lib/clientRecords';
 import { formatKmf } from '../lib/format';
 import type { Cart } from '../lib/cart';
 import type { MenuItem, MenuMoment, PageId } from '../types';
@@ -18,14 +20,6 @@ interface MenuPageProps {
   onNavigate: (page: PageId) => void;
 }
 
-const MOMENT_TABS: { id: MenuMoment; label: string }[] = [
-  { id: 'all', label: 'Toute la carte' },
-  { id: 'petit-dejeuner', label: 'Petit-déjeuner · dès 07h00' },
-  { id: 'dejeuner', label: 'Déjeuner · 12h–15h' },
-  { id: 'diner', label: 'Dîner · 18h30–23h' },
-  { id: 'desserts-boissons', label: 'Desserts & Boissons' },
-];
-
 const ORDERED_MOMENTS: Exclude<MenuMoment, 'all'>[] = [
   'petit-dejeuner',
   'dejeuner',
@@ -33,32 +27,27 @@ const ORDERED_MOMENTS: Exclude<MenuMoment, 'all'>[] = [
   'desserts-boissons',
 ];
 
-const MOMENT_HEADINGS: Record<
-  Exclude<MenuMoment, 'all'>,
-  { title: string; hours: string }
-> = {
-  'petit-dejeuner': {
-    title: 'Petit-déjeuner',
-    hours: 'Servi dès 07h00 jusqu’à 10h30 en terrasse et en salle',
-  },
-  dejeuner: {
-    title: 'Déjeuner',
-    hours: 'Servi de 12h00 à 15h00 · Formules et carte complète',
-  },
-  diner: {
-    title: 'Dîner',
-    hours: 'Servi de 18h30 à 23h00 · Grillades, poissons et classiques bistrot',
-  },
-  'desserts-boissons': {
-    title: 'Desserts maison & Boissons',
-    hours: 'Pâtisseries du jour, jus frais pressés et cafés',
-  },
-};
-
 export function MenuPage({ onNavigate }: MenuPageProps) {
-  const { content, live } = useSiteContent();
+  const { content, live } = useLocalizedContent();
+  const { locale, t } = useLocale();
   const { info, chef, heroImage } = content.settings;
   const menu = content.menu.filter((item) => item.isVisible !== false);
+
+  const momentTabs: { id: MenuMoment; label: string }[] = [
+    { id: 'all', label: t('menu.all') },
+    { id: 'petit-dejeuner', label: t('menu.breakfast') },
+    { id: 'dejeuner', label: t('menu.lunch') },
+    { id: 'diner', label: t('menu.dinner') },
+    { id: 'desserts-boissons', label: t('menu.dessertsDrinks') },
+  ];
+
+  const momentHeadings: Record<Exclude<MenuMoment, 'all'>, { title: string; hours: string }> = {
+    'petit-dejeuner': { title: t('menu.headings.breakfast.title'), hours: t('menu.headings.breakfast.hours') },
+    dejeuner: { title: t('menu.headings.lunch.title'), hours: t('menu.headings.lunch.hours') },
+    diner: { title: t('menu.headings.dinner.title'), hours: t('menu.headings.dinner.hours') },
+    'desserts-boissons': { title: t('menu.headings.dessertsDrinks.title'), hours: t('menu.headings.dessertsDrinks.hours') },
+  };
+
   const chefItem: MenuItem = {
     id: 'plat-du-jour',
     name: chef.dishName,
@@ -66,26 +55,55 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
     priceKmf: chef.priceKmf,
     moment: 'dejeuner',
     sectionLabel: chef.title,
-    tag: 'Selon arrivage',
+    tag: t('common.accordingToArrival'),
     image: heroImage,
   };
 
   const [selectedMoment, setSelectedMoment] = useState<MenuMoment>('all');
   const [cart, setCart] = useState<Cart>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [sendingOrder, setSendingOrder] = useState(false);
 
   const visibleMoments = selectedMoment === 'all' ? ORDERED_MOMENTS : [selectedMoment];
 
   const cartCount = getCartCount(cart);
   const cartTotal = getCartTotal(cart);
-  const whatsappUrl = `${info.whatsappHref}?text=${encodeURIComponent(
-    buildOrderMessage(cart),
-  )}`;
 
   const quantityFor = (id: string) => cart.find((line) => line.id === id)?.quantity ?? 0;
 
-  const sendOrder = () => {
+  const sendOrder = async () => {
     if (cart.length === 0) return;
+    const name = customerName.trim();
+    const phone = customerPhone.trim();
+    if (name.length < 2 || phone.replace(/\D/g, '').length < 6) {
+      setOrderError(t('menu.customerRequired'));
+      return;
+    }
+    setOrderError(null);
+    setSendingOrder(true);
+    const details = {
+      items: summarizeCart(cart),
+      totalKmf: cartTotal,
+      itemCount: cartCount,
+      message: buildOrderMessage(cart, locale, { name, phone }),
+    };
+    try {
+      await saveClientRecord({
+        kind: 'order',
+        name,
+        phone,
+        locale,
+        details,
+      });
+    } finally {
+      setSendingOrder(false);
+    }
+    const whatsappUrl = `${info.whatsappHref}?text=${encodeURIComponent(
+      buildOrderMessage(cart, locale, { name, phone }),
+    )}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
@@ -93,27 +111,24 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
     <div className="py-10 md:py-14 space-y-12">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Page Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-[#E2E6DF] pb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-line pb-8">
           <div className="space-y-2 max-w-2xl">
-            <p className="text-xs font-medium text-[#0F4C45]">
-              La Carte & Menus · Tarifs nets en Francs Comoriens (KMF)
+            <p className="text-xs font-medium text-ocean">
+              {t('menu.kicker')}
             </p>
-            <h1 className="font-display text-4xl md:text-5xl font-semibold text-[#151A19] text-balance">
-              Une carte rythmée par les heures du jour
+            <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink text-balance">
+              {t('menu.title')}
             </h1>
-            <p className="text-base text-[#4A5552] leading-relaxed">
-              Du petit-déjeuner matinal aux grillades du soir, nos assiettes sont
-              préparées à la commande avec les pêches côtières de Grande Comore.
-              Sélectionnez vos plats, le total se calcule automatiquement et votre
-              commande part directement sur WhatsApp.
+            <p className="text-base text-ink-muted leading-relaxed">
+              {t('menu.intro')}
             </p>
             {live && (
-              <p className="inline-flex items-center gap-1.5 text-xs font-medium text-[#0F4C45]">
+              <p className="inline-flex items-center gap-1.5 text-xs font-medium text-ocean">
                 <span
-                  className="w-1.5 h-1.5 rounded-full bg-[#0F4C45]"
+                  className="w-1.5 h-1.5 rounded-full bg-ocean"
                   aria-hidden="true"
                 />
-                Carte mise à jour en direct
+                {t('common.liveMenu')}
               </p>
             )}
           </div>
@@ -121,26 +136,26 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
 
         {/* Plat du jour du chef */}
         <section
-          aria-label="Suggestion du chef"
-          className="rounded-xl bg-[#F1F3EF] border border-[#E2E6DF] p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
+          aria-label={t('menu.chefSuggestion')}
+          className="rounded-xl bg-surface-alt border border-line p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
         >
           <div className="space-y-2 max-w-2xl">
-            <p className="text-xs font-semibold text-[#0F4C45]">
+            <p className="text-xs font-semibold text-ocean">
               {chef.title} · {chef.subtitle}
             </p>
-            <h2 className="font-display text-2xl md:text-3xl font-semibold text-[#151A19]">
+            <h2 className="font-display text-2xl md:text-3xl font-semibold text-ink">
               {chef.dishName}
             </h2>
-            <p className="text-xs text-[#4A5552]">{chef.availability}</p>
+            <p className="text-xs text-ink-muted">{chef.availability}</p>
           </div>
           <div className="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-3 shrink-0">
-            <span className="font-mono text-xl font-semibold text-[#151A19] tabular-nums">
+            <span className="font-mono text-xl font-semibold text-ink tabular-nums">
               {formatKmf(chef.priceKmf)}
             </span>
             <button
               type="button"
               onClick={() => setCart((current) => addToCart(current, chefItem))}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F4C45] hover:underline whitespace-nowrap shrink-0 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-ocean hover:underline whitespace-nowrap shrink-0 cursor-pointer"
             >
               {quantityFor(chefItem.id) > 0 ? (
                 <Check className="w-4 h-4" aria-hidden="true" />
@@ -148,15 +163,15 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                 <Plus className="w-4 h-4" aria-hidden="true" />
               )}
               {quantityFor(chefItem.id) > 0
-                ? `Ajouté (${quantityFor(chefItem.id)})`
-                : 'Ajouter au panier'}
+                ? t('common.addedCount', { count: quantityFor(chefItem.id) })
+                : t('common.addToCart')}
             </button>
             <button
               type="button"
               onClick={() => onNavigate('reservation')}
-              className="text-xs font-medium text-[#4A5552] hover:text-[#0F4C45] underline underline-offset-4 cursor-pointer"
+              className="text-xs font-medium text-ink-muted hover:text-ocean underline underline-offset-4 cursor-pointer"
             >
-              Réserver une table plutôt
+              {t('common.ratherBook')}
             </button>
           </div>
         </section>
@@ -165,10 +180,10 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
         <div className="space-y-3">
           <div
             role="group"
-            aria-label="Filtrer la carte par moment de la journée"
-            className="flex flex-wrap items-center gap-1.5 p-1.5 bg-[#F1F3EF] border border-[#E2E6DF] rounded-xl w-fit"
+            aria-label={t('menu.tabsAria')}
+            className="flex flex-wrap items-center gap-1.5 p-1.5 bg-surface-alt border border-line rounded-xl w-fit"
           >
-            {MOMENT_TABS.map((tab) => {
+            {momentTabs.map((tab) => {
               const isActive = selectedMoment === tab.id;
               return (
                 <button
@@ -178,8 +193,8 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                   onClick={() => setSelectedMoment(tab.id)}
                   className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-white text-[#151A19] shadow-xs border border-[#E2E6DF]'
-                      : 'text-[#4A5552] hover:text-[#151A19]'
+                      ? 'bg-surface text-ink shadow-xs border border-line'
+                      : 'text-ink-muted hover:text-ink'
                   }`}
                 >
                   {tab.label}
@@ -196,7 +211,7 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
             className="lg:hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium cursor-pointer"
           >
             <ShoppingBasket className="w-4 h-4" aria-hidden="true" />
-            Voir le panier ({cartCount}) · {formatKmf(cartTotal)}
+            {t('common.viewCart', { count: cartCount, total: formatKmf(cartTotal) })}
           </button>
         </div>
 
@@ -204,38 +219,37 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
           {/* Cart */}
           <aside
             id="panier-commande"
-            aria-label="Votre commande"
+            aria-label={t('menu.cartAria')}
             className={`${
               cartOpen ? 'block' : 'hidden'
             } lg:block lg:sticky lg:top-24 lg:col-span-4 lg:order-last`}
           >
-            <div className="bg-white border border-[#E2E6DF] rounded-xl p-6 space-y-5">
+            <div className="bg-surface border border-line rounded-xl p-6 space-y-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-[#0F4C45]">Commande en cours</p>
-                  <h2 className="font-display text-2xl font-semibold text-[#151A19]">
-                    Votre panier
+                  <p className="text-xs font-medium text-ocean">{t('common.currentOrder')}</p>
+                  <h2 className="font-display text-2xl font-semibold text-ink">
+                    {t('common.yourCart')}
                   </h2>
                 </div>
                 <span
-                  className="rounded-full bg-[#0F4C45]/10 px-2.5 py-1 text-xs font-semibold text-[#0F4C45] tabular-nums"
+                  className="rounded-full bg-ocean/10 px-2.5 py-1 text-xs font-semibold text-ocean tabular-nums"
                   aria-live="polite"
                 >
-                  {cartCount} article{cartCount > 1 ? 's' : ''}
+                  {cartCount} {cartCount > 1 ? t('common.articles') : t('common.article')}
                 </span>
               </div>
 
               {cart.length === 0 ? (
-                <p className="text-sm text-[#4A5552] leading-relaxed rounded-lg bg-[#F8F9F7] border border-dashed border-[#D4DAD0] p-4">
-                  Aucun plat sélectionné. Ajoutez un plat depuis la carte pour composer
-                  votre commande.
+                <p className="text-sm text-ink-muted leading-relaxed rounded-lg bg-canvas border border-dashed border-line-strong p-4">
+                  {t('common.cartEmpty')}
                 </p>
               ) : (
-                <ul className="divide-y divide-[#E2E6DF]">
+                <ul className="divide-y divide-line">
                   {cart.map((line) => (
                     <li key={line.id} className="py-3 flex flex-col gap-2.5 first:pt-0">
                       <div className="flex items-start justify-between gap-3">
-                        <p className="text-sm font-medium text-[#151A19] leading-snug">
+                        <p className="text-sm font-medium text-ink leading-snug">
                           {line.name}
                         </p>
                         <button
@@ -243,25 +257,25 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                           onClick={() =>
                             setCart((current) => removeFromCart(current, line.id))
                           }
-                          aria-label={`Retirer ${line.name} du panier`}
-                          className="text-[#4A5552] hover:text-[#9B2C2C] cursor-pointer shrink-0"
+                          aria-label={t('common.remove', { name: line.name })}
+                          className="text-ink-muted hover:text-[#9B2C2C] cursor-pointer shrink-0"
                         >
                           <Trash2 className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </div>
                       <div className="flex items-center justify-between gap-3">
-                        <div className="inline-flex items-center border border-[#D4DAD0] rounded-lg overflow-hidden">
+                        <div className="inline-flex items-center border border-line-strong rounded-lg overflow-hidden">
                           <button
                             type="button"
                             onClick={() =>
                               setCart((current) => changeQuantity(current, line.id, -1))
                             }
-                            aria-label={`Retirer une unité de ${line.name}`}
-                            className="w-9 h-9 flex items-center justify-center text-[#151A19] hover:bg-[#F1F3EF] cursor-pointer"
+                            aria-label={t('common.removeUnit', { name: line.name })}
+                            className="w-9 h-9 flex items-center justify-center text-ink hover:bg-surface-alt cursor-pointer"
                           >
                             <Minus className="w-4 h-4" aria-hidden="true" />
                           </button>
-                          <span className="w-8 text-center text-sm font-semibold text-[#151A19] tabular-nums">
+                          <span className="w-8 text-center text-sm font-semibold text-ink tabular-nums">
                             {line.quantity}
                           </span>
                           <button
@@ -269,13 +283,13 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                             onClick={() =>
                               setCart((current) => changeQuantity(current, line.id, 1))
                             }
-                            aria-label={`Ajouter une unité de ${line.name}`}
-                            className="w-9 h-9 flex items-center justify-center text-[#151A19] hover:bg-[#F1F3EF] cursor-pointer"
+                            aria-label={t('common.addUnit', { name: line.name })}
+                            className="w-9 h-9 flex items-center justify-center text-ink hover:bg-surface-alt cursor-pointer"
                           >
                             <Plus className="w-4 h-4" aria-hidden="true" />
                           </button>
                         </div>
-                        <span className="text-sm font-semibold text-[#0F4C45] tabular-nums">
+                        <span className="text-sm font-semibold text-ocean tabular-nums">
                           {formatKmf(line.priceKmf * line.quantity)}
                         </span>
                       </div>
@@ -284,46 +298,87 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                 </ul>
               )}
 
-              <div className="border-t border-[#E2E6DF] pt-4 space-y-1">
+              <div className="border-t border-line pt-4 space-y-3">
+                <p className="text-xs font-semibold text-ink">{t('menu.customerInfoTitle')}</p>
+                <div className="space-y-1.5">
+                  <label htmlFor="cart-customer-name" className="block text-xs font-medium text-ink-muted">
+                    {t('menu.customerName')} *
+                  </label>
+                  <input
+                    id="cart-customer-name"
+                    type="text"
+                    autoComplete="name"
+                    value={customerName}
+                    onChange={(e) => {
+                      setCustomerName(e.target.value);
+                      if (orderError) setOrderError(null);
+                    }}
+                    placeholder={t('menu.customerNamePlaceholder')}
+                    className="w-full px-3 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="cart-customer-phone" className="block text-xs font-medium text-ink-muted">
+                    {t('menu.customerWhatsApp')} *
+                  </label>
+                  <input
+                    id="cart-customer-phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={customerPhone}
+                    onChange={(e) => {
+                      setCustomerPhone(e.target.value);
+                      if (orderError) setOrderError(null);
+                    }}
+                    placeholder={t('menu.customerWhatsAppPlaceholder')}
+                    className="w-full px-3 py-2.5 rounded-lg border border-line-strong bg-surface text-sm text-ink focus:outline-2 focus:outline-ocean tabular-nums"
+                  />
+                </div>
+                {orderError && (
+                  <p role="alert" className="text-xs font-medium text-[#9B2C2C] bg-[#9B2C2C]/8 border border-[#9B2C2C]/25 rounded-lg px-3 py-2">
+                    {orderError}
+                  </p>
+                )}
+              </div>
+
+              <div className="border-t border-line pt-4 space-y-1">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-sm font-medium text-[#4A5552]">
-                    Total à régler sur place
+                  <span className="text-sm font-medium text-ink-muted">
+                    {t('common.totalToPay')}
                   </span>
                   <span
-                    className="font-display text-2xl font-semibold text-[#151A19] tabular-nums"
+                    className="font-display text-2xl font-semibold text-ink tabular-nums"
                     aria-live="polite"
                   >
                     {formatKmf(cartTotal)}
                   </span>
                 </div>
-                <p className="text-xs text-[#4A5552]">
-                  Les prix sont indiqués en francs comoriens, taxes comprises.
+                <p className="text-xs text-ink-muted">
+                  {t('common.pricesNote')}
                 </p>
               </div>
 
               <div className="space-y-2.5">
                 <button
                   type="button"
-                  onClick={sendOrder}
-                  disabled={cart.length === 0}
+                  onClick={() => void sendOrder()}
+                  disabled={cart.length === 0 || sendingOrder}
                   className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <MessageCircle className="w-4 h-4" aria-hidden="true" />
-                  Valider la commande
+                  {sendingOrder ? '...' : t('common.validateOrder')}
                 </button>
                 {cart.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setCart([])}
-                    className="w-full text-xs font-medium text-[#4A5552] hover:text-[#9B2C2C] cursor-pointer"
+                    className="w-full text-xs font-medium text-ink-muted hover:text-[#9B2C2C] cursor-pointer"
                   >
-                    Vider le panier
+                    {t('common.emptyCart')}
                   </button>
                 )}
-                <p className="text-xs text-[#4A5552] leading-relaxed">
-                  Le détail de la commande est pré-rempli dans WhatsApp. Le restaurant
-                  confirme la disponibilité et le délai de préparation avant le règlement
-                  sur place.
+                <p className="text-xs text-ink-muted leading-relaxed">
+                  {t('common.orderNote')}
                 </p>
               </div>
             </div>
@@ -333,15 +388,15 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
           <div className="lg:col-span-8 space-y-12">
             {visibleMoments.map((momentKey) => {
               const items = menu.filter((item) => item.moment === momentKey);
-              const heading = MOMENT_HEADINGS[momentKey];
+              const heading = momentHeadings[momentKey];
 
               return (
                 <section key={momentKey} className="space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-[#151A19]/15 pb-3">
-                    <h2 className="font-display text-3xl font-semibold text-[#151A19]">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-ink/15 pb-3">
+                    <h2 className="font-display text-3xl font-semibold text-ink">
                       {heading.title}
                     </h2>
-                    <p className="text-xs text-[#4A5552]">{heading.hours}</p>
+                    <p className="text-xs text-ink-muted">{heading.hours}</p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -350,9 +405,9 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                       return (
                         <article
                           key={item.id}
-                          className="flex flex-col bg-white border border-[#E2E6DF] rounded-xl overflow-hidden"
+                          className="flex flex-col bg-surface border border-line rounded-xl overflow-hidden"
                         >
-                          <div className="aspect-[16/10] overflow-hidden bg-[#EBF0EB]">
+                          <div className="aspect-[16/10] overflow-hidden bg-surface-muted">
                             <ResilientImage
                               src={item.image ?? heroImage}
                               alt={item.name}
@@ -361,26 +416,26 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                           </div>
                           <div className="p-5 flex-1 flex flex-col gap-3">
                             <div className="flex items-baseline justify-between gap-3">
-                              <h3 className="text-base font-semibold text-[#151A19] leading-snug">
+                              <h3 className="text-base font-semibold text-ink leading-snug">
                                 {item.name}
                               </h3>
-                              <span className="font-mono text-sm font-medium text-[#151A19] tabular-nums whitespace-nowrap shrink-0">
+                              <span className="font-mono text-sm font-medium text-ink tabular-nums whitespace-nowrap shrink-0">
                                 {formatKmf(item.priceKmf)}
                               </span>
                             </div>
-                            <p className="text-sm text-[#4A5552] leading-relaxed">
+                            <p className="text-sm text-ink-muted leading-relaxed">
                               {item.description}
                             </p>
-                            <div className="pt-3 mt-auto border-t border-[#F1F3EF] flex items-center justify-between gap-3">
-                              <span className="text-xs text-[#4A5552]">
-                                {item.tag ?? 'Préparé à la commande'}
+                            <div className="pt-3 mt-auto border-t border-surface-alt flex items-center justify-between gap-3">
+                              <span className="text-xs text-ink-muted">
+                                {item.tag ?? t('common.preparedToOrder')}
                               </span>
                               <button
                                 type="button"
                                 onClick={() =>
                                   setCart((current) => addToCart(current, item))
                                 }
-                                aria-label={`Ajouter ${item.name} au panier`}
+                                aria-label={`${t('common.add')} ${item.name}`}
                                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-[#0F4C45] text-white hover:bg-[#0B3A35] transition-colors cursor-pointer shrink-0"
                               >
                                 {quantity > 0 ? (
@@ -388,7 +443,7 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
                                 ) : (
                                   <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                                 )}
-                                {quantity > 0 ? `Ajouté (${quantity})` : 'Ajouter'}
+                                {quantity > 0 ? t('common.addedCount', { count: quantity }) : t('common.add')}
                               </button>
                             </div>
                           </div>

@@ -28,10 +28,10 @@ export function ResilientImage({
       <div
         role="img"
         aria-label={alt}
-        className={`flex flex-col items-center justify-center bg-[#EBF0EB] text-[#0F4C45] p-6 text-center ${aspectClassName} ${className}`}
+        className={`flex flex-col items-center justify-center bg-surface-muted text-ocean p-6 text-center ${aspectClassName} ${className}`}
       >
         <Utensils className="w-7 h-7 mb-2 opacity-60" strokeWidth={1.5} />
-        <span className="text-xs font-medium text-[#4A5552] max-w-[22ch]">{alt}</span>
+        <span className="text-xs font-medium text-ink-muted max-w-[22ch]">{alt}</span>
       </div>
     );
   }

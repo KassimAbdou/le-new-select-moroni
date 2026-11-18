@@ -6,13 +6,13 @@ import { ResilientImage } from '../components/ResilientImage';
 import { uploadMedia } from '../data/siteContent';
 
 export const inputClass =
-  'w-full px-3 py-2 rounded-lg border border-[#D4DAD0] bg-white text-sm text-[#151A19] placeholder:text-[#8A948F] focus:outline-2 focus:outline-[#0F4C45]';
+  'w-full px-3 py-2 rounded-lg border border-line-strong bg-surface text-sm text-ink placeholder:text-ink-faint focus:outline-2 focus:outline-ocean';
 
 export const primaryButtonClass =
   'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#0F4C45] text-white text-sm font-medium hover:bg-[#0B3A35] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const secondaryButtonClass =
-  'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-[#D4DAD0] bg-white text-sm font-medium text-[#151A19] hover:bg-[#F1F3EF] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-line-strong bg-surface text-sm font-medium text-ink hover:bg-surface-alt transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const dangerButtonClass =
   'inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-[#9B2C2C]/30 text-sm font-medium text-[#9B2C2C] hover:bg-[#9B2C2C]/8 transition-colors cursor-pointer';
@@ -30,11 +30,11 @@ export function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={htmlFor} className="block text-sm font-medium text-[#151A19]">
+      <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
         {label}
       </label>
       {children}
-      {hint && <p className="text-xs text-[#4A5552] leading-relaxed">{hint}</p>}
+      {hint && <p className="text-xs text-ink-muted leading-relaxed">{hint}</p>}
     </div>
   );
 }
@@ -47,9 +47,9 @@ export function Notice({
   children: ReactNode;
 }) {
   const classes = {
-    info: 'bg-[#0F4C45]/8 border-[#0F4C45]/25 text-[#0F4C45]',
+    info: 'bg-[#0F4C45]/8 border-[#0F4C45]/25 text-ocean',
     error: 'bg-[#9B2C2C]/8 border-[#9B2C2C]/25 text-[#9B2C2C]',
-    success: 'bg-[#0F4C45]/8 border-[#0F4C45]/30 text-[#0F4C45]',
+    success: 'bg-[#0F4C45]/8 border-ocean/30 text-ocean',
   }[tone];
   return (
     <div
@@ -75,15 +75,15 @@ export function ToggleRow({
   id: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-lg border border-[#E2E6DF] bg-white px-4 py-3">
+    <div className="flex items-start justify-between gap-4 rounded-lg border border-line bg-surface px-4 py-3">
       <div className="space-y-0.5">
         <label
           htmlFor={id}
-          className="block text-sm font-medium text-[#151A19] cursor-pointer"
+          className="block text-sm font-medium text-ink cursor-pointer"
         >
           {label}
         </label>
-        {description && <p className="text-xs text-[#4A5552]">{description}</p>}
+        {description && <p className="text-xs text-ink-muted">{description}</p>}
       </div>
       <input
         id={id}
@@ -152,7 +152,7 @@ export function ImageField({
       </div>
       {error && <p className="text-xs text-[#9B2C2C]">{error}</p>}
       {value && (
-        <div className="w-full max-w-sm aspect-[16/9] rounded-lg overflow-hidden border border-[#E2E6DF] bg-[#EBF0EB]">
+        <div className="w-full max-w-sm aspect-[16/9] rounded-lg overflow-hidden border border-line bg-surface-muted">
           <ResilientImage
             src={value}
             alt="Aperçu de l’image"

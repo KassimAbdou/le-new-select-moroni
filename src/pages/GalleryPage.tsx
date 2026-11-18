@@ -1,25 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { useSiteContent } from '../hooks/useSiteContent';
+import { useLocalizedContent } from '../hooks/useLocalizedContent';
+import { useLocale } from '../i18n/LocaleContext';
 import type { GalleryCategory } from '../types';
 import { ResilientImage } from '../components/ResilientImage';
 
-const GALLERY_FILTERS: { id: GalleryCategory; label: string }[] = [
-  { id: 'all', label: 'Toutes les vues' },
-  { id: 'terrasse', label: 'Terrasse' },
-  { id: 'salle', label: 'Salle' },
-  { id: 'plats', label: 'Plats' },
-  { id: 'evenements', label: 'Événements' },
-];
-
 export function GalleryPage() {
-  const { content } = useSiteContent();
+  const { content } = useLocalizedContent();
+  const { t } = useLocale();
   const galleryItems = content.gallery.filter((item) => item.isVisible !== false);
   const [activeCategory, setActiveCategory] = useState<GalleryCategory>('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
+  const galleryFilters: { id: GalleryCategory; label: string }[] = [
+    { id: 'all', label: t('gallery.all') },
+    { id: 'terrasse', label: t('gallery.terrace') },
+    { id: 'salle', label: t('gallery.room') },
+    { id: 'plats', label: t('gallery.dishes') },
+    { id: 'evenements', label: t('gallery.events') },
+  ];
 
   const filteredItems =
     activeCategory === 'all'
@@ -89,26 +91,25 @@ export function GalleryPage() {
     <div className="py-10 md:py-14 space-y-10">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Header & Filter Bar */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E2E6DF] pb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line pb-8">
           <div className="space-y-2 max-w-2xl">
-            <p className="text-xs font-medium text-[#0F4C45]">
-              Galerie Photo · Ambiances & Assiettes
+            <p className="text-xs font-medium text-ocean">
+              {t('gallery.kicker')}
             </p>
-            <h1 className="font-display text-4xl md:text-5xl font-semibold text-[#151A19] text-balance">
-              Sous les badamiers et en cuisine
+            <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink text-balance">
+              {t('gallery.title')}
             </h1>
-            <p className="text-base text-[#4A5552] leading-relaxed">
-              Parcourez la terrasse de la Place de France, la salle climatisée et nos
-              assiettes préparées au fil de la journée.
+            <p className="text-base text-ink-muted leading-relaxed">
+              {t('gallery.intro')}
             </p>
           </div>
 
           <div
             role="group"
-            aria-label="Filtrer la galerie photo"
-            className="flex flex-wrap items-center gap-1.5 p-1.5 bg-[#F1F3EF] border border-[#E2E6DF] rounded-xl w-fit"
+            aria-label={t('gallery.filtersAria')}
+            className="flex flex-wrap items-center gap-1.5 p-1.5 bg-surface-alt border border-line rounded-xl w-fit"
           >
-            {GALLERY_FILTERS.map((filter) => {
+            {galleryFilters.map((filter) => {
               const isActive = activeCategory === filter.id;
               return (
                 <button
@@ -121,8 +122,8 @@ export function GalleryPage() {
                   }}
                   className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-white text-[#151A19] shadow-xs border border-[#E2E6DF]'
-                      : 'text-[#4A5552] hover:text-[#151A19]'
+                      ? 'bg-surface text-ink shadow-xs border border-line'
+                      : 'text-ink-muted hover:text-ink'
                   }`}
                 >
                   {filter.label}
@@ -139,10 +140,10 @@ export function GalleryPage() {
               key={item.id}
               type="button"
               onClick={() => setLightboxIndex(idx)}
-              aria-label={`Agrandir la photo : ${item.title}`}
-              className="group text-left bg-white border border-[#E2E6DF] rounded-xl overflow-hidden transition-transform duration-150 hover:-translate-y-0.5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F4C45]"
+              aria-label={t('common.enlargePhoto', { title: item.title })}
+              className="group text-left bg-surface border border-line rounded-xl overflow-hidden transition-transform duration-150 hover:-translate-y-0.5 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-[#EBF0EB]">
+              <div className="aspect-[4/3] overflow-hidden bg-surface-muted">
                 <ResilientImage
                   src={item.image}
                   alt={item.title}
@@ -150,11 +151,11 @@ export function GalleryPage() {
                 />
               </div>
               <div className="p-5 space-y-1.5">
-                <p className="text-xs text-[#0F4C45] font-medium">{item.categoryLabel}</p>
-                <h2 className="font-display text-2xl font-semibold text-[#151A19]">
+                <p className="text-xs text-ocean font-medium">{item.categoryLabel}</p>
+                <h2 className="font-display text-2xl font-semibold text-ink">
                   {item.title}
                 </h2>
-                <p className="text-sm text-[#4A5552] leading-relaxed">{item.caption}</p>
+                <p className="text-sm text-ink-muted leading-relaxed">{item.caption}</p>
               </div>
             </button>
           ))}
@@ -173,7 +174,7 @@ export function GalleryPage() {
             role="dialog"
             aria-modal="true"
             aria-label={activeLightboxItem.title}
-            className="relative max-w-4xl w-full bg-white rounded-xl overflow-hidden border border-[#E2E6DF]"
+            className="relative max-w-4xl w-full bg-surface rounded-xl overflow-hidden border border-line"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="aspect-[16/10] bg-[#151A19] relative">
@@ -186,8 +187,8 @@ export function GalleryPage() {
                 ref={closeButtonRef}
                 type="button"
                 onClick={() => setLightboxIndex(null)}
-                aria-label="Fermer l’aperçu"
-                className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-[#151A19]/80 text-white flex items-center justify-center hover:bg-[#151A19] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                aria-label={t('common.closePreview')}
+                className="absolute top-3 right-3 w-10 h-10 rounded-lg bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -195,37 +196,37 @@ export function GalleryPage() {
 
             <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="text-xs font-medium text-[#0F4C45]" aria-live="polite">
+                <p className="text-xs font-medium text-ocean" aria-live="polite">
                   {activeLightboxItem.categoryLabel} · {lightboxIndex + 1} /{' '}
                   {filteredItems.length}
                 </p>
-                <h3 className="font-display text-2xl font-semibold text-[#151A19]">
+                <h3 className="font-display text-2xl font-semibold text-ink">
                   {activeLightboxItem.title}
                 </h3>
-                <p className="text-sm text-[#4A5552]">{activeLightboxItem.caption}</p>
+                <p className="text-sm text-ink-muted">{activeLightboxItem.caption}</p>
               </div>
 
               {filteredItems.length > 1 && (
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
-                    aria-label="Photo précédente"
+                    aria-label={t('common.previousPhoto')}
                     onClick={() =>
                       setLightboxIndex(
                         (lightboxIndex - 1 + filteredItems.length) % filteredItems.length,
                       )
                     }
-                    className="w-10 h-10 rounded-lg border border-[#E2E6DF] flex items-center justify-center text-[#151A19] hover:bg-[#F1F3EF] transition-colors cursor-pointer"
+                    className="w-10 h-10 rounded-lg border border-line flex items-center justify-center text-ink hover:bg-surface-alt transition-colors cursor-pointer"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     type="button"
-                    aria-label="Photo suivante"
+                    aria-label={t('common.nextPhoto')}
                     onClick={() =>
                       setLightboxIndex((lightboxIndex + 1) % filteredItems.length)
                     }
-                    className="w-10 h-10 rounded-lg border border-[#E2E6DF] flex items-center justify-center text-[#151A19] hover:bg-[#F1F3EF] transition-colors cursor-pointer"
+                    className="w-10 h-10 rounded-lg border border-line flex items-center justify-center text-ink hover:bg-surface-alt transition-colors cursor-pointer"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, CheckCircle2, LogOut, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Globe, LogOut, Moon, ShieldCheck, Sun } from 'lucide-react';
 import { useSiteContent } from '../hooks/useSiteContent';
 import { SUPABASE_URL, isSupabaseConfigured } from '../lib/supabase';
 import type { PageId } from '../types';
 import {
   BrigadeEditor,
+  ClientRecordsEditor,
   DashboardOverview,
   FaqEditor,
   GalleryEditor,
@@ -14,38 +15,62 @@ import {
 } from './AdminEditors';
 import { Notice, inputClass, primaryButtonClass } from './ui';
 import { useAdminSession } from './useAdminSession';
+import { useLocale } from '../i18n/LocaleContext';
+import { useTheme } from '../theme/ThemeContext';
+import { LOCALES, LOCALE_META } from '../i18n/types';
 
-type Tab = 'tableau' | 'plats' | 'infos' | 'galerie' | 'equipe' | 'faq' | 'medias';
+type Tab = 'tableau' | 'plats' | 'infos' | 'galerie' | 'equipe' | 'faq' | 'medias' | 'clients';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'tableau', label: 'Tableau de bord' },
-  { id: 'plats', label: 'Plats' },
-  { id: 'infos', label: 'Informations' },
-  { id: 'galerie', label: 'Galerie' },
-  { id: 'equipe', label: 'Équipe' },
-  { id: 'faq', label: 'FAQ' },
-  { id: 'medias', label: 'Médias' },
-];
+const TAB_IDS: Tab[] = ['tableau', 'plats', 'infos', 'galerie', 'equipe', 'faq', 'medias', 'clients'];
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { locale, setLocale, t } = useLocale();
+  const { theme, toggleTheme } = useTheme();
   return (
-    <div className="min-h-screen bg-[#F8F9F7] text-[#151A19]">
+    <div className="min-h-screen bg-canvas text-ink">
       <header className="bg-[#151A19] text-white">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-2 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-[#8FC7B8]" aria-hidden="true" />
             <span className="font-display text-xl font-semibold">
               Le New Select{' '}
-              <span className="text-white/60 font-sans text-sm">· Administration</span>
+              <span className="text-white/60 font-sans text-sm">· {t('dashboard.title')}</span>
             </span>
           </div>
-          <a
-            href="#accueil"
-            className="inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white"
-          >
-            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-            Retour au site
-          </a>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+              title={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+              className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-white/20 bg-white/5 text-white hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" aria-hidden="true" /> : <Moon className="w-4 h-4" aria-hidden="true" />}
+            </button>
+            <label className="inline-flex items-center gap-1.5">
+              <Globe className="w-4 h-4 text-white/70" aria-hidden="true" />
+              <span className="sr-only">Language</span>
+              <select
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as typeof locale)}
+                className="bg-white/10 border border-white/20 rounded-lg px-2 py-1.5 text-xs font-medium text-white focus:outline-2 focus:outline-white/50 cursor-pointer"
+                aria-label="Language"
+              >
+                {LOCALES.map((code) => (
+                  <option key={code} value={code} className="text-ink bg-surface">
+                    {LOCALE_META[code].nativeLabel}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <a
+              href="#accueil"
+              className="inline-flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white"
+            >
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+              {t('dashboard.backToSite')}
+            </a>
+          </div>
         </div>
       </header>
       {children}
@@ -54,28 +79,22 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
 }
 
 function SetupScreen() {
+  const { t } = useLocale();
   return (
     <AdminLayout>
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <h1 className="font-display text-4xl font-semibold text-[#151A19]">
-          Configuration Supabase requise
+        <h1 className="font-display text-4xl font-semibold text-ink">
+          {t('dashboard.setup.title')}
         </h1>
         <div className="mt-6 space-y-5">
-          <Notice>
-            Le dashboard est prêt, mais la clé publique Supabase n’est pas encore définie
-            dans l’environnement de l’application.
-          </Notice>
-          <div className="bg-white border border-[#E2E6DF] rounded-xl p-6 space-y-4">
-            <p className="text-sm font-medium text-[#151A19]">Variables à définir :</p>
-            <pre className="bg-[#F1F3EF] rounded-lg p-4 text-xs overflow-x-auto">
+          <Notice>{t('dashboard.setup.notice')}</Notice>
+          <div className="bg-surface border border-line rounded-xl p-6 space-y-4">
+            <p className="text-sm font-medium text-ink">{t('dashboard.setup.varsTitle')}</p>
+            <pre className="bg-surface-alt rounded-lg p-4 text-xs overflow-x-auto">
               {`VITE_SUPABASE_URL=${SUPABASE_URL}\nVITE_SUPABASE_ANON_KEY=la_cle_anon_du_projet`}
             </pre>
-            <p className="text-sm text-[#4A5552] leading-relaxed">
-              Ajoutez-les dans <code>.env.local</code> en local, puis dans les variables
-              d’environnement Vercel. Exécutez ensuite{' '}
-              <code>supabase/migrations/001_lns_site_content.sql</code> dans le SQL Editor
-              de Supabase. Seule la clé <strong>anon</strong> est exposée au navigateur :
-              la clé service_role ne doit jamais être utilisée ici.
+            <p className="text-sm text-ink-muted leading-relaxed">
+              {t('dashboard.setup.help')}
             </p>
           </div>
         </div>
@@ -91,6 +110,7 @@ function LoginScreen({
   error: string | null;
   onSubmit: (email: string, password: string) => Promise<string | null>;
 }) {
+  const { t } = useLocale();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState<string | null>(null);
@@ -99,16 +119,13 @@ function LoginScreen({
   return (
     <AdminLayout>
       <main className="max-w-md mx-auto px-4 py-14">
-        <div className="bg-white border border-[#E2E6DF] rounded-xl p-7 space-y-6">
+        <div className="bg-surface border border-line rounded-xl p-7 space-y-6">
           <div className="space-y-2">
-            <p className="text-xs font-medium text-[#0F4C45]">Espace propriétaire</p>
-            <h1 className="font-display text-3xl font-semibold text-[#151A19]">
-              Connexion
+            <p className="text-xs font-medium text-ocean">{t('dashboard.login.kicker')}</p>
+            <h1 className="font-display text-3xl font-semibold text-ink">
+              {t('dashboard.login.title')}
             </h1>
-            <p className="text-sm text-[#4A5552]">
-              Réservé au propriétaire du restaurant. Utilisez le compte Supabase Auth
-              autorisé.
-            </p>
+            <p className="text-sm text-ink-muted">{t('dashboard.login.intro')}</p>
           </div>
           <form
             className="space-y-4"
@@ -124,7 +141,7 @@ function LoginScreen({
           >
             <div className="space-y-1.5">
               <label htmlFor="admin-email" className="block text-sm font-medium">
-                E-mail
+                {t('dashboard.login.email')}
               </label>
               <input
                 id="admin-email"
@@ -138,7 +155,7 @@ function LoginScreen({
             </div>
             <div className="space-y-1.5">
               <label htmlFor="admin-password" className="block text-sm font-medium">
-                Mot de passe
+                {t('dashboard.login.password')}
               </label>
               <input
                 id="admin-password"
@@ -156,7 +173,7 @@ function LoginScreen({
               className={`${primaryButtonClass} w-full`}
               disabled={busy}
             >
-              {busy ? 'Connexion…' : 'Se connecter'}
+              {busy ? t('dashboard.login.submitting') : t('dashboard.login.submit')}
             </button>
           </form>
         </div>
@@ -170,6 +187,7 @@ export default function AdminPage({
 }: {
   onNavigate: (page: PageId) => void;
 }) {
+  const { t } = useLocale();
   const { client, content, source, live, error, refresh } = useSiteContent();
   const {
     authorized,
@@ -201,8 +219,8 @@ export default function AdminPage({
   if (checking) {
     return (
       <AdminLayout>
-        <main className="max-w-3xl mx-auto px-4 py-14 text-sm text-[#4A5552]">
-          Vérification de l’accès…
+        <main className="max-w-3xl mx-auto px-4 py-14 text-sm text-ink-muted">
+          {t('dashboard.status.checking')}
         </main>
       </AdminLayout>
     );
@@ -253,44 +271,56 @@ export default function AdminPage({
       <FaqEditor client={client} content={content} onChanged={refresh} notify={notify} />
     ),
     medias: <MediaLibrary client={client} notify={notify} />,
+    clients: <ClientRecordsEditor client={client} notify={notify} />,
+  };
+
+  const tabLabels: Record<Tab, string> = {
+    tableau: t('dashboard.tabs.overview'),
+    plats: t('dashboard.tabs.dishes'),
+    infos: t('dashboard.tabs.info'),
+    galerie: t('dashboard.tabs.gallery'),
+    equipe: t('dashboard.tabs.team'),
+    faq: t('dashboard.tabs.faq'),
+    medias: t('dashboard.tabs.media'),
+    clients: t('dashboard.tabs.clients'),
   };
 
   return (
     <AdminLayout>
-      <div className="border-b border-[#E2E6DF] bg-white">
+      <div className="border-b border-line bg-surface">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <nav aria-label="Sections du dashboard" className="flex flex-wrap gap-1 py-3">
-            {TABS.map((item) => (
+          <nav aria-label={t('dashboard.title')} className="flex flex-wrap gap-1 py-3">
+            {TAB_IDS.map((id) => (
               <button
-                key={item.id}
+                key={id}
                 type="button"
-                onClick={() => setTab(item.id)}
-                aria-current={tab === item.id ? 'page' : undefined}
+                onClick={() => setTab(id)}
+                aria-current={tab === id ? 'page' : undefined}
                 className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
-                  tab === item.id
-                    ? 'bg-[#0F4C45]/10 text-[#0F4C45]'
-                    : 'text-[#4A5552] hover:bg-[#F1F3EF]'
+                  tab === id
+                    ? 'bg-ocean/10 text-ocean'
+                    : 'text-ink-muted hover:bg-surface-alt'
                 }`}
               >
-                {item.label}
+                {tabLabels[id]}
               </button>
             ))}
           </nav>
-          <div className="flex items-center gap-3 py-3 text-xs text-[#4A5552]">
+          <div className="flex items-center gap-3 py-3 text-xs text-ink-muted">
             <span className="inline-flex items-center gap-1.5">
               <span
-                className={`w-2 h-2 rounded-full ${live ? 'bg-[#0F4C45]' : 'bg-[#9A6B26]'}`}
+                className={`w-2 h-2 rounded-full ${live ? 'bg-ocean' : 'bg-[#9A6B26]'}`}
                 aria-hidden="true"
               />
-              {live ? 'Synchronisation active' : 'Mode local'}
+              {live ? t('dashboard.status.live') : t('dashboard.status.local')}
             </span>
             <button
               type="button"
               onClick={() => void signOut()}
-              className="inline-flex items-center gap-1.5 font-medium hover:text-[#151A19]"
+              className="inline-flex items-center gap-1.5 font-medium hover:text-ink"
             >
               <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
-              Déconnexion
+              {t('dashboard.logout')}
             </button>
           </div>
         </div>

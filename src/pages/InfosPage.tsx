@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, MapPin, Phone } from 'lucide-react';
-import { useSiteContent } from '../hooks/useSiteContent';
+import { useLocalizedContent } from '../hooks/useLocalizedContent';
+import { useLocale } from '../i18n/LocaleContext';
+import { contentTranslations } from '../i18n/content';
 import type { PageId } from '../types';
 
 interface InfosPageProps {
   onNavigate: (page: PageId) => void;
 }
 
-const PAYMENT_METHODS = [
+const DEFAULT_PAYMENT_METHODS = [
   {
     title: 'Espèces (KMF & EUR)',
     detail:
@@ -26,71 +28,69 @@ const PAYMENT_METHODS = [
 ];
 
 export function InfosPage({ onNavigate }: InfosPageProps) {
-  const { content } = useSiteContent();
+  const { content } = useLocalizedContent();
+  const { locale, t } = useLocale();
   const { info } = content.settings;
   const faqItems = content.faq.filter((item) => item.isVisible !== false);
   const [openFaqId, setOpenFaqId] = useState<string | null>(faqItems[0]?.id ?? null);
+
+  useEffect(() => {
+    if (faqItems.length === 0) {
+      setOpenFaqId(null);
+      return;
+    }
+    if (!openFaqId || !faqItems.some((item) => item.id === openFaqId)) {
+      setOpenFaqId(faqItems[0]!.id);
+    }
+  }, [faqItems, openFaqId]);
+
+  const paymentMethods = useMemo(() => {
+    if (locale === 'fr') return DEFAULT_PAYMENT_METHODS;
+    return contentTranslations[locale]?.paymentMethods ?? DEFAULT_PAYMENT_METHODS;
+  }, [locale]);
 
   return (
     <div className="py-10 md:py-14 space-y-14">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
         {/* Header */}
-        <div className="space-y-2 max-w-2xl border-b border-[#E2E6DF] pb-8">
-          <p className="text-xs font-medium text-[#0F4C45]">
-            Informations Pratiques · Moroni
-          </p>
-          <h1 className="font-display text-4xl md:text-5xl font-semibold text-[#151A19] text-balance">
-            Préparer votre venue au New Select
+        <div className="space-y-2 max-w-2xl border-b border-line pb-8">
+          <p className="text-xs font-medium text-ocean">{t('infos.kicker')}</p>
+          <h1 className="font-display text-4xl md:text-5xl font-semibold text-ink text-balance">
+            {t('infos.title')}
           </h1>
-          <p className="text-base text-[#4A5552] leading-relaxed">
-            Accès, stationnement autour de la Place de France, moyens de paiement et
-            réponses aux questions fréquentes.
-          </p>
+          <p className="text-base text-ink-muted leading-relaxed">{t('infos.intro')}</p>
         </div>
 
         {/* Access & Stationnement + Takeaway & Groups */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <section className="bg-white border border-[#E2E6DF] rounded-xl p-6 sm:p-8 space-y-4">
-            <p className="text-xs font-medium text-[#0F4C45]">
-              01. Accès & Stationnement
-            </p>
-            <h2 className="font-display text-3xl font-semibold text-[#151A19]">
-              Aux abords de la Place de France
+          <section className="bg-surface border border-line rounded-xl p-6 sm:p-8 space-y-4">
+            <p className="text-xs font-medium text-ocean">{t('infos.accessKicker')}</p>
+            <h2 className="font-display text-3xl font-semibold text-ink">
+              {t('infos.accessTitle')}
             </h2>
-            <p className="text-sm text-[#4A5552] leading-relaxed">
-              Situé en plein centre-ville de Moroni, le restaurant est accessible à pied
-              depuis les ministères, banques, ambassades et le port. Des places de
-              stationnement public longent la Place de France et la rue adjacente, à moins
-              de cinquante mètres de l’entrée de la terrasse.
-            </p>
+            <p className="text-sm text-ink-muted leading-relaxed">{t('infos.accessText')}</p>
             <div className="pt-2 flex flex-wrap items-center gap-4 text-sm">
               <a
                 href={info.directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-medium text-[#0F4C45] hover:underline"
+                className="inline-flex items-center gap-1.5 font-medium text-ocean hover:underline"
               >
                 <MapPin className="w-4 h-4" />
-                <span>Itinéraire GPS Place de France</span>
+                <span>{t('common.openItinerary')}</span>
               </a>
-              <span className="text-[#4A5552] tabular-nums">
+              <span className="text-ink-muted tabular-nums">
                 11°42&apos;06&quot;S · 43°15&apos;17&quot;E
               </span>
             </div>
           </section>
 
-          <section className="bg-white border border-[#E2E6DF] rounded-xl p-6 sm:p-8 space-y-4">
-            <p className="text-xs font-medium text-[#0F4C45]">02. À emporter & Groupes</p>
-            <h2 className="font-display text-3xl font-semibold text-[#151A19]">
-              Vente à emporter et grandes tables
+          <section className="bg-surface border border-line rounded-xl p-6 sm:p-8 space-y-4">
+            <p className="text-xs font-medium text-ocean">{t('infos.takeawayKicker')}</p>
+            <h2 className="font-display text-3xl font-semibold text-ink">
+              {t('infos.takeawayTitle')}
             </h2>
-            <p className="text-sm text-[#4A5552] leading-relaxed">
-              Tous les plats de la carte peuvent être commandés à emporter pour vos
-              bureaux ou votre domicile en appelant vingt minutes avant votre passage.
-              Pour les groupes de 8 à 30 couverts (déjeuners officiels, réunions, dîners
-              familiaux), nous privatisons une zone de la salle climatisée ou de la
-              terrasse.
-            </p>
+            <p className="text-sm text-ink-muted leading-relaxed">{t('infos.takeawayText')}</p>
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <a
                 href={info.phoneHref}
@@ -102,9 +102,9 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
               <button
                 type="button"
                 onClick={() => onNavigate('reservation')}
-                className="text-sm font-medium text-[#151A19] hover:text-[#0F4C45] transition-colors cursor-pointer"
+                className="text-sm font-medium text-ink hover:text-ocean transition-colors cursor-pointer"
               >
-                Demander un devis groupe
+                {t('common.askGroupQuote')}
               </button>
             </div>
           </section>
@@ -113,22 +113,20 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
         {/* Moyens de paiement */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-[#4A5552]">
-              Règlement sur place ou à emporter
-            </p>
-            <h2 className="font-display text-3xl font-semibold text-[#151A19]">
-              Moyens de paiement acceptés
+            <p className="text-xs font-medium text-ink-muted">{t('infos.paymentKicker')}</p>
+            <h2 className="font-display text-3xl font-semibold text-ink">
+              {t('infos.paymentTitle')}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {PAYMENT_METHODS.map((pm) => (
+            {paymentMethods.map((pm) => (
               <div
                 key={pm.title}
-                className="bg-white border border-[#E2E6DF] rounded-xl p-6 space-y-2"
+                className="bg-surface border border-line rounded-xl p-6 space-y-2"
               >
-                <h3 className="text-base font-semibold text-[#151A19]">{pm.title}</h3>
-                <p className="text-sm text-[#4A5552] leading-relaxed">{pm.detail}</p>
+                <h3 className="text-base font-semibold text-ink">{pm.title}</h3>
+                <p className="text-sm text-ink-muted leading-relaxed">{pm.detail}</p>
               </div>
             ))}
           </div>
@@ -137,15 +135,13 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
         {/* Foire aux questions */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <p className="text-xs font-medium text-[#4A5552]">
-              Services en salle et en terrasse
-            </p>
-            <h2 className="font-display text-3xl font-semibold text-[#151A19]">
-              Foire aux questions
+            <p className="text-xs font-medium text-ink-muted">{t('infos.faqKicker')}</p>
+            <h2 className="font-display text-3xl font-semibold text-ink">
+              {t('infos.faqTitle')}
             </h2>
           </div>
 
-          <div className="bg-white border border-[#E2E6DF] rounded-xl divide-y divide-[#E2E6DF]">
+          <div className="bg-surface border border-line rounded-xl divide-y divide-line">
             {faqItems.map((faq) => {
               const isOpen = openFaqId === faq.id;
               return (
@@ -156,14 +152,14 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
                     aria-expanded={isOpen}
                     aria-controls={`faq-answer-${faq.id}`}
                     onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                    className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left hover:bg-[#F8F9F7] transition-colors cursor-pointer"
+                    className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left hover:bg-canvas transition-colors cursor-pointer"
                   >
-                    <span className="text-base font-medium text-[#151A19]">
+                    <span className="text-base font-medium text-ink">
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-[#4A5552] shrink-0 transition-transform duration-150 ${
-                        isOpen ? 'rotate-180 text-[#0F4C45]' : ''
+                      className={`w-5 h-5 text-ink-muted shrink-0 transition-transform duration-150 ${
+                        isOpen ? 'rotate-180 text-ocean' : ''
                       }`}
                     />
                   </button>
@@ -172,7 +168,7 @@ export function InfosPage({ onNavigate }: InfosPageProps) {
                       id={`faq-answer-${faq.id}`}
                       role="region"
                       aria-labelledby={`faq-question-${faq.id}`}
-                      className="px-6 pb-5 text-sm text-[#4A5552] leading-relaxed"
+                      className="px-6 pb-5 text-sm text-ink-muted leading-relaxed"
                     >
                       {faq.answer}
                     </div>

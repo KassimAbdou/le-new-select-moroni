@@ -24,15 +24,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (!this.state.hasError) return this.props.children;
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9F7] px-6 py-16">
+      <div className="min-h-screen flex items-center justify-center bg-canvas px-6 py-16">
         <div className="max-w-lg text-center space-y-4">
-          <p className="font-mono text-xs font-medium text-[#0F4C45]">
+          <p className="font-mono text-xs font-medium text-ocean">
             Une erreur est survenue
           </p>
-          <h1 className="font-display text-4xl font-semibold text-[#151A19]">
+          <h1 className="font-display text-4xl font-semibold text-ink">
             La page n’a pas pu s’afficher
           </h1>
-          <p className="text-sm text-[#4A5552] leading-relaxed">
+          <p className="text-sm text-ink-muted leading-relaxed">
             Merci de rechargez la page. Si le problème persiste, contactez le restaurant
             au +269 773 00 31.
           </p>
