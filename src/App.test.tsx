@@ -40,6 +40,33 @@ describe('application', () => {
     expect(document.getElementById('menu-daily-specials')).not.toBeNull();
   });
 
+  it('affiche un panier flottant dès qu’un plat est ajouté', () => {
+    render(<App />);
+    window.location.hash = '#menu';
+    fireEvent(window, new Event('hashchange'));
+
+    expect(screen.queryByRole('button', { name: /voir le panier \(1\)/i })).toBeNull();
+
+    fireEvent.click(screen.getAllByRole('button', { name: /^ajouter /i })[0]!);
+
+    const floatingCart = screen
+      .getAllByRole('button', { name: /voir le panier \(1\)/i })
+      .find((button) => button.hasAttribute('aria-label'));
+    expect(floatingCart).toBeDefined();
+
+    fireEvent.click(floatingCart!);
+    expect(
+      screen.getAllByRole('button', { name: 'Fermer le panier' }).length,
+    ).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Fermer le panier' })[0]!);
+    expect(
+      screen
+        .getAllByRole('button', { name: /voir le panier \(1\)/i })
+        .some((button) => button.hasAttribute('aria-label')),
+    ).toBe(true);
+  });
+
   it('suit les changements d’URL et les événements du navigateur', () => {
     render(<App />);
 

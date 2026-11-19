@@ -7,6 +7,7 @@ import {
   Plus,
   ShoppingBasket,
   Trash2,
+  X,
 } from 'lucide-react';
 import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { useLocale } from '../i18n/LocaleContext';
@@ -146,6 +147,22 @@ export function MenuPage({ onNavigate, focus }: MenuPageProps) {
     }, 120);
     return () => window.clearTimeout(timer);
   }, [focus]);
+
+  // Le panier ouvert devient un tiroir : on bloque le défilement de la page et
+  // on permet de le fermer avec Échap.
+  useEffect(() => {
+    if (!cartOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setCartOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [cartOpen]);
 
   const visibleMoments = selectedMoment === 'all' ? ORDERED_MOMENTS : [selectedMoment];
 
@@ -349,14 +366,25 @@ export function MenuPage({ onNavigate, focus }: MenuPageProps) {
           </button>
         </div>
 
+        {cartOpen && (
+          <button
+            type="button"
+            aria-label={t('common.closeCart')}
+            onClick={() => setCartOpen(false)}
+            className="fixed inset-0 z-40 bg-basalt/60 backdrop-blur-sm cursor-default"
+          />
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Cart */}
+          {/* Cart : colonne collante sur desktop, tiroir sur mobile quand ouvert. */}
           <aside
             id="panier-commande"
             aria-label={t('menu.cartAria')}
-            className={`${
-              cartOpen ? 'block' : 'hidden'
-            } lg:block lg:sticky lg:top-24 lg:col-span-4 lg:order-last`}
+            className={
+              cartOpen
+                ? 'fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto overscroll-contain rounded-t-2xl border border-line bg-surface shadow-2xl sm:inset-x-auto sm:right-4 sm:top-4 sm:bottom-4 sm:w-[420px] sm:max-w-full sm:max-h-none sm:rounded-2xl'
+                : 'hidden lg:col-span-4 lg:order-last lg:block lg:sticky lg:top-24'
+            }
           >
             <div className="bg-surface border border-line rounded-xl p-6 space-y-5">
               <div className="flex items-start justify-between gap-3">
@@ -374,6 +402,16 @@ export function MenuPage({ onNavigate, focus }: MenuPageProps) {
                 >
                   {cartCount} {cartCount > 1 ? t('common.articles') : t('common.article')}
                 </span>
+                {cartOpen && (
+                  <button
+                    type="button"
+                    onClick={() => setCartOpen(false)}
+                    aria-label={t('common.closeCart')}
+                    className="inline-flex w-8 h-8 items-center justify-center rounded-lg border border-line text-ink hover:bg-surface-alt cursor-pointer shrink-0"
+                  >
+                    <X className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                )}
               </div>
 
               {cart.length === 0 ? (
@@ -689,6 +727,31 @@ export function MenuPage({ onNavigate, focus }: MenuPageProps) {
           </div>
         </div>
       </div>
+
+      {cartCount > 0 && !cartOpen && (
+        <button
+          type="button"
+          onClick={() => setCartOpen(true)}
+          aria-label={t('common.viewCart', {
+            count: cartCount,
+            total: formatKmf(cartTotal),
+          })}
+          className="fixed bottom-4 right-4 z-30 inline-flex items-center gap-3 rounded-full bg-burgundy px-4 py-3 text-white shadow-xl shadow-burgundy/25 transition-transform duration-200 hover:-translate-y-0.5 hover:bg-burgundy-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy cursor-pointer sm:bottom-6 sm:right-6"
+        >
+          <span className="relative inline-flex">
+            <ShoppingBasket className="w-5 h-5" aria-hidden="true" />
+            <span className="absolute -top-2.5 -right-2.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold leading-none text-burgundy tabular-nums">
+              {cartCount}
+            </span>
+          </span>
+          <span className="hidden text-sm font-semibold sm:inline">
+            {t('common.yourCart')}
+          </span>
+          <span className="text-sm font-semibold tabular-nums">
+            {formatKmf(cartTotal)}
+          </span>
+        </button>
+      )}
     </div>
   );
 }

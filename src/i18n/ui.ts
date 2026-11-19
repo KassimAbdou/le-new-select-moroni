@@ -40,6 +40,7 @@ export type UiMessages = {
     addToCart: string;
     addedCount: string;
     viewCart: string;
+    closeCart: string;
     yourCart: string;
     currentOrder: string;
     cartEmpty: string;
@@ -594,6 +595,7 @@ export const ui: Record<Locale, UiMessages> = {
       addToCart: 'Ajouter au panier',
       addedCount: 'Ajouté ({count})',
       viewCart: 'Voir le panier ({count}) · {total}',
+      closeCart: 'Fermer le panier',
       yourCart: 'Votre panier',
       currentOrder: 'Commande en cours',
       cartEmpty:
@@ -1213,6 +1215,7 @@ export const ui: Record<Locale, UiMessages> = {
       addToCart: 'Add to cart',
       addedCount: 'Added ({count})',
       viewCart: 'View cart ({count}) · {total}',
+      closeCart: 'Close cart',
       yourCart: 'Your cart',
       currentOrder: 'Current order',
       cartEmpty: 'No dishes selected. Add a dish from the menu to build your order.',
@@ -1828,6 +1831,7 @@ export const ui: Record<Locale, UiMessages> = {
       addToCart: 'أضف إلى السلة',
       addedCount: 'تمت الإضافة ({count})',
       viewCart: 'عرض السلة ({count}) · {total}',
+      closeCart: 'إغلاق السلة',
       yourCart: 'سلتك',
       currentOrder: 'الطلب الحالي',
       cartEmpty: 'لم يتم اختيار أي طبق. أضف طبقًا من القائمة لتكوين طلبك.',
@@ -2432,6 +2436,7 @@ export const ui: Record<Locale, UiMessages> = {
       addToCart: 'Ongeza kwenye kikapu',
       addedCount: 'Imeongezwa ({count})',
       viewCart: 'Tazama kikapu ({count}) · {total}',
+      closeCart: 'Funga kikapu',
       yourCart: 'Kikapu chako',
       currentOrder: 'Oda ya sasa',
       cartEmpty:
