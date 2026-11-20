@@ -27,6 +27,7 @@ import {
   SIGNATURE_DISHES,
   TRIPADVISOR_REVIEWS,
 } from './restaurantData';
+import { safeExternalUrl, safeImageUrl, safePhoneUrl } from '../lib/safeUrl';
 
 export interface RestaurantInfo {
   name: string;
@@ -310,17 +311,20 @@ function rowToSettings(row: SettingsRow | null): SiteSettings {
       address: row.address ?? fallback.info.address,
       country: row.country ?? fallback.info.country,
       phoneDisplay: row.phone_display ?? fallback.info.phoneDisplay,
-      phoneHref: row.phone_href ?? fallback.info.phoneHref,
-      whatsappHref: row.whatsapp_href ?? fallback.info.whatsappHref,
+      phoneHref: safePhoneUrl(row.phone_href, fallback.info.phoneHref),
+      whatsappHref: safeExternalUrl(row.whatsapp_href, fallback.info.whatsappHref),
       email: row.email ?? fallback.info.email,
       hoursSummary: row.hours_summary ?? fallback.info.hoursSummary,
       coordinates: {
         lat: row.latitude ?? fallback.info.coordinates.lat,
         lng: row.longitude ?? fallback.info.coordinates.lng,
       },
-      directionsUrl: row.directions_url ?? fallback.info.directionsUrl,
+      directionsUrl: safeExternalUrl(row.directions_url, fallback.info.directionsUrl),
     },
-    heroImage: normalizeHeroImage(row.hero_image_url, fallback.heroImage),
+    heroImage: safeImageUrl(
+      normalizeHeroImage(row.hero_image_url, fallback.heroImage),
+      fallback.heroImage,
+    ),
     chef: {
       title: row.chef_title ?? fallback.chef.title,
       subtitle: row.chef_subtitle ?? fallback.chef.subtitle,
@@ -362,7 +366,7 @@ function rowToMenuItem(row: MenuRow): MenuItem {
     priceOptions: parsePriceOptions(row.price_options),
     tag: row.tag ?? undefined,
     isSignature: row.is_signature ?? undefined,
-    image: row.image_url ?? undefined,
+    image: safeImageUrl(row.image_url) || undefined,
     isVisible: row.is_visible ?? true,
     sortOrder: row.sort_order ?? 0,
   };
@@ -413,7 +417,7 @@ function rowToDailySpecial(row: DailySpecialRow): DailySpecial {
     dishName: row.dish_name ?? '',
     description: row.description ?? '',
     priceKmf: Number(row.price_kmf ?? 0),
-    image: row.image_url ?? undefined,
+    image: safeImageUrl(row.image_url) || undefined,
     startDate: parseDate(row.start_date, ''),
     endDate: parseDate(row.end_date, row.start_date ?? ''),
     availability: row.availability ?? undefined,
@@ -478,13 +482,13 @@ function rowToEvent(row: EventRow): EventItem {
     time: row.time ?? undefined,
     location: row.location ?? undefined,
     priceKmf: row.price_kmf === null ? undefined : Number(row.price_kmf),
-    image: row.image_url ?? undefined,
+    image: safeImageUrl(row.image_url) || undefined,
     ticketPriceKmf:
       row.ticket_price_kmf === null ? undefined : Number(row.ticket_price_kmf),
     ticketsAvailable:
       row.tickets_available === null ? undefined : Number(row.tickets_available),
     ticketSalePoints: row.ticket_sale_points ?? undefined,
-    ticketingUrl: row.ticketing_url ?? undefined,
+    ticketingUrl: safeExternalUrl(row.ticketing_url) || undefined,
     isVisible: row.is_visible ?? true,
     sortOrder: row.sort_order ?? 0,
   };
@@ -512,7 +516,7 @@ function rowToGalleryItem(row: GalleryRow): GalleryItem {
     caption: row.caption ?? '',
     category,
     categoryLabel: row.category_label ?? GALLERY_CATEGORY_LABELS[category],
-    image: row.image_url ?? '',
+    image: safeImageUrl(row.image_url),
     isVisible: row.is_visible ?? true,
     sortOrder: row.sort_order ?? 0,
   };

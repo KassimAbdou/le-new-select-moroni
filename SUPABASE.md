@@ -69,6 +69,16 @@ supabase/migrations/005_lns_ticket_records.sql
 
 Elle autorise le type `ticket` dans `lns_client_records` : sans elle, une réservation de billets est refusée par la contrainte `kind in ('order', 'reservation')`.
 
+### Migration 006 — durcissement des demandes clients
+
+Exécuter ensuite :
+
+```text
+supabase/migrations/006_lns_harden_client_records.sql
+```
+
+Elle ajoute des limites de taille sur les champs des commandes/réservations et un anti-spam : au maximum **5 demandes par numéro sur 10 minutes** et **120 demandes globales par minute**. Les administrateurs ne sont pas limités. L'horodatage est désormais fixé par la base de données, ce qui empêche de contourner ces fenêtres en envoyant une date fictive. Cette migration est non destructive.
+
 ## 3. Créer le compte propriétaire
 
 1. Supabase → **Authentication → Users → Add user** : créer le compte avec e-mail et mot de passe.
@@ -104,5 +114,9 @@ Le bouton **Masquer** retire temporairement un élément du site sans le supprim
 ## Sécurité
 
 - Le dashboard est protégé par Supabase Auth **et** par la table `lns_admins` (fonction `lns_is_admin()`).
-- Un visiteur anonyme ne peut que lire les éléments visibles : aucune écriture n'est possible depuis le navigateur.
+- Un visiteur anonyme ne peut que lire les éléments visibles : aucune modification du contenu du site n'est possible depuis le navigateur.
+- La seule écriture publique est l'ajout d'une commande/réservation dans `lns_client_records`, limité par la migration 006 (taille des champs + anti-spam).
 - Les images du bucket `lns-media` sont publiques en lecture, nécessaires aux pages client ; l'upload est réservé aux administrateurs.
+- Les URLs éditables (liens et images) sont filtrées côté client : seuls `http(s)`, les chemins relatifs et `tel:` sont acceptés.
+- À vérifier dans Supabase → **Authentication → Providers → Email** : activer la confirmation par e-mail, désactiver l'inscription publique si elle n'est pas utile, et utiliser un mot de passe long pour le compte propriétaire (idéalement avec MFA). Ces réglages ne sont pas stockés dans ce dépôt.
+- Les en-têtes de sécurité (CSP, `frame-ancestors`, `nosniff`) sont configurés dans `vercel.json`.
